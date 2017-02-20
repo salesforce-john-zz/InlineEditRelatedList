@@ -197,9 +197,13 @@ public with sharing class RelatedListDataGridController {
         Schema.SObjectType sobjectType = (new list<Id>(lookupIds))[0].getSObjectType();
         String sobjectName = sobjectType.getDescribe().getName();
         
-        return Database.query('Select Id, Name From ' + 
-                              sobjectName + 
-                              ' Where Id in :lookupIds');                   
+        if(isSafeObject(sobjectName) && isSafeField('Name', sobjectName)){
+        	return Database.query('Select Id, Name From ' + 
+	                              sobjectName + 
+	                              ' Where Id in :lookupIds');
+        }
+        
+        return null;                   
     }
     
     /**
@@ -254,9 +258,29 @@ public with sharing class RelatedListDataGridController {
      * */
     @AuraEnabled
 	public static Object[] getLookupCandidates(String refObjName, String searchTerm) {
-        String soqlQuery = 'Select Id,Name From '+ refObjName+ 
-            ' Where Name Like \'%' + searchTerm + '%\''+' Limit 5';
-        
-        return Database.query(soqlQuery);
+		String qname = '%' + searchTerm + '%';
+		
+		if(isSafeObject(refObjName) && isSafeField('Name', refObjName)){
+	        return Database.query('Select Id,Name From ' + 
+	        					  refObjName + 
+	            				  ' Where Name Like :qname Limit 5');
+		}
+		
+		return null;
 	}
+	
+	private static boolean isSafeObject(String objName){
+	    Map <String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+	    SObjectType myObj = schemaMap.get(objName);
+	    
+	    return (myObj != null && myObj.getDescribe().isAccessible()); 
+	}
+	
+	private static boolean isSafeField(String fieldName, String objName){
+	    	Map <String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+	    	SObjectType myObj = schemaMap.get(objName);
+	    	
+	        SObjectField myField = myObj.getDescribe().fields.getMap().get(fieldName);
+	        return (myField != null && myField.getDescribe().isAccessible());	    
+	}	
 }
