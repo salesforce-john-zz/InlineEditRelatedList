@@ -99,8 +99,23 @@
             "jsonData": JSON.stringify(component.get("v.items"))
         });	
         
-        saveItemsAction.setCallback(this, function(res) {            
-            saveCallback(res.getState(), res.getError());
+        saveItemsAction.setCallback(this, function(res) { 
+            if(res.getState()=="SUCCESS"){
+                var dataAction = component.get("c.getReleatedListItems");
+                dataAction.setParams({
+                    "objectId": component.get("v.recordId"),
+                    "relatedlistName": component.get("v.relatedListName")
+                });	
+                
+                dataAction.setCallback(this, function(res) {                        
+                    saveCallback(res.getState(), res.getError(), res.getReturnValue());                  
+                });   
+        
+        		$A.enqueueAction(dataAction);     
+            }
+            else{
+             	saveCallback(res.getState(), res.getError(), items);                  
+            }             
         });   
         
         $A.enqueueAction(saveItemsAction);

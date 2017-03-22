@@ -55,10 +55,10 @@
             var items = helper.updateItems(component);
             
             //OnSave items callback
-            function saveCallback(status, errors){
+            function saveCallback(status, errors, newItems){
                 if(status=="SUCCESS"){
                     //Refresh the items
-                    helper.refreshItems(component, items, "read");      
+                    helper.refreshItems(component, newItems, "read");      
                     
                     //Refresh the UI elements
                     helper.refreshUIElements(component, event);                    
