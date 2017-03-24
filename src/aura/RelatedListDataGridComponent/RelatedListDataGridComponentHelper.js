@@ -32,10 +32,29 @@
             "relatedlistName": component.get("v.relatedListName")
         });	
         
-        dataAction.setCallback(this, function(res) {                        
+        dataAction.setCallback(this, function(res) {             
             if (res.getState() === "SUCCESS") {                 
-                var gridContainer = component.find("gridContainer");
-                component.set("v.items", res.getReturnValue()); 
+                var items = res.getReturnValue();                
+				var json_filter = component.get("v.filter");                
+                
+                if (json_filter != null){
+                    var obj_filter = JSON.parse(json_filter); 
+                    var fn_filter = function(elt){
+						for (var field in obj_filter) {
+                            if (obj_filter.hasOwnProperty(field)) {
+                                if(obj_filter[field] != elt[field]){
+                                    return false;
+                                }
+                            }
+                        }                       
+                        
+                        return true;
+                    }
+                    
+                    items = items.filter(fn_filter);
+                }
+                
+                component.set("v.items", items); 
             }
             else if (res.getState() === "ERROR") {
                 $A.log("Errors", res.getError());
