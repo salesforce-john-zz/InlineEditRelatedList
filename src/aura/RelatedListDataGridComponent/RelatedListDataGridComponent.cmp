@@ -13,6 +13,8 @@
     
     <aura:attribute name="canCreate" type="Boolean" default="true"/>
     <aura:attribute name="filter" type="String"/>
+    <aura:attribute name="aggregate" type="String"/>
+    <aura:attribute name="aggregations" type="Object[]"/>
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
     <aura:handler event="force:refreshView" action="{!c.refreshItems}"/>
@@ -64,7 +66,13 @@
                                                  columns="{!v.columns}"                                                 
                                                  item="{!item}" 
                                                  itemRank="{!itemRank}"/>                                
-                    </aura:iteration>    	            
+                    </aura:iteration>   
+                    <tr aura:id="total" class="total">
+                        <aura:iteration items="{!v.aggregations}" 
+                                        var="aggregation">                          
+                            <td>{!aggregation}</td>
+                        </aura:iteration>
+                    </tr>                      
                 </tbody>
             </table>
         </div>

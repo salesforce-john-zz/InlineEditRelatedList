@@ -2,4 +2,5 @@
 	<design:attribute name="relatedListLabel" label="Related List Label" description="The label of the related list to display"/>    
     <design:attribute name="canCreate" label="Can Create Object" description="Can Create Object Option"/>    
     <design:attribute name="filter" label="Filter" description="Javascript filter"/>    
+    <design:attribute name="aggregate" label="Aggregate" description="Aggregate Options"/>    
 </design:component>

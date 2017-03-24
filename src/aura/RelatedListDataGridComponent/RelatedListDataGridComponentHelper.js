@@ -23,6 +23,9 @@
         
         //Toogle the grid actions
         this.toogleGridActions(component, event);
+        
+        //Toogle the total row
+        this.toogleTotal(component, event);
     },
     loadItems : function(component){
         //Load items from Salesforce
@@ -33,10 +36,20 @@
         });	
         
         dataAction.setCallback(this, function(res) {             
+            var aggregate_map = { 
+                sum : function(a, b){return a + b;},
+                max : function(a, b){return Math.max(a,b);},
+                min : function(a, b){return Math.min(a,b);}
+            };
+            
+            var columns = component.get("v.columns");
+        	var aggregations = Array(columns.length).fill("");     	
+        
             if (res.getState() === "SUCCESS") {                 
                 var items = res.getReturnValue();                
 				var json_filter = component.get("v.filter");                
                 
+                //Apply Filters
                 if (json_filter != null){
                     var obj_filter = JSON.parse(json_filter); 
                     var fn_filter = function(elt){
@@ -52,9 +65,30 @@
                     }
                     
                     items = items.filter(fn_filter);
+                    
+                }
+                               
+                //Apply Aggregate
+                var json_aggregate = component.get("v.aggregate");                
+                
+                if (json_aggregate != null){    		
+                    var obj_aggregate = JSON.parse(json_aggregate); 
+                    columns.forEach(function(column, index){
+                        if(obj_aggregate.hasOwnProperty(column.name)){
+                            var key_aggregate = obj_aggregate[column.name];
+                            var fn_aggregate = aggregate_map[key_aggregate];
+                            var values = items.map(function(elt){return elt[column.name]});
+                            
+                            aggregations[index] = values.reduce(fn_aggregate).toString();
+                        }    
+                    });
                 }
                 
-                component.set("v.items", items); 
+                aggregations[0] = "Total";
+                
+                //Update the UI
+                component.set("v.items", items);                 
+                component.set("v.aggregations", aggregations);                
             }
             else if (res.getState() === "ERROR") {
                 $A.log("Errors", res.getError());
@@ -137,5 +171,10 @@
         });   
         
         $A.enqueueAction(saveItemsAction);
+    },
+    toogleTotal : function(component, event){
+        //Show/hide the total row on the bottom
+        var totalComponent = component.find("total");
+        $A.util.toggleClass(totalComponent, "hidden");
     }
 })

@@ -13,3 +13,8 @@
 .THIS .slds-button--brand{
     margin-left: 1rem !important;
 }
+
+.THIS .total {
+    background: #1fcaa0;
+    color: white;
+}
