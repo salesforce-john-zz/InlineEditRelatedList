@@ -113,5 +113,8 @@
         });
         
         createRecordEvent.fire();
+    },
+    refreshItems : function(component, event, helper){
+        helper.loadItems(component); 
     }
 })

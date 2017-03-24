@@ -35,7 +35,6 @@
         dataAction.setCallback(this, function(res) {                        
             if (res.getState() === "SUCCESS") {                 
                 var gridContainer = component.find("gridContainer");
-                $A.util.toggleClass(gridContainer, "hidden");        
                 component.set("v.items", res.getReturnValue()); 
             }
             else if (res.getState() === "ERROR") {
@@ -110,11 +109,11 @@
                 dataAction.setCallback(this, function(res) {                        
                     saveCallback(res.getState(), res.getError(), res.getReturnValue());                  
                 });   
-        
-        		$A.enqueueAction(dataAction);     
+                
+                $A.enqueueAction(dataAction);     
             }
             else{
-             	saveCallback(res.getState(), res.getError(), items);                  
+                saveCallback(res.getState(), res.getError(), items);                  
             }             
         });   
         

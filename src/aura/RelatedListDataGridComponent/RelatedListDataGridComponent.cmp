@@ -11,10 +11,12 @@
     
     <aura:attribute name="displayMode" type="String" default="read"/>
     
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-    <aura:handler event="force:refreshView" action="{!c.doInit}" />    
+    <aura:attribute name="canCreate" type="Boolean" default="true"/>
     
-    <article aura:id="gridContainer" class="slds-card hidden">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
+    <aura:handler event="force:refreshView" action="{!c.refreshItems}"/>
+
+    <article aura:id="gridContainer" class="slds-card">
         <div class="slds-card__header slds-grid">
             <header class="slds-media slds-media--center slds-has-flexi-truncate">
                 <div class="slds-media__body slds-truncate">
@@ -29,11 +31,13 @@
                                       size="medium" variant="bare"
                                       onclick="{! c.startEdit }" 
                                       alternativeText="Edit Items" />
-                <lightning:buttonIcon aura:id="createButton"
-                                      iconName="utility:new" 
-                                      size="medium" variant="bare"
-                                      onclick="{! c.createItem }" 
-                                      alternativeText="Create New Record" />                
+                <aura:if isTrue="{!v.canCreate}">
+                    <lightning:buttonIcon aura:id="createButton"
+                                          iconName="utility:new" 
+                                          size="medium" variant="bare"
+                                          onclick="{! c.createItem }" 
+                                          alternativeText="Create New Record" />                
+                </aura:if>
             </div>
         </div>
         <div class="slds-card__body">
@@ -77,5 +81,5 @@
                 </button>
             </div>
         </div>
-    </article>
+    </article>    
 </aura:component>
