@@ -17,7 +17,7 @@
     <aura:attribute name="aggregations" type="Object[]"/>
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
-    <aura:handler event="force:refreshView" action="{!c.refreshItems}"/>
+    <aura:handler event="force:refreshView" action="{!c.reloadItems}"/>
 
     <article aura:id="gridContainer" class="slds-card">
         <div class="slds-card__header slds-grid">

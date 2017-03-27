@@ -55,12 +55,13 @@
             var items = helper.updateItems(component);
             
             //OnSave items callback
-            function saveCallback(status, errors, newItems){
-                if(status=="SUCCESS"){
-                    //Refresh the items
-                    helper.refreshItems(component, newItems, "read");      
-                    
-                    //Refresh the UI elements
+            function onSaveSuccess(res){
+                //Set the display mode
+        		component.set("v.displayMode", "read"); 
+                
+                //Refresh the items
+                helper.loadItems(component, function(newItems){                    
+                   	//Refresh the UI elements
                     helper.refreshUIElements(component, event);                    
                     
                     //Display a confirmation Taost
@@ -70,31 +71,33 @@
                         "type" : "success",
                         "message": "The items list has been updated successfully"
                     });
-                    toastEvent.fire();
+                    toastEvent.fire(); 
+                });                                
+            }
+            
+            function onSaveError(res){                      
+                var errMsg = null;
+                var errors = res.getError();
+                
+                if(errors[0] && errors[0].message){
+                    errMsg = errors[0].message;
+                } 
+                if(errors[0] && errors[0].pageErrors) {
+                    errMsg = errors[0].pageErrors[0].message;
                 }
-                if(status=="ERROR"){                      
-                    var errMsg = null;
-                    
-                    if(errors[0] && errors[0].message){
-                        errMsg = errors[0].message;
-                    } 
-                    if(errors[0] && errors[0].pageErrors) {
-                        errMsg = errors[0].pageErrors[0].message;
-                    }
-                    
-                    var toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        "title": "Error!",
-                        "type" : "error",
-                        "mode" : "sticky",
-                        "message": "Server Error:" + errMsg
-                    });
-                    toastEvent.fire();                    
-                }
+                
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": "Error!",
+                    "type" : "error",
+                    "mode" : "sticky",
+                    "message": "Server Error:" + errMsg
+                });
+                toastEvent.fire();                    
             }        
             
             //Save items in the backend
-            helper.saveItems(component, items, saveCallback);
+            helper.saveItems(component, items, onSaveSuccess, onSaveError);
         }else{
             var toastEvent = $A.get("e.force:showToast");
             toastEvent.setParams({
@@ -114,7 +117,7 @@
         
         createRecordEvent.fire();
     },
-    refreshItems : function(component, event, helper){
+    reloadItems : function(component, event, helper){
         helper.loadItems(component); 
     }
 })

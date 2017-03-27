@@ -27,7 +27,7 @@
         //Toogle the total row
         this.toogleTotal(component, event);
     },
-    loadItems : function(component){
+    loadItems : function(component, onSuccess, onError){
         //Load items from Salesforce
         var dataAction = component.get("c.getReleatedListItems");
         dataAction.setParams({
@@ -35,7 +35,7 @@
             "relatedlistName": component.get("v.relatedListName")
         });	
         
-        dataAction.setCallback(this, function(res) {             
+        dataAction.setCallback(this, function(res) {                        
             var aggregate_map = { 
                 sum : function(a, b){return a + b;},
                 max : function(a, b){return Math.max(a,b);},
@@ -64,8 +64,7 @@
                         return true;
                     }
                     
-                    items = items.filter(fn_filter);
-                    
+                    items = items.filter(fn_filter);                    
                 }
                                
                 //Apply Aggregate
@@ -88,10 +87,19 @@
                 
                 //Update the UI
                 component.set("v.items", items);                 
-                component.set("v.aggregations", aggregations);                
+                component.set("v.aggregations", aggregations); 
+                
+                //Call the success callback
+                if(onSuccess != null){
+                    onSuccess(items);
+                }
             }
             else if (res.getState() === "ERROR") {
                 $A.log("Errors", res.getError());
+                //Call the error callback
+                if(onError != null){
+                    onError(res);
+                }
             }
         });   
         
@@ -143,7 +151,7 @@
         
         return items;
     },
-    saveItems : function(component, items, saveCallback){
+    saveItems : function(component, items, onSuccess, onError){
         //Save items on Salesforce
         var saveItemsAction = component.get("c.saveRelatedListItems");
         
@@ -153,20 +161,10 @@
         
         saveItemsAction.setCallback(this, function(res) { 
             if(res.getState()=="SUCCESS"){
-                var dataAction = component.get("c.getReleatedListItems");
-                dataAction.setParams({
-                    "objectId": component.get("v.recordId"),
-                    "relatedlistName": component.get("v.relatedListName")
-                });	
-                
-                dataAction.setCallback(this, function(res) {                        
-                    saveCallback(res.getState(), res.getError(), res.getReturnValue());                  
-                });   
-                
-                $A.enqueueAction(dataAction);     
+				onSuccess(res);				                
             }
             else{
-                saveCallback(res.getState(), res.getError(), items);                  
+                onError(res);                  
             }             
         });   
         
