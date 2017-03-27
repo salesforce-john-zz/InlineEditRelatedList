@@ -172,7 +172,9 @@
     },
     toogleTotal : function(component, event){
         //Show/hide the total row on the bottom
-        var totalComponent = component.find("total");
-        $A.util.toggleClass(totalComponent, "hidden");
+        if (component.get("v.aggregate")!=null){
+        	var totalComponent = component.find("total");
+        	$A.util.toggleClass(totalComponent, "hidden");
+        }
     }
 })

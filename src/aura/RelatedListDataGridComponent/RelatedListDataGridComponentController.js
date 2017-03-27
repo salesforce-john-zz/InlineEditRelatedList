@@ -34,6 +34,9 @@
                 $A.enqueueAction(metadataAction);             
             }
         }
+        
+        //Toogle the total row
+        helper.toogleTotal(component, event);
     },    
     startEdit : function(component, event, helper) {
         //Save a copy of items

@@ -67,7 +67,7 @@
                                                  item="{!item}" 
                                                  itemRank="{!itemRank}"/>                                
                     </aura:iteration>   
-                    <tr aura:id="total" class="total">
+                    <tr aura:id="total" class="total hidden">
                         <aura:iteration items="{!v.aggregations}" 
                                         var="aggregation">                          
                             <td>{!aggregation}</td>
