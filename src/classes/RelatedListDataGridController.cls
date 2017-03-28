@@ -92,6 +92,10 @@ public with sharing class RelatedListDataGridController {
     public static Object[] getReleatedListsMetadata(Id objectId)
     {
         String recordTypeName = RestAPIUtils.getObjectRecordTypeName(objectId);
+        if(recordTypeName=='Master' || recordTypeName=='Principal'){
+            recordTypeName = null;
+        }
+        
         Object[] relatedListsMetatdata = RestAPIUtils.getRelatedListsMetadata(objectId, 
                                                                               recordTypeName);
         
@@ -110,6 +114,10 @@ public with sharing class RelatedListDataGridController {
                                                  String relatedListLabel)
     {
         String recordTypeName = RestAPIUtils.getObjectRecordTypeName(objectId);
+        if(recordTypeName=='Master' || recordTypeName=='Principal'){
+            recordTypeName = null;
+        }
+        
         Object[] relatedListsMetatdata = RestAPIUtils.getRelatedListsMetadata(objectId, 
                                                                               recordTypeName);
         
