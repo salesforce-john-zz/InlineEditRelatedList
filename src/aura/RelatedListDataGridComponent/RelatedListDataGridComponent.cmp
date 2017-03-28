@@ -11,9 +11,9 @@
     
     <aura:attribute name="displayMode" type="String" default="read"/>
     
-    <aura:attribute name="canCreate" type="Boolean" default="true"/>
-    <aura:attribute name="filter" type="String"/>
-    <aura:attribute name="aggregate" type="String"/>
+    <aura:attribute name="canCreate" type="Boolean" default="true" access=globa/>
+    <aura:attribute name="filter" type="String" access=globa/>
+    <aura:attribute name="aggregate" type="String" access=globa/>
     <aura:attribute name="aggregations" type="Object[]"/>
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
