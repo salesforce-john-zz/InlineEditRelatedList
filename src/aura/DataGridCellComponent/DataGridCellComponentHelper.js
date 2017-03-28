@@ -6,17 +6,22 @@
         //Set the column label
         component.set("v.label", column.label); 
         //Set the value from the item
-        component.set("v.value", item[column.name]);                
-        //Set the required flag for all fields
-        component.set("v.required", JSON.parse(column.required));
-        //Set the length for String field
-        component.set("v.length", JSON.parse(column.length));
-        //Set the options for Picklist field
-        component.set("v.options", JSON.parse(column.options));
-        //Set the digits for Integer field
-        component.set("v.digits", JSON.parse(column.digits));
-        //Set the precision for Integer field
-        component.set("v.precision", JSON.parse(column.precision));                
+        component.set("v.value", item[column.name]);  
+        try{              
+	        //Set the required flag for all fields
+	        component.set("v.required", JSON.parse(column.required));
+	        //Set the length for String field
+	        component.set("v.length", JSON.parse(column.length));
+	        //Set the options for Picklist field
+	        component.set("v.options", JSON.parse(column.options));
+	        //Set the digits for Integer field
+	        component.set("v.digits", JSON.parse(column.digits));
+	        //Set the precision for Integer field
+	        component.set("v.precision", JSON.parse(column.precision));
+        }
+        catch(ex){
+        	console.error("RelatedListEditor", ex.message);
+        }
     },    
     getInputCell : function(component, event){
         return component.find("inputCell");
