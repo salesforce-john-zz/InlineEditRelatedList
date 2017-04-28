@@ -1,7 +1,7 @@
 <aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" 
                 controller="RelatedListDataGridController"
                 access="global" >   
-    <aura:attribute name="relatedListLabel" type="String" access="global"/> 
+    <aura:attribute name="relatedListLabel" type="String" access="global"/>     
     <aura:attribute name="relatedObjectName" type="String" default=""/> 
     <aura:attribute name="relatedListName" type="String"/> 
     
@@ -16,15 +16,27 @@
     <aura:attribute name="aggregate" type="String" access="global"/>
     <aura:attribute name="aggregations" type="Object[]"/>
     
+    <aura:attribute name="defaultValues" type="String" default="{}" access="global"/>
+    <aura:attribute name="customLabel" type="String" access="global"/> 
+    <aura:attribute name="customIcon" type="String" default="standard:contact" access="global"/> 
+    <aura:attribute name="sort" type="String" access="global"/>
+    
+    <aura:attribute name="displayLabel" type="String"/>    
+    
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
     <aura:handler event="force:refreshView" action="{!c.reloadItems}"/>
-
+    
     <article aura:id="gridContainer" class="slds-card">
         <div class="slds-card__header slds-grid">
             <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container">
+                        <lightning:icon iconName="{!v.customIcon}" size="small"/>
+                    </span>
+                </div>
                 <div class="slds-media__body slds-truncate">
                     <h2>
-                        <span class="slds-text-heading--small">{!v.relatedListLabel}</span>                        
+                        <span class="slds-text-heading--small">{!v.displayLabel}</span>                        
                     </h2>
                 </div>
             </header>
@@ -34,7 +46,7 @@
                                       size="medium" variant="bare"
                                       onclick="{! c.startEdit }" 
                                       alternativeText="Edit Items" />
-                <aura:if isTrue="{!v.canCreate}">
+                <aura:if isTrue="{!and(v.canCreate, v.displayMode != 'read')}">
                     <lightning:buttonIcon aura:id="createButton"
                                           iconName="utility:new" 
                                           size="medium" variant="bare"
@@ -62,16 +74,19 @@
                                     var="item" 
                                     indexVar="itemRank">                  
                         <c:DataGridRowComponent aura:id="row"
-                                                 displayMode="{!v.displayMode}"
-                                                 columns="{!v.columns}"                                                 
-                                                 item="{!item}" 
-                                                 itemRank="{!itemRank}"/>                                
+                                                displayMode="{!v.displayMode}"
+                                                columns="{!v.columns}"                                                 
+                                                item="{!item}" 
+                                                itemRank="{!itemRank}"
+                                                onDelete="{!c.actionDelete}"
+                                                onEdit="{!c.actionEdit}"
+                                                />                                
                     </aura:iteration>   
                     <tr aura:id="total" class="total hidden">
                         <aura:iteration items="{!v.aggregations}" 
                                         var="aggregation">                          
                             <td>{!aggregation}</td>
-                        </aura:iteration>
+                        </aura:iteration>                        
                     </tr>                      
                 </tbody>
             </table>
@@ -90,5 +105,10 @@
                 </button>
             </div>
         </div>
-    </article>    
+    </article>  
+    <c:RelatedListEditRecordComponent aura:id="editDialog" onClose="{!c.editCallback}" onSave="{!c.saveCallback}" />
+    <c:LightningDialog aura:id="deleteDialog" type="CONFIRM" onClose="{!c.deleteCallback}" />           
+    <c:LightningDialog aura:id="loaderDialog" type="LOADER" />
+    
+
 </aura:component>

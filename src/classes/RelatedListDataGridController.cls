@@ -71,10 +71,13 @@ public with sharing class RelatedListDataGridController {
                     //Set length
                     mColumn.put('length', JSON.serialize(fieldDescResult.getLength()));
                     
+                    //Set type
+                    mColumn.put('type', typesMap.get(fieldDescResult.getType()));        
+                    
                     //Set type for AutoNumber and Formula Fields
-                    mColumn.put('type', typesMap.get(fieldDescResult.getType()));                    
                     if(fieldDescResult.isAutoNumber() || fieldDescResult.isCalculated()){
-                        mColumn.put('type', 'Formula');                    
+                        mColumn.put('calculatedType', mColumn.get('type')); 
+                        mColumn.put('type', 'Formula');                           
                     }                    
                 }else{
                     columns.remove(i);
@@ -95,7 +98,6 @@ public with sharing class RelatedListDataGridController {
         if(recordTypeName=='Master' || recordTypeName=='Principal'){
             recordTypeName = null;
         }
-        
         Object[] relatedListsMetatdata = RestAPIUtils.getRelatedListsMetadata(objectId, 
                                                                               recordTypeName);
         
@@ -117,7 +119,6 @@ public with sharing class RelatedListDataGridController {
         if(recordTypeName=='Master' || recordTypeName=='Principal'){
             recordTypeName = null;
         }
-        
         Object[] relatedListsMetatdata = RestAPIUtils.getRelatedListsMetadata(objectId, 
                                                                               recordTypeName);
         
@@ -140,7 +141,7 @@ public with sharing class RelatedListDataGridController {
                                                 String relatedlistName)
     {            
         Object[] items = RestAPIUtils.getRelatedListItems(objectId, 
-                                                              relatedlistName);
+                                                          relatedlistName);
         if(items.size()>0){        
             Id firstChildId = (Id)((Map<String, Object>) items.get(0)).get('Id');            
         	DescribeSObjectResult objectDescResult = firstChildId.getSobjectType().getDescribe();
@@ -218,7 +219,7 @@ public with sharing class RelatedListDataGridController {
     * Save the related list items
     * */
     @AuraEnabled
-    public static boolean saveRelatedListItems(String jsonData)
+    public static Boolean saveRelatedListItems(String jsonData)
     {
         List<SObject> sObjectsItems = new List<SObject>();
         
@@ -291,4 +292,99 @@ public with sharing class RelatedListDataGridController {
 	        SObjectField myField = myObj.getDescribe().fields.getMap().get(fieldName);
 	        return (myField != null && myField.getDescribe().isAccessible());	    
 	}	
+    
+    
+    @AuraEnabled
+    public static Boolean deleteRelatedRecord(Id objectId){
+        Schema.SObjectType sobjectType = objectId.getSObjectType();
+        String sobjectName = sobjectType.getDescribe().getName();
+        
+        if(isSafeObject(sobjectName)) {
+            Database.DeleteResult result = Database.delete(objectId);            
+            return result.isSuccess();
+        }
+        return False;
+    }
+    
+    /**
+    * Return the object details
+    * */
+    @AuraEnabled
+    public static Object getObject(Id objectId)
+    {            
+        Object item = RestAPIUtils.getObject(objectId);
+        if(item != null){        
+            DescribeSObjectResult objectDescResult = objectId.getSobjectType().getDescribe();
+            
+        	Map<String, DescribeFieldResult> lookupFields = new Map<String,DescribeFieldResult>();            
+            for(Schema.SObjectField sfield : objectDescResult.fields.getMap().Values()){ 
+                DescribeFieldResult fieldDescResult = sfield.getDescribe();                
+                if(fieldDescResult.getType()==Schema.DisplayType.REFERENCE){                        
+                    lookupFields.put(fieldDescResult.getName(), fieldDescResult);
+                }                                
+            }   
+			
+            //Set the lookup labels based on the field type
+            for(String fieldKey : lookupFields.keySet()){
+                Set<Id> lookupIds = new Set<Id>();
+                
+                //Build the list of IDs
+                Map<String, Object> mItem = (Map<String, Object>) item;
+                if(mItem.containsKey(fieldKey)){
+                    Id lookupId = (Id)mItem.get(fieldKey);
+                    if(lookupId != null){
+                        lookupIds.add(lookupId); 
+                    }                        
+                }
+                
+                               
+                //Do SOQL query based on the ID list
+                if(!lookupIds.isEmpty()){
+                    SObject[] lookupObjs = getLookupObjects(lookupIds);                 
+                    for(SObject lookupObj : lookupObjs){
+                        try{                            	
+                            mItem.put(fieldKey + '__Name', lookupObj.get('Name'));                                                                                        
+                        }
+                        catch(Exception e){
+                            System.debug(e.getMessage());
+                            mItem.put(fieldKey + '__Name', 'Undefined'); 
+                        }                        
+                    }
+                }                                    
+            }
+            
+            return item;                    
+        }
+                
+        return null;
+    } 
+    
+    /**
+    * Create the object based on a json
+    * */
+    @AuraEnabled
+    public static Id createRelatedObject(Id objectId,
+                                         String objectName,
+                                         String jsonData)
+    {
+        if(isSafeObject(objectName)){
+            Map<String, Object> defaultValues = (Map<String, Object>)JSON.deserializeUntyped(jsonData);
+        	SObjectType relatedObjectType =  Schema.getGlobalDescribe().get(objectName);    
+            Schema.DescribeSobjectResult relatedDescribe = relatedObjectType.getDescribe();
+            
+        	SObject relatedObject = relatedObjectType.newSObject();
+            
+        	//Update the fields from default values
+            for(String field : relatedDescribe.fields.getMap().keySet()){                
+                if(defaultValues.containsKey(field)){                        
+                    relatedObject.put(field, defaultValues.get(field));                    
+                }                    
+            }
+            
+            insert relatedObject;            
+            return relatedObject.Id;
+        }
+        
+        return null;
+    } 
 }

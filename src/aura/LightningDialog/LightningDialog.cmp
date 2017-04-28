@@ -1,0 +1,45 @@
+<aura:component >    
+    <aura:attribute name="type" type="String" required="true" default="CONFIRM" description="CONFIRM, LOADER"/>
+    <aura:attribute name="showDialog" type="Boolean" required="true" default="false" />
+    <aura:attribute name="context" type="Object" required="false"  />    
+    <aura:attribute name="title" type="String" required="true" />
+    <aura:attribute name="content" type="String" required="true"  />
+    
+    <aura:registerEvent name="onClose" type="c:LightningDialogCloceEvt"/>
+    <aura:registerEvent name="onSave" type="c:LightningDialogCloceEvt"/>
+    
+    <aura:handler name="change" value="{!v.showDialog}" action="{!c.onShowDialogValueChange}"/>
+    <aura:handler name="onSaveSuccess" event="force:recordSaveSuccess" action="{!c.onSaveSuccess}"/>
+    
+    <div aura:id="theModal" style="margin-top:100px" 
+         class="{!'slds-modal '+((v.showDialog)?'slds-fade-in-open':'slds-fade-in-close')}" 
+         aria-hidden="true" role="dialog">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h2 class="slds-text-heading--medium">{!v.title}</h2>
+                <aura:renderIf isTrue="{!v.type == 'LOADER'}">
+                    <div style="margin-top:30px;" class="slds-spinner--brand slds-spinner slds-spinner--small" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </aura:renderIf>
+            </div>
+            
+            <div class="slds-modal__content slds-p-around--medium">
+                <aura:renderIf isTrue="{!not(empty(v.content))}">
+                    <div style="text-align:center;">
+                        <p><aura:unescapedHtml value="{!v.content}" /></p>                            
+                    </div>
+                </aura:renderIf>
+            </div>
+            
+            <div class="slds-modal__footer slds-modal__footer--directional">
+                <aura:renderIf isTrue="{!v.type == 'CONFIRM'}">
+                    <button class="slds-button slds-button--neutral " onclick="{!c.closeModal}">No</button>
+                    <button class="slds-button slds-button--brand " onclick="{!c.closeModalYes}">Yes</button>
+                </aura:renderIf>
+            </div>                
+        </div>
+    </div>
+    <div aura:id="theBackdrop" class="{!'slds-backdrop '+((v.showDialog)?'slds-backdrop--open':'slds-backdrop--close')}"></div>      
+</aura:component>

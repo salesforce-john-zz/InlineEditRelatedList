@@ -1,0 +1,5 @@
+<aura:event type="COMPONENT" description="Lightning dialog close event" >
+	<aura:attribute name="dialogType" type="String" description="Type of origin dialog"/>
+	<aura:attribute name="confirmResult" type="Boolean" description="Result after closing for CONFIRM type" />
+	<aura:attribute name="context" type="Object" description="Generic context object to be sent back to the callback" />
+</aura:event>

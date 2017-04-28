@@ -1,10 +1,7 @@
 ({
     doInit : function(component, event, helper) {
         function getCellComponent(column, index){
-            var columnType = column.type;
-            if(index==0){
-                columnType = "ItemLink";
-            }         
+            var columnType = column.type;                    
             
             switch(columnType) {
                 case 'Boolean':
@@ -75,5 +72,24 @@
                 }
             }
         );                            
-    }
+    },    
+    handleMenuSelect: function(component, event, helper) {
+        var selectedValue = event.getParam("value");        
+        if(selectedValue === "delete"){
+            var deleteEvt = component.getEvent("onDelete");                
+            deleteEvt.setParams({
+                item: component.get('v.item')
+            });
+            
+            deleteEvt.fire();          
+        }
+        if(selectedValue === "edit"){            
+            var updateEvt = component.getEvent("onEdit");                
+            updateEvt.setParams({
+                item: component.get('v.item')
+            });
+            
+            updateEvt.fire();
+        }            
+    }                      
 })

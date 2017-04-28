@@ -67,4 +67,60 @@ public class RelatedListDataGridControllerTest {
         
         Test.stopTest();        
     }
+    
+    static Account createFakeAccount(){
+        Account account = new Account();
+        account.Name='Test Account' ;
+        insert account;
+        
+        return account;
+    }
+    
+    static testMethod void testGetObject()
+    {
+        Test.startTest();        
+        Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());                                
+        Object jsonObj = RelatedListDataGridController.getObject('0019E000006nVr3QAE');        
+        System.assertEquals(true, jsonObj != null);        
+        
+        Test.stopTest();            
+    }
+    
+    static testMethod void testDelectObject()
+    {
+        Test.startTest();
+        
+        Contact ct = new Contact();
+        ct.LastName = 'Hicham';
+        ct.FirstName = 'El Mansouri';       
+        insert ct;
+        
+        boolean result = RelatedListDataGridController.deleteRelatedRecord(ct.Id);
+        System.assertEquals(true, result);
+        
+        Test.stopTest();
+    }       
+    
+    static testMethod void testCreateRelatedObject()
+    {
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator()); 
+        
+        Account account = new Account();
+        account.Name='Test Account' ;
+        insert account;
+
+        Map<String, String> data = new Map<String, String>();
+        data.put('AccountId', account.id);
+        data.put('lastname', 'Test');
+        data.put('firstname', 'Test');        
+        
+        System.debug(JSON.serialize(data));
+        Id IdContact = RelatedListDataGridController.createRelatedObject(account.Id, 
+                                                                         'Contact', 
+                                                                         JSON.serialize(data));
+        System.assertEquals(true, IdContact != null);
+        
+        Test.stopTest();
+    }
 }

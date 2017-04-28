@@ -1,12 +1,25 @@
-<aura:component >
+<aura:component controller="RelatedListDataGridController">
     <aura:attribute name="displayMode" type="String"/>
     <aura:attribute name="columns" type="Object[]"/>
     
     <aura:attribute name="item" type="Object"/>
     <aura:attribute name="itemRank" type="Integer"/>
     
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />    
+    <aura:registerEvent name="onDelete" type="c:RelatedRecordEvt"/>
+    <aura:registerEvent name="onEdit" type="c:RelatedRecordEvt"/>
     
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-    
-	<tr>{!v.body}</tr>    
+    <tr>
+        {!v.body}
+         <aura:if isTrue="{!v.displayMode != 'read'}">
+             <td class="actions">
+                 <lightning:buttonMenu alternativeText="Actions" 
+                                       iconSize="x-small"
+                                       onselect="{!c.handleMenuSelect}">
+                     <lightning:menuItem label="Delete" value="delete" />
+                     <!--lightning:menuItem label="Edit" value="edit"/-->                
+                 </lightning:buttonMenu>
+             </td>
+        </aura:if>
+    </tr>            
 </aura:component>

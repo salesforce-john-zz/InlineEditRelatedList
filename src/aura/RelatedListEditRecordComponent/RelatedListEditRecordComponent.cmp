@@ -1,0 +1,30 @@
+<aura:component >    
+    <aura:attribute name="context" type="Object" required="false"  />    
+    <aura:attribute name="showDialog" type="Boolean" default="false" />
+    
+    <aura:registerEvent name="onClose" type="c:LightningDialogCloceEvt"/>
+    <aura:registerEvent name="onSave" type="c:LightningDialogCloceEvt"/>
+    
+    <aura:handler name="change" value="{!v.showDialog}" action="{!c.onShowDialogValueChange}"/>
+    <aura:handler name="onSaveSuccess" event="force:recordSaveSuccess" action="{!c.onSaveSuccess}"/>
+    
+    <div aura:id="theModal" style="margin-top:100px" 
+         class="{!'slds-modal '+((v.showDialog)?'slds-fade-in-open':'slds-fade-in-close')}" 
+         aria-hidden="true" role="dialog">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h2 class="slds-text-heading--medium">{!'Edit ' + v.context.Name}</h2>
+            </div>
+            
+            <div class="slds-modal__content slds-p-around--medium">
+                <force:recordEdit aura:id="editComponent" recordId="{!v.context.Id}"/>
+            </div>
+            
+            <div class="slds-modal__footer slds-modal__footer--directional">
+                <button class="slds-button slds-button--neutral " onclick="{!c.cancelAction}">Cancel</button>
+                <button class="slds-button slds-button--brand " onclick="{!c.saveAction}">Save</button>
+            </div>                
+        </div>
+    </div>
+    <div aura:id="theBackdrop" class="{!'slds-backdrop '+((v.showDialog)?'slds-backdrop--open':'slds-backdrop--close')}"></div>      
+</aura:component>

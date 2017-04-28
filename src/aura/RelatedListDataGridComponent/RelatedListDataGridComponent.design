@@ -1,6 +1,10 @@
 <design:component >
-	<design:attribute name="relatedListLabel" label="Related List Label" description="The label of the related list to display"/>    
+    <design:attribute name="relatedListLabel" label="Related List Label" description="The label of the related list to display"/>    
     <design:attribute name="canCreate" label="Can Create Object" description="Can Create Object Option"/>    
     <design:attribute name="filter" label="Filter" description="Javascript filter"/>    
     <design:attribute name="aggregate" label="Aggregate" description="Aggregate Options"/>    
+    <design:attribute name="defaultValues" label="Default Values" description="Default Values for Creation"/>
+    <design:attribute name="customLabel" label="Custom Label" description="Custom Label"/> 
+    <design:attribute name="customIcon" label="Custom Icon" description="Custom Icon"/> 
+    <design:attribute name="sort" label="Sort" description="Sort Options"/>
 </design:component>

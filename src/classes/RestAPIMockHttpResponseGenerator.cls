@@ -4,7 +4,9 @@ global class RestAPIMockHttpResponseGenerator  implements HttpCalloutMock {
         mock.setHeader('Content-Type', 'application/json');
 		mock.setStatusCode(200);
 
-        String endPoint = req.getEndpoint();        
+        String endPoint = req.getEndpoint();      
+        System.debug(endPoint);
+        
         //Get Layout Response
         if(endPoint.contains('sobjects/Account/describe/layouts')){
             mock.setStaticResource('TestAccountLayoutResponse');

@@ -1,0 +1,64 @@
+<apex:page controller="Magics.Ctrl00_Magic_Xpi_Setting" setup="true">
+ 
+ <apex:form >
+ 
+ <apex:sectionHeader title="Magic xpi" subtitle="Configuration" />
+ 
+ <apex:outputPanel layout="block" styleClass="bDescription">
+        You can define here the configuration for the Magic xpi app.
+ </apex:outputPanel>
+<apex:pageMessages id="messages" escape="false" /> 
+<apex:pageBlock title="Magic xpi Configuration" mode="edit">
+
+    <apex:pageBlockButtons location="top">
+              <apex:commandButton value="Edit" action="{!Edit}"  rendered="{!NOT(EditMode)}"/>
+              <apex:commandButton value="Save" action="{!Save}" rendered="{!EditMode}" />
+              <apex:commandButton value="Cancel" action="{!Cancel}" rendered="{!EditMode}" immediate="true"/>
+    </apex:pageBlockButtons>
+                
+ <!-----------------------------------------------------View Mode ------------------------------------------> 
+  
+<apex:outputPanel rendered="{!NOT(Editmode)}">
+     
+ 
+  <apex:pageBlockSection title="Synchronization Interval" collapsible="false" columns="1"   >
+  <apex:pageBlockSectionItem helpText="Define Synchronization Interval">
+                    <apex:outputLabel value="{!$ObjectType.Magics__Magic_xpi_Setting__c.Fields.Magics__Interval__c.Label}" />
+                    <apex:outputText value="{!mXpi.Magics__Interval__c}" style="width:100px !important;" />
+                    
+  </apex:pageBlockSectionItem>
+  </apex:pageBlockSection>
+  
+  <apex:pageBlockSection title="Notifications" collapsible="false" columns="1" >
+  <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Magics__Magic_xpi_Setting__c.Fields.Magics__Notification_Types__c.Label}" />
+                    <apex:outputField value="{!mXpi.Magics__Notification_Types__c}" />
+
+  </apex:pageBlockSectionItem>
+  </apex:pageBlockSection>
+  </apex:outputPanel>
+  
+ <!-----------------------------------------------------Edit Mode ------------------------------------------> 
+  
+  <apex:outputPanel rendered="{!EditMode}">
+   
+  <apex:pageBlockSection title="Interval" collapsible="false" columns="1"   >
+  <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Magics__Magic_xpi_Setting__c.Fields.Magics__Interval__c.Label}" />
+                    <apex:inputfield required="true" value="{!mXpi.Magics__Interval__c}" style="width:50px !important;" />
+  </apex:pageBlockSectionItem>
+  </apex:pageBlockSection>
+  
+  <apex:pageBlockSection title="Notification Type" collapsible="false" columns="1" >
+  <apex:pageBlockSectionItem >
+                     <apex:outputLabel value="{!$ObjectType.Magics__Magic_xpi_Setting__c.Fields.Magics__Notification_Types__c.Label}" />
+                     <apex:inputfield value="{!mXpi.Magics__Notification_Types__c}" />
+  </apex:pageBlockSectionItem>
+  </apex:pageBlockSection>
+  </apex:outputPanel>
+  </apex:pageBlock>
+  
+  
+ </apex:form>
+ 
+</apex:page>

@@ -138,12 +138,13 @@ public with sharing class RestAPIUtils {
     public static String getObjectRecordTypeName(Id objectId)
     {
         Map<String, Object> mObject = getObject(objectId);
-        if (mObject.containsKey('RecordTypeId')){
+        if (mObject.containsKey('RecordTypeId') && 
+            mObject.get('RecordTypeId') != null){
             Map<Id,Schema.RecordTypeInfo> recordTypeInfo = 
-                objectId.getSobjectType().getDescribe().getRecordTypeInfosById();
+                objectId.getSobjectType().getDescribe().getRecordTypeInfosById();            
             return recordTypeInfo.get((Id)mObject.get('RecordTypeId')).getName();            
         }
         
         return 'Master';
-    }
+    }    
 }

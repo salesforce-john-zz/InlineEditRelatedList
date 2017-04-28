@@ -1,3 +1,13 @@
 <aura:component extends="c:DataGridCellComponent">
-    <ui:outputRichText aura:id="outputCell" value="{!v.value}"/> 
+    <aura:renderIf isTrue="{!v.column.calculatedType=='Currency'}">
+        <ui:outputCurrency aura:id="outputCell" value="{!v.value}"/>
+        <aura:set attribute="else">
+            <aura:renderIf isTrue="{!v.column.calculatedType=='Percent'}">
+                <ui:outputNumber aura:id="outputCell" value="{!v.value}" format="00.00%"/>
+                <aura:set attribute="else">
+                    <ui:outputRichText aura:id="outputCell" value="{!v.value}"/>
+                </aura:set>
+            </aura:renderIf>            
+        </aura:set>
+    </aura:renderIf>    
 </aura:component>

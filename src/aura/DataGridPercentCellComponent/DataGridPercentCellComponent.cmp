@@ -1,8 +1,8 @@
 <aura:component extends="c:DataGridCellComponent">
     <aura:if isTrue="{!v.displayMode == 'read'}">
-        <ui:outputNumber aura:id="outputCell" value="{!v.value}"/>
+        <ui:outputNumber aura:id="outputCell" value="{!v.value}" format="00.00%"/>
         <aura:set attribute="else">
-            <ui:inputNumber aura:id="inputCell" value="{!v.value}" change="{!c.checkInput}"/>
+            <ui:inputNumber aura:id="inputCell" value="{!v.value}" change="{!c.checkInput}" format="00.00%"/>
         </aura:set>
     </aura:if>
 </aura:component>

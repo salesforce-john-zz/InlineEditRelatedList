@@ -37,6 +37,15 @@
         
         //Toogle the total row
         helper.toogleTotal(component, event);
+        
+        //Update the default values for the current record
+        var defaultValues = component.get("v.defaultValues");
+        defaultValues = defaultValues.replace("$recordId", component.get("v.recordId"));
+        component.set("v.defaultValues", defaultValues);
+        
+        //Set the display label        
+        var displayLabel = component.get("v.customLabel") || component.get("v.relatedListLabel");                        
+        component.set("v.displayLabel", displayLabel);
     },    
     startEdit : function(component, event, helper) {
         //Save a copy of items
@@ -60,11 +69,11 @@
             //OnSave items callback
             function onSaveSuccess(res){
                 //Set the display mode
-        		component.set("v.displayMode", "read"); 
+                component.set("v.displayMode", "read"); 
                 
                 //Refresh the items
                 helper.loadItems(component, function(newItems){                    
-                   	//Refresh the UI elements
+                    //Refresh the UI elements
                     helper.refreshUIElements(component, event);                    
                     
                     //Display a confirmation Taost
@@ -75,6 +84,8 @@
                         "message": "The items list has been updated successfully"
                     });
                     toastEvent.fire(); 
+                    
+                    $A.get('e.force:refreshView').fire();
                 });                                
             }
             
@@ -113,14 +124,87 @@
         }
     },
     createItem : function(component, event, helper){
-        var createRecordEvent = $A.get("e.force:createRecord");
-        createRecordEvent.setParams({
-            "entityApiName": component.get("v.relatedObjectName")
+        var createAction = component.get("c.createRelatedObject");
+        
+        createAction.setParams({          
+            "objectId": component.get("v.recordId"),
+            "objectName" : component.get("v.relatedObjectName"),                                       
+            "jsonData": component.get("v.defaultValues")
         });
         
-        createRecordEvent.fire();
+        createAction.setCallback(this, function(res) {            
+            if (res.getState() === "SUCCESS" && res.getReturnValue()) {                        
+                helper.notifyItemCreated(component, res.getReturnValue());                     
+            } 
+            else if (res.getState() === "ERROR") {
+                $A.log("Errors", res.getError());
+            }           
+        });  
+        
+        $A.enqueueAction(createAction);         
     },
     reloadItems : function(component, event, helper){
         helper.loadItems(component); 
-    }
+    },        
+    deleteCallback: function(component, event, helper) {
+        if (event.getParam('confirmResult')){
+            var deleteDialog = component.find("deleteDialog");                
+            var loaderDialog = component.find("loaderDialog");  
+            
+            var deleteAction = component.get("c.deleteRelatedRecord");
+            var item = deleteDialog.get("v.context");
+            
+            deleteAction.setParams({
+                "objectId": item.Id            
+            });
+            
+            deleteAction.setCallback(this, function(res) { 
+                loaderDialog.set('v.showDialog', false);                        
+                
+                if (res.getState() === "SUCCESS") {        
+                    helper.notifyItemDeleted(component, item);
+                } 
+                
+                else if (res.getState() === "ERROR") {
+                    $A.log("Errors", res.getError());
+                }                                   
+            });   
+            
+            loaderDialog.set('v.title', 'Deleting ' + item.Name);
+            loaderDialog.set("v.content", "Please wait while deleting the record");
+            loaderDialog.set('v.showDialog', true);
+            
+            $A.enqueueAction(deleteAction);            
+        }                
+    },
+    editCallback: function(component, event, helper) {
+        if (event.getParam('confirmResult')){
+            var loaderDialog = component.find("loaderDialog");
+            loaderDialog.set('v.title', 'Saving ' + event.getParam('context').Name);
+            loaderDialog.set("v.content", "Please wait while saving the record"); 
+            loaderDialog.set('v.showDialog', true);           
+        }
+    },
+    saveCallback: function(component, event, helper) {
+        var loaderDialog = component.find("loaderDialog");         
+        loaderDialog.set('v.showDialog', false); 
+        
+        helper.notifyItemUpdated(component, event.getParam('context'));                   
+    },
+    actionDelete : function(component, event, helper){       
+        var deleteDialog = component.find("deleteDialog"); 
+        var item = event.getParam('item');
+        
+        deleteDialog.set('v.title', 'Delete ' + item.Name);
+        deleteDialog.set('v.content', 'Do you really want to delete this record?')                       
+        deleteDialog.set('v.context', item);
+        
+        deleteDialog.set('v.showDialog', true);        
+    },
+    actionEdit : function(component, event, helper){                    
+        var editDialog = component.find('editDialog');
+        
+        editDialog.set('v.context', event.getParam('item'));                       
+        editDialog.set('v.showDialog', true);         
+    }    
 })
