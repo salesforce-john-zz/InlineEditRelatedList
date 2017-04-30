@@ -34,9 +34,9 @@
 		<members>DataGridStringCellComponent</members>
 		<members>DataGridTextAreaCellComponent</members>
 		<members>DataGridUrlCellComponent</members>
-		<members>LightningDialog</members>
-		<members>LightningDialogCloceEvt</members>
-		<members>RelatedRecordEvt</members>
+		<members>DataGridDialogComponent</members>
+		<members>DataGridCloseDialogEvent</members>
+		<members>DataGridRelatedRecordEvent</members>
 		<members>RelatedListEditRecordComponent</members>
 		<name>AuraDefinitionBundle</name>
 	</types>

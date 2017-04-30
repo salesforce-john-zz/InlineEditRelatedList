@@ -1,6 +1,6 @@
 <aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" 
                 controller="RelatedListDataGridController"
-                access="global" >   
+                access="global" >       
     <aura:attribute name="relatedListLabel" type="String" access="global"/>     
     <aura:attribute name="relatedObjectName" type="String" default=""/> 
     <aura:attribute name="relatedListName" type="String"/> 
@@ -104,11 +104,11 @@
                     Save
                 </button>
             </div>
-        </div>
+        </div>        
     </article>  
     <c:RelatedListEditRecordComponent aura:id="editDialog" onClose="{!c.editCallback}" onSave="{!c.saveCallback}" />
-    <c:LightningDialog aura:id="deleteDialog" type="CONFIRM" onClose="{!c.deleteCallback}" />           
-    <c:LightningDialog aura:id="loaderDialog" type="LOADER" />
+    <c:DataGridDialogComponent aura:id="deleteDialog" type="CONFIRM" onClose="{!c.deleteCallback}" />           
+    <c:DataGridDialogComponent aura:id="loaderDialog" type="LOADER" />
     
 
 </aura:component>

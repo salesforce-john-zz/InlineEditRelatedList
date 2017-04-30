@@ -6,8 +6,8 @@
     <aura:attribute name="itemRank" type="Integer"/>
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />    
-    <aura:registerEvent name="onDelete" type="c:RelatedRecordEvt"/>
-    <aura:registerEvent name="onEdit" type="c:RelatedRecordEvt"/>
+    <aura:registerEvent name="onDelete" type="c:DataGridRelatedRecordEvent"/>
+    <aura:registerEvent name="onEdit" type="c:DataGridRelatedRecordEvent"/>
     
     <tr>
         {!v.body}

@@ -2,8 +2,8 @@
     <aura:attribute name="context" type="Object" required="false"  />    
     <aura:attribute name="showDialog" type="Boolean" default="false" />
     
-    <aura:registerEvent name="onClose" type="c:LightningDialogCloceEvt"/>
-    <aura:registerEvent name="onSave" type="c:LightningDialogCloceEvt"/>
+    <aura:registerEvent name="onClose" type="c:DataGridCloseDialogEvent"/>
+    <aura:registerEvent name="onSave" type="c:DataGridCloseDialogEvent"/>
     
     <aura:handler name="change" value="{!v.showDialog}" action="{!c.onShowDialogValueChange}"/>
     <aura:handler name="onSaveSuccess" event="force:recordSaveSuccess" action="{!c.onSaveSuccess}"/>
