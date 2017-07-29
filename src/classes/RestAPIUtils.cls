@@ -1,7 +1,7 @@
 public with sharing class RestAPIUtils {
     static public String SF_HOST = System.Url.getSalesforceBaseURL().toExternalForm();
-    static public String QUERY_API_URL = SF_HOST + '/services/data/v38.0/tooling/query/?q=';
-    static public String SOBJECT_API_URL = SF_HOST + '/services/data/v38.0/sobjects/';   
+    static public String QUERY_API_URL = SF_HOST + '/services/data/v39.0/tooling/query/?q=';
+    static public String SOBJECT_API_URL = SF_HOST + '/services/data/v39.0/sobjects/';   
     
     /**
      * Helper function to call the SF Rest API

@@ -92,7 +92,7 @@
             </table>
         </div>
         <div aura:id="gridActions" class="forceRecordEditActions hidden">
-            <div class="actionsContainer">
+            <div class="slds-align_absolute-center">
                 <button type="button" 
                         class="slds-button slds-button--neutral" 
                         onclick="{! c.cancelEdit }">
