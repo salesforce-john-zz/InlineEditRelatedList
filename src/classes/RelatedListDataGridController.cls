@@ -47,7 +47,7 @@ public with sharing class RelatedListDataGridController {
             //If it's a Reference field
             if(columnKey.endsWith('.Name')){                
                 mColumn.put('refObjName', ((String)mColumn.get('field')).replace('.Name', ''));
-                columnKey = (String)mColumn.get('lookupId');
+                columnKey = ((String)mColumn.get('lookupId')).replace('.', '');
                 mColumn.put('name', columnKey);                
             }
             
@@ -190,8 +190,7 @@ public with sharing class RelatedListDataGridController {
                         }
                     }
                 }
-            }                            
-            
+            }                                        
             return items;                    
         }
                 
