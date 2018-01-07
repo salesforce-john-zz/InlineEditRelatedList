@@ -8,4 +8,5 @@
     <design:attribute name="customLabel" label="Custom Label" description="Custom Label"/> 
     <design:attribute name="customIcon" label="Custom Icon" description="Custom Icon"/> 
     <design:attribute name="sort" label="Sort" description="Sort Options"/>
+    <design:attribute name="order" label="Order" description="Sort Order"/>
 </design:component>

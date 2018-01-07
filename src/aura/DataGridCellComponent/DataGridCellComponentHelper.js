@@ -6,7 +6,7 @@
         //Set the column label
         component.set("v.label", column.label); 
         //Set the value from the item
-        component.set("v.value", item[column.name]);  
+        component.set("v.value", item[column.name]);          
         
         try{ 
             //Set the required flag for all fields
@@ -61,7 +61,7 @@
         var digits = component.get("v.digits");
         var value = cellInput.get("v.value");
         
-        if (value && value.toString().length > digits) {
+        if (value && value.toString().length > digits + 1) {
             component.set("v.errors", [{
                 message: "Input too long: >" + digits
             }]);
@@ -71,7 +71,7 @@
         var precision = component.get("v.precision");
         var value = cellInput.get("v.value");
         
-        if (value && value.toString().length > precision) {
+        if (value && value.toString().length > precision + 1) {
             component.set("v.errors", [{
                 message: "Input too long: >" + precision
             }]);

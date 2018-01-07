@@ -1,52 +1,63 @@
 ({
     doInit : function(component, event, helper) {
+        var item = component.get("v.item");        
+        var itemRank = component.get("v.itemRank");
+        
+        var columns = component.get("v.columns");
+        var displayMode = component.get("v.displayMode");
+        
         function getCellComponent(column, index){
             var columnType = column.type;                    
-            
-            switch(columnType) {
-                case 'Boolean':
-                    return "c:DataGridBooleanCellComponent";
-                case 'String':
-                    return "c:DataGridStringCellComponent";                    
-                case 'TextArea':
-                    return "c:DataGridTextAreaCellComponent";
-                case 'Phone':
-                    return "c:DataGridPhoneCellComponent";
-                case 'Email':
-                    return "c:DataGridEmailCellComponent";
-                case 'Url':
-                    return "c:DataGridUrlCellComponent";
-                case 'Currency':
-                    return "c:DataGridCurrencyCellComponent";
-                case 'Double':
-                    return "c:DataGridDoubleCellComponent";
-                case 'Integer':
-                    return "c:DataGridIntegerCellComponent";
-                case 'Percent':
-                    return "c:DataGridPercentCellComponent";
-                case 'Date':
-                    return "c:DataGridDateCellComponent";
-                case 'Datetime':
-                    return "c:DataGridDatetimeCellComponent";
-                case 'PickList':
-                    return "c:DataGridPickListCellComponent";
-                case 'Reference':
-                    return "c:DataGridReferenceCellComponent";
-                case 'ItemLink':
-                    return "c:DataGridItemLinkCellComponent";
-                case 'Formula':
-                    return "c:DataGridFormulaCellComponent";
-                default:
-                    return "c:DataGridFormulaCellComponent";
-            }            
+            if(displayMode == 'read' && 
+               column.name.toLowerCase() == 'name'){
+                return "c:DataGridItemLinkCellComponent";
+            }
+            else{
+                switch(columnType) {
+                    case 'Boolean':
+                        return "c:DataGridBooleanCellComponent";
+                    case 'String':
+                        return "c:DataGridStringCellComponent";                    
+                    case 'TextArea':
+                        return "c:DataGridTextAreaCellComponent";
+                    case 'Phone':
+                        return "c:DataGridPhoneCellComponent";
+                    case 'Email':
+                        return "c:DataGridEmailCellComponent";
+                    case 'Url':
+                        return "c:DataGridUrlCellComponent";
+                    case 'Currency':
+                        return "c:DataGridCurrencyCellComponent";
+                    case 'Double':
+                        return "c:DataGridDoubleCellComponent";
+                    case 'Integer':
+                        return "c:DataGridIntegerCellComponent";
+                    case 'Percent':
+                        return "c:DataGridPercentCellComponent";
+                    case 'Date':
+                        return "c:DataGridDateCellComponent";
+                    case 'Datetime':
+                        return "c:DataGridDatetimeCellComponent";
+                    case 'PickList':
+                        return "c:DataGridPickListCellComponent";
+                    case 'Reference':
+                        return "c:DataGridReferenceCellComponent";
+                    case 'ItemLink':
+                        return "c:DataGridItemLinkCellComponent";
+                    case 'Formula':
+                        return "c:DataGridFormulaCellComponent";
+                    default:
+                        return "c:DataGridFormulaCellComponent";
+                }  
+            }
         }
-        var columns = component.get("v.columns");
+        
         var cellComponents = columns.map(function(column, index){
             return [getCellComponent(column, index),{                
                 "aura:id" : "cellWrapper",
-                "displayMode" : component.get("v.displayMode"),
-                "itemRank" : component.get("v.itemRank"),
-                "item" : component.get("v.item"),
+                "item" : item,
+                "itemRank" : itemRank,                
+                "displayMode" : displayMode,                
                 "columnRank" : index,
                 "column" : column				
             }];    

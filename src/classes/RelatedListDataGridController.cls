@@ -47,8 +47,10 @@ public with sharing class RelatedListDataGridController {
             //If it's a Reference field
             if(columnKey.endsWith('.Name')){                
                 mColumn.put('refObjName', ((String)mColumn.get('field')).replace('.Name', ''));
-                columnKey = ((String)mColumn.get('lookupId')).replace('.', '');
-                mColumn.put('name', columnKey);                
+                if(mColumn.get('lookupId')!=null){
+                    columnKey = ((String)mColumn.get('lookupId')).replace('.', '');
+                    mColumn.put('name', columnKey);   
+                }
             }
             
             Schema.SObjectField sfield = relatedObjDesc.fields.getMap().get(columnKey);           
@@ -74,11 +76,17 @@ public with sharing class RelatedListDataGridController {
                     //Set type
                     mColumn.put('type', typesMap.get(fieldDescResult.getType()));        
                     
-                    //Set type for AutoNumber and Formula Fields
-                    if(fieldDescResult.isAutoNumber() || fieldDescResult.isCalculated()){
+                    //Set type for Formula Fields
+                    if(fieldDescResult.isCalculated()){
                         mColumn.put('calculatedType', mColumn.get('type')); 
                         mColumn.put('type', 'Formula');                           
-                    }                    
+                    }   
+                    
+ 					//Set type for AutoNumber Fields
+                    if(fieldDescResult.isAutoNumber()){
+                        mColumn.put('calculatedType', mColumn.get('type')); 
+                        mColumn.put('type', 'ItemLink');                           
+                    }                       
                 }else{
                     columns.remove(i);
                 }                            
@@ -146,12 +154,23 @@ public with sharing class RelatedListDataGridController {
             Id firstChildId = (Id)((Map<String, Object>) items.get(0)).get('Id');            
         	DescribeSObjectResult objectDescResult = firstChildId.getSobjectType().getDescribe();
             
-        	Map<String, DescribeFieldResult> lookupFields = new Map<String,DescribeFieldResult>();            
+        	Map<String, DescribeFieldResult> lookupFields = new Map<String,DescribeFieldResult>();  
+            Map<String, DescribeFieldResult> pickListFields = new Map<String,DescribeFieldResult>();    
+            Map<String, DescribeFieldResult> percentFields = new Map<String,DescribeFieldResult>();    
+            
             for(Schema.SObjectField sfield : objectDescResult.fields.getMap().Values()){ 
                 DescribeFieldResult fieldDescResult = sfield.getDescribe();                
                 if(fieldDescResult.getType()==Schema.DisplayType.REFERENCE){                        
                     lookupFields.put(fieldDescResult.getName(), fieldDescResult);
-                }                                
+                } 
+                
+                if(fieldDescResult.getType()==Schema.DisplayType.PICKLIST){                        
+                    pickListFields.put(fieldDescResult.getName(), fieldDescResult);
+                } 
+                
+                if(fieldDescResult.getType()==Schema.DisplayType.PERCENT){                        
+                    percentFields.put(fieldDescResult.getName(), fieldDescResult);
+                } 
             }   
 			
             //Set the lookup labels based on the field type
@@ -190,7 +209,34 @@ public with sharing class RelatedListDataGridController {
                         }
                     }
                 }
-            }                                        
+            }
+            
+            //Update the pickList field 
+            for(String fieldKey : pickListFields.keySet()){                
+                DescribeFieldResult fieldDescResult =  pickListFields.get(fieldKey);                        
+                List<PicklistEntry> valuesList = fieldDescResult.getPicklistValues();                    
+                Map<String, String> valuesMap = new Map<String, String>();
+                for(PicklistEntry entry : valuesList){
+                    valuesMap.put(entry.getValue(), entry.getLabel());
+                }
+                
+                for(Object item : items){                    
+                    Map<String, Object> mItem = (Map<String, Object>) item;
+                    mItem.put(fieldKey, (String)valuesMap.get((String)mItem.get(fieldKey)));
+                }
+            }             
+             
+            
+            //Update the percent field 
+            for(String fieldKey : percentFields.keySet()){                
+                for(Object item : items){                    
+                    Map<String, Object> mItem = (Map<String, Object>) item;
+                    if(mItem.get(fieldKey) != null){
+	                    mItem.put(fieldKey, (decimal)mItem.get(fieldKey)/100);
+                    }
+                }
+            }    
+            
             return items;                    
         }
                 
@@ -246,6 +292,11 @@ public with sharing class RelatedListDataGridController {
                         if(mObj.get(field) != null){
                             String datetimeStr = ((String)mObj.get(field)).replace('T', ' ').replace('000Z', '');
                             sObj.put(field, Datetime.valueOf(datetimeStr));                    
+                        }
+                    }
+                    else if(sfield.getDescribe().getType() == Schema.DisplayType.PERCENT){
+                        if(mObj.get(field) != null){                            
+                            sObj.put(field, (decimal)mObj.get(field)*100);                    
                         }
                     }
                     else{                        
@@ -373,12 +424,24 @@ public with sharing class RelatedListDataGridController {
             
         	SObject relatedObject = relatedObjectType.newSObject();
             
-        	//Update the fields from default values
-            for(String field : relatedDescribe.fields.getMap().keySet()){                
-                if(defaultValues.containsKey(field)){                        
-                    relatedObject.put(field, defaultValues.get(field));                    
+            //Update the fields from default values
+            for(String field : relatedDescribe.fields.getMap().keySet()){                 
+                if(defaultValues.containsKey(field)){    
+                    Schema.SObjectField sfield = relatedDescribe.fields.getMap().get(field);
+                    if(sfield.getDescribe().getType() == Schema.DisplayType.DATE){
+                        String dateStr = ((String)defaultValues.get(field)) + ' 00:00:00';
+                        relatedObject.put(field, Date.valueOf(dateStr));                                                
+                    }
+                    
+                    else if(sfield.getDescribe().getType() == Schema.DisplayType.DATETIME){
+                        String datetimeStr = ((String)defaultValues.get(field)).replace('T', ' ').replace('000Z', '');
+                        relatedObject.put(field, Datetime.valueOf(datetimeStr));                                            
+                    }
+                    else{
+                        relatedObject.put(field, defaultValues.get(field));                    
+                    }
                 }                    
-            }
+            }           
             
             insert relatedObject;            
             return relatedObject.Id;

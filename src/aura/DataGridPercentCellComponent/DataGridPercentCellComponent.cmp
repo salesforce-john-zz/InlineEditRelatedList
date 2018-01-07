@@ -1,8 +1,10 @@
 <aura:component extends="c:DataGridCellComponent">
-    <aura:if isTrue="{!v.displayMode == 'read'}">
-        <ui:outputNumber aura:id="outputCell" value="{!v.value}" format="00.00%"/>
+    <aura:if isTrue="{!v.displayMode == 'read'}">        
+        <lightning:formattedNumber aura:id="outputCell" value="{!v.value}" 
+                                    maximumSignificantDigits="2"
+                                    style="percent" />  
         <aura:set attribute="else">
-            <ui:inputNumber aura:id="inputCell" value="{!v.value}" change="{!c.checkInput}" format="00.00%"/>
+            <ui:inputNumber aura:id="inputCell" value="{!v.value}" change="{!c.checkInput}" format=".00%"/>
         </aura:set>
     </aura:if>
 </aura:component>

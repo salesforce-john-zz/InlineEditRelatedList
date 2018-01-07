@@ -20,6 +20,7 @@
     <aura:attribute name="customLabel" type="String" access="global"/> 
     <aura:attribute name="customIcon" type="String" default="standard:contact" access="global"/> 
     <aura:attribute name="sort" type="String" access="global"/>
+    <aura:attribute name="order" type="String" access="global" default="desc"/>
     
     <aura:attribute name="displayLabel" type="String"/>    
     

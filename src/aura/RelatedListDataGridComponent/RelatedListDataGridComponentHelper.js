@@ -162,14 +162,17 @@
         
         //Apply Sort Criteria
         var sort_field = component.get("v.sort");
+        var sort_order = component.get("v.order");
+        var order_coef = (sort_order == "desc")?-1:1;
+        
         if(sort_field != null && !noSort){
             items.sort(function(a, b){
                 if (a.hasOwnProperty(sort_field)) {
                     if (a[sort_field] < b[sort_field]){
-                        return -1;
+                        return -1*order_coef;
                     }
                     if (a[sort_field] > b[sort_field]){
-                        return 1;
+                        return 1*order_coef;
                     }
                     if (a[sort_field] == b[sort_field]){
                         return 0;
