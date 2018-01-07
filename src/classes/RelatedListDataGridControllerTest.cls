@@ -2,11 +2,10 @@
 public class RelatedListDataGridControllerTest {
  	static testMethod void testGetReleatedListsMetadata()
     {
-		Test.startTest();        
-        Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());        
-                
+		Test.startTest();                
+        Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());  
         Object[] relatedListsMatadata = RelatedListDataGridController.getReleatedListsMetadata('0010Y000003iFovQAE');
-		System.assertEquals(7, relatedListsMatadata.size());        
+		System.assertEquals(true, relatedListsMatadata.size() > 0);        
         
         Test.stopTest();        
     }
@@ -14,9 +13,9 @@ public class RelatedListDataGridControllerTest {
     
     static testMethod void testGetReleatedListMetadata()
     {
-        Test.startTest();        
-        Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());        
-                
+        Test.startTest();       
+        Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());        		
+             
         Object relatedListsMatadata = RelatedListDataGridController.getReleatedListMetadata('0010Y000003iFovQAE',
                                                                                             'Contacts');
 		System.assertEquals(true, relatedListsMatadata != null);        
@@ -27,11 +26,10 @@ public class RelatedListDataGridControllerTest {
     static testMethod void testGetReleatedListItems()
     {
         Test.startTest();
-        Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());        
-        
+        Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());                              
         Object[] contacts = RelatedListDataGridController.getReleatedListItems('0010Y000003iFovQAE', 
                                                                                'Contacts');        
-		System.assertEquals(1, contacts.size());         
+		System.assertEquals(true, contacts.size()>0);         
         
         Test.stopTest();
     } 
@@ -114,8 +112,7 @@ public class RelatedListDataGridControllerTest {
         data.put('AccountId', account.id);
         data.put('lastname', 'Test');
         data.put('firstname', 'Test');        
-        
-        System.debug(JSON.serialize(data));
+                
         Id IdContact = RelatedListDataGridController.createRelatedObject(account.Id, 
                                                                          'Contact', 
                                                                          JSON.serialize(data));
