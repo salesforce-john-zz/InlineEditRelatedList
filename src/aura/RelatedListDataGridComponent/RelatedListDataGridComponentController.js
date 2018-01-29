@@ -22,7 +22,13 @@
                     if (res.getState() === "SUCCESS" && res.getReturnValue()) {        
                         component.set("v.relatedListName", res.getReturnValue().name);
                         component.set("v.relatedObjectName",  res.getReturnValue().sobject);
-                        component.set("v.columns", res.getReturnValue().columns);
+                        component.set("v.columns", res.getReturnValue().columns);                                               
+                        
+                        //Set the viewAll Link
+                        var viewAllLink = "/one/one.app#/sObject/" + 
+                            component.get("v.recordId") + "/rlName/" + 
+                            component.get("v.relatedListName") + "/view";                        
+                        component.set("v.viewAllLink", viewAllLink);
                         
                         helper.loadItems(component);                      
                     } 
@@ -45,7 +51,7 @@
         
         //Set the display label        
         var displayLabel = component.get("v.customLabel") || component.get("v.relatedListLabel");                        
-        component.set("v.displayLabel", displayLabel);
+        component.set("v.displayLabel", displayLabel);                
     },    
     startEdit : function(component, event, helper) {
         //Save a copy of items

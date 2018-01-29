@@ -431,12 +431,11 @@ public with sharing class RelatedListDataGridController {
                     if(sfield.getDescribe().getType() == Schema.DisplayType.DATE){
                         String dateStr = ((String)defaultValues.get(field)) + ' 00:00:00';
                         relatedObject.put(field, Date.valueOf(dateStr));                                                
-                    }
-                    
+                    }                    
                     else if(sfield.getDescribe().getType() == Schema.DisplayType.DATETIME){
                         String datetimeStr = ((String)defaultValues.get(field)).replace('T', ' ').replace('000Z', '');
                         relatedObject.put(field, Datetime.valueOf(datetimeStr));                                            
-                    }
+                    }                                                            
                     else{
                         relatedObject.put(field, defaultValues.get(field));                    
                     }

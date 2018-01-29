@@ -22,6 +22,7 @@
     <aura:attribute name="sort" type="String" access="global"/>
     <aura:attribute name="order" type="String" access="global" default="desc"/>
     
+    <aura:attribute name="viewAllLink" type="String"/>    
     <aura:attribute name="displayLabel" type="String"/>    
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
@@ -105,7 +106,14 @@
                     Save
                 </button>
             </div>
-        </div>        
+        </div> 
+        
+        <div aura:id="viewAllLink" class="slds-card__footer">
+            <div class="slds-align_absolute-center">
+                <ui:outputURL value="{!v.viewAllLink}" label="View All"/>              
+            </div>
+        </div>                 
+        
     </article>  
     <c:RelatedListEditRecordComponent aura:id="editDialog" onClose="{!c.editCallback}" onSave="{!c.saveCallback}" />
     <c:DataGridDialogComponent aura:id="deleteDialog" type="CONFIRM" onClose="{!c.deleteCallback}" />           

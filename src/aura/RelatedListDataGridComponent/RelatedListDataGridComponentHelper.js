@@ -13,6 +13,10 @@
         //Show/hide the action bar on the bottom
         var gridActions = component.find("gridActions");
         $A.util.toggleClass(gridActions, "hidden");
+        
+        //Show hide the view all link
+        var viewAllLink = component.find("viewAllLink");
+        $A.util.toggleClass(viewAllLink, "hidden");
     },
     refreshUIElements : function(component, event){
         //Apply the shadow on the grid
@@ -67,11 +71,20 @@
     },
     getCellComponents : function(component){
         var cellComponents = [];
-        component.find("row").forEach(function(row){
-            row.get("v.body").forEach(function(cell){
-                cellComponents.push(cell);
-            })
-        });
+        var rows = component.find("row");        
+        
+        if(rows){
+            //Only 1 row
+            if(!Array.isArray(rows)){
+            	rows = [rows]
+        	}
+            
+            rows.forEach(function(row){
+                row.get("v.body").forEach(function(cell){
+                    cellComponents.push(cell);
+                })
+            });
+        }
         
         return cellComponents;
     },
@@ -141,81 +154,85 @@
         var aggregations = Array(columns.length).fill("");     	
         
         var json_filter = component.get("v.filter");                
-        
-        //Apply Filters
-        if (json_filter != null){
-            var obj_filter = JSON.parse(json_filter); 
-            var fn_filter = function(elt){
-                for (var field in obj_filter) {
-                    if (obj_filter.hasOwnProperty(field)) {
-                        if(obj_filter[field] != elt[field]){
-                            return false;
+        if(items && items.length > 0){
+            //Apply Filters
+            if (json_filter != null){
+                var obj_filter = JSON.parse(json_filter); 
+                var fn_filter = function(elt){
+                    for (var field in obj_filter) {
+                        if (obj_filter.hasOwnProperty(field)) {
+                            if(obj_filter[field] != elt[field]){
+                                return false;
+                            }
                         }
-                    }
-                }                       
+                    }                       
+                    
+                    return true;
+                }
                 
-                return true;
+                items = items.filter(fn_filter);                    
             }
             
-            items = items.filter(fn_filter);                    
-        }
-        
-        //Apply Sort Criteria
-        var sort_field = component.get("v.sort");
-        var sort_order = component.get("v.order");
-        var order_coef = (sort_order == "desc")?-1:1;
-        
-        if(sort_field != null && !noSort){
-            items.sort(function(a, b){
-                if (a.hasOwnProperty(sort_field)) {
-                    if (a[sort_field] < b[sort_field]){
-                        return -1*order_coef;
-                    }
-                    if (a[sort_field] > b[sort_field]){
-                        return 1*order_coef;
-                    }
-                    if (a[sort_field] == b[sort_field]){
-                        return 0;
-                    }
-                }
-            }); 
-        }
-        
-        //Apply Aggregate
-        var json_aggregate = component.get("v.aggregate");                
-        
-        if (json_aggregate != null){    		
-            var obj_aggregate = JSON.parse(json_aggregate); 
-            columns.forEach(function(column, index){
-                if(obj_aggregate.hasOwnProperty(column.name)){
-                    var key_aggregate = obj_aggregate[column.name];
-                    var fn_aggregate = aggregate_map[key_aggregate];
-                    var values = items.map(function(elt){return elt[column.name] || 0});
-                    
-                    if(values.length > 0){
-                        var column_type = column.calculatedType || column.type;
-                        var aggregated_value = values.reduce(fn_aggregate).toString();     
-                        if(column_type=='Percent'){ 
-                            aggregated_value = $A.localizationService.formatPercent(aggregated_value)
+            //Apply Sort Criteria
+            var sort_field = component.get("v.sort");
+            var sort_order = component.get("v.order");
+            var order_coef = (sort_order == "desc")?-1:1;
+            
+            if(sort_field != null && !noSort){
+                items.sort(function(a, b){
+                    if (a.hasOwnProperty(sort_field)) {
+                        if (a[sort_field] < b[sort_field]){
+                            return -1*order_coef;
                         }
-                        if(column_type=='Currency'){ 
-                            aggregated_value = $A.localizationService.formatCurrency(aggregated_value);
+                        if (a[sort_field] > b[sort_field]){
+                            return 1*order_coef;
                         }
-                        if(column_type=='Double' || column_type=='Integer'){ 
-                            aggregated_value = $A.localizationService.formatNumber(aggregated_value);
+                        if (a[sort_field] == b[sort_field]){
+                            return 0;
                         }
+                    }
+                }); 
+            }
+            
+            //Apply Aggregate
+            var json_aggregate = component.get("v.aggregate");                
+            
+            if (json_aggregate != null){    		
+                var obj_aggregate = JSON.parse(json_aggregate); 
+                columns.forEach(function(column, index){
+                    if(obj_aggregate.hasOwnProperty(column.name)){
+                        var key_aggregate = obj_aggregate[column.name];
+                        var fn_aggregate = aggregate_map[key_aggregate];
+                        var values = items.map(function(elt){return elt[column.name] || 0});
                         
-                        aggregations[index] = aggregated_value;
-                    }                            
-                }    
-            });
+                        if(values.length > 0){
+                            var column_type = column.calculatedType || column.type;
+                            var aggregated_value = values.reduce(fn_aggregate).toString();     
+                            if(column_type=='Percent'){ 
+                                aggregated_value = $A.localizationService.formatPercent(aggregated_value)
+                            }
+                            if(column_type=='Currency'){ 
+                                aggregated_value = $A.localizationService.formatCurrency(aggregated_value);
+                            }
+                            if(column_type=='Double' || column_type=='Integer'){ 
+                                aggregated_value = $A.localizationService.formatNumber(aggregated_value);
+                            }
+                            
+                            aggregations[index] = aggregated_value;
+                        }                            
+                    }    
+                });
+            }
+            
+            aggregations[0] = "Total";                        
         }
-        
-        aggregations[0] = "Total";
+        else{
+            items = [];
+        }
         
         //Update the UI
         component.set("v.items", JSON.parse(JSON.stringify(items)));                 
-        component.set("v.aggregations", aggregations);             
+        component.set("v.aggregations", aggregations); 
     },
     notifyItemDeleted : function(component, item){
         var newItems = component.get("v.items");

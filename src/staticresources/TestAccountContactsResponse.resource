@@ -62,9 +62,6 @@
     "IsEmailBounced" : false,
     "PhotoUrl" : "/services/images/photo/0030Y000003PDjgQAG",
     "Jigsaw" : null,
-    "JigsawContactId" : null,
-    "CleanStatus" : "Pending",
-    "Level__c" : null,
-    "Languages__c" : null
+    "JigsawContactId" : null    
   } ]
 }
