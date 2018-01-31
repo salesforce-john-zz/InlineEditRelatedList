@@ -3,6 +3,8 @@ public with sharing class RestAPIUtils {
     static public String QUERY_API_URL = SF_HOST + '/services/data/v39.0/tooling/query/?q=';
     static public String SOBJECT_API_URL = SF_HOST + '/services/data/v39.0/sobjects/';   
     
+    static public String SESSION_ID = null;
+    
     /**
      * Helper function to call the SF Rest API
      * */
@@ -28,15 +30,8 @@ public with sharing class RestAPIUtils {
      * For Rest API calls
      * */
     public static String getSessionId()
-    {
-        if (Test.IsRunningTest())
-        {
-            return UserInfo.getSessionId();
-        }else{
-            PageReference newPage = Page.GetSessionIdPage;
-            String content = newPage.getContent().toString();
-            return content.substringBetween('<SessionId>', '</SessionId>');
-        }
+    {        
+        return SESSION_ID;
     }
     
     /**

@@ -23,7 +23,9 @@
     <aura:attribute name="order" type="String" access="global" default="desc"/>
     
     <aura:attribute name="viewAllLink" type="String"/>    
-    <aura:attribute name="displayLabel" type="String"/>    
+    <aura:attribute name="displayLabel" type="String"/>  
+    
+    <aura:attribute name="sessionId" type="String"/>  
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
     <aura:handler event="force:refreshView" action="{!c.reloadItems}"/>

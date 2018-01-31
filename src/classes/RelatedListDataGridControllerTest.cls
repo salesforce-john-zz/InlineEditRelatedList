@@ -1,11 +1,15 @@
 @isTest
 public class RelatedListDataGridControllerTest {
+    static private String getSessionId(){
+    	return UserInfo.getSessionId();    
+    }
+    
  	static testMethod void testGetReleatedListsMetadata()
     {
 		Test.startTest();                
         Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());  
-        Object[] relatedListsMatadata = RelatedListDataGridController.getReleatedListsMetadata('0010Y000003iFovQAE');
-		System.assertEquals(true, relatedListsMatadata.size() > 0);        
+        Object[] relatedListsMatadata = RelatedListDataGridController.getReleatedListsMetadata('0010Y000003iFovQAE', getSessionId());
+		System.assertEquals(true, relatedListsMatadata.size() > 0);                
         
         Test.stopTest();        
     }
@@ -17,7 +21,8 @@ public class RelatedListDataGridControllerTest {
         Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());        		
              
         Object relatedListsMatadata = RelatedListDataGridController.getReleatedListMetadata('0010Y000003iFovQAE',
-                                                                                            'Contacts');
+                                                                                            'Contacts',
+                                                                                            getSessionId());
 		System.assertEquals(true, relatedListsMatadata != null);        
         
         Test.stopTest();         
@@ -28,7 +33,8 @@ public class RelatedListDataGridControllerTest {
         Test.startTest();
         Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());                              
         Object[] contacts = RelatedListDataGridController.getReleatedListItems('0010Y000003iFovQAE', 
-                                                                               'Contacts');        
+                                                                               'Contacts',
+                                                                               getSessionId());        
 		System.assertEquals(true, contacts.size()>0);         
         
         Test.stopTest();
@@ -41,7 +47,8 @@ public class RelatedListDataGridControllerTest {
         Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());        
         
         Object[] contacts = RelatedListDataGridController.getReleatedListItems('0010Y000003iFovQAE', 
-                                                                               'Contacts');                
+                                                                               'Contacts',
+                                                                               getSessionId());                
 		Account account = new Account();
         account.Name='Test Account' ;
         insert account;
@@ -57,10 +64,10 @@ public class RelatedListDataGridControllerTest {
         mContact.put('Id', contact.Id);        
         mContact.remove('OwnerId');
         
-		Boolean result = RelatedListDataGridController.saveRelatedListItems(System.JSON.serialize(contacts));
+		Boolean result = RelatedListDataGridController.saveRelatedListItems(System.JSON.serialize(contacts), getSessionId());
         System.assertEquals(true, result);
         
-        Object[] candidates = RelatedListDataGridController.getLookupCandidates('Account', 'Test');
+        Object[] candidates = RelatedListDataGridController.getLookupCandidates('Account', 'Test', getSessionId());
         System.assertEquals(true, candidates.size() > 0);
         
         Test.stopTest();        
@@ -78,7 +85,7 @@ public class RelatedListDataGridControllerTest {
     {
         Test.startTest();        
         Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());                                
-        Object jsonObj = RelatedListDataGridController.getObject('0019E000006nVr3QAE');        
+        Object jsonObj = RelatedListDataGridController.getObject('0019E000006nVr3QAE', getSessionId());        
         System.assertEquals(true, jsonObj != null);        
         
         Test.stopTest();            
@@ -93,7 +100,7 @@ public class RelatedListDataGridControllerTest {
         ct.FirstName = 'El Mansouri';       
         insert ct;
         
-        boolean result = RelatedListDataGridController.deleteRelatedRecord(ct.Id);
+        boolean result = RelatedListDataGridController.deleteRelatedRecord(ct.Id, getSessionId());
         System.assertEquals(true, result);
         
         Test.stopTest();
@@ -115,7 +122,8 @@ public class RelatedListDataGridControllerTest {
                 
         Id IdContact = RelatedListDataGridController.createRelatedObject(account.Id, 
                                                                          'Contact', 
-                                                                         JSON.serialize(data));
+                                                                         JSON.serialize(data),
+                                                                         getSessionId());
         System.assertEquals(true, IdContact != null);
         
         Test.stopTest();
