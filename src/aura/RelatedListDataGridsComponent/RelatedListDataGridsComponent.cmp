@@ -3,8 +3,6 @@
                 access="global">    
 	<aura:attribute name="relatedLists" type="Object[]"/>
     
-    <aura:attribute name="sessionId" type="String"/>  
-    
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <aura:handler event="force:refreshView" action="{!c.doInit}" />    
     

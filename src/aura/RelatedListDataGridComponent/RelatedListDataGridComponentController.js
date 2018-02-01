@@ -1,59 +1,45 @@
 ({
     doInit : function(component, event, helper) {  
-        //Get the Session ID first        
-        var sessionIdAction = component.get("c.getSessionId");                
-        sessionIdAction.setCallback(this, function(res) {            
-            if (res.getState() === "SUCCESS" && res.getReturnValue()) {        
-                component.set("v.sessionId", res.getReturnValue());
-                
-                //If the component is initialized 
-                //From the related lists component
-                //We have just to load items
-                if(component.get("v.relatedObjectName")!=""){
-                    helper.loadItems(component);                      
-                }
-                
-                //Otherwise we have to load 
-                //the metadata as well
-                else{
-                    if(component.get("v.relatedListLabel")){
-                        var metadataAction = component.get("c.getReleatedListMetadata");
-                        
-                        metadataAction.setParams({
-                            "objectId": component.get("v.recordId"),
-                            "relatedListLabel": component.get("v.relatedListLabel"),
-                            "sessionId":component.get("v.sessionId")
-                        });
-                        
-                        metadataAction.setCallback(this, function(res) {            
-                            if (res.getState() === "SUCCESS" && res.getReturnValue()) {        
-                                component.set("v.relatedListName", res.getReturnValue().name);
-                                component.set("v.relatedObjectName",  res.getReturnValue().sobject);
-                                component.set("v.columns", res.getReturnValue().columns);                                               
-                                
-                                //Set the viewAll Link
-                                var viewAllLink = "/one/one.app#/sObject/" + 
-                                    component.get("v.recordId") + "/rlName/" + 
-                                    component.get("v.relatedListName") + "/view";                        
-                                component.set("v.viewAllLink", viewAllLink);
-                                
-                                helper.loadItems(component);                      
-                            } 
-                            else if (res.getState() === "ERROR") {
-                                $A.log("Errors", res.getError());
-                            }           
-                        });  
-                        
-                        $A.enqueueAction(metadataAction);             
-                    }
-                }
-            } 
-            else if (res.getState() === "ERROR") {
-                $A.log("Errors", res.getError());
-            }           
-        });  
+        //If the component is initialized 
+        //From the related lists component
+        //We have just to load items
+        if(component.get("v.relatedObjectName")!=""){
+            helper.loadItems(component);                      
+        }
         
-        $A.enqueueAction(sessionIdAction);                                     
+        //Otherwise we have to load 
+        //the metadata as well
+        else{
+            if(component.get("v.relatedListLabel")){
+                var metadataAction = component.get("c.getReleatedListMetadata");
+                
+                metadataAction.setParams({
+                    "objectId": component.get("v.recordId"),
+                    "relatedListLabel": component.get("v.relatedListLabel")
+                });
+                
+                metadataAction.setCallback(this, function(res) {            
+                    if (res.getState() === "SUCCESS" && res.getReturnValue()) {        
+                        component.set("v.relatedListName", res.getReturnValue().name);
+                        component.set("v.relatedObjectName",  res.getReturnValue().sobject);
+                        component.set("v.columns", res.getReturnValue().columns);                                               
+                        
+                        //Set the viewAll Link
+                        var viewAllLink = "/one/one.app#/sObject/" + 
+                            component.get("v.recordId") + "/rlName/" + 
+                            component.get("v.relatedListName") + "/view";                        
+                        component.set("v.viewAllLink", viewAllLink);
+                        
+                        helper.loadItems(component);                      
+                    } 
+                    else if (res.getState() === "ERROR") {
+                        $A.log("Errors", res.getError());
+                    }           
+                });  
+                
+                $A.enqueueAction(metadataAction);             
+            }
+        }
         
         //Toogle the total row
         helper.toogleTotal(component, event);
@@ -149,8 +135,7 @@
         createAction.setParams({          
             "objectId": component.get("v.recordId"),
             "objectName" : component.get("v.relatedObjectName"),                                       
-            "jsonData": component.get("v.defaultValues"),
-            "sessionId":component.get("v.sessionId")
+            "jsonData": component.get("v.defaultValues")
         });
         
         createAction.setCallback(this, function(res) {            
@@ -176,8 +161,7 @@
             var item = deleteDialog.get("v.context");
             
             deleteAction.setParams({
-                "objectId": item.Id,
-                "sessionId":component.get("v.sessionId")
+                "objectId": item.Id            
             });
             
             deleteAction.setCallback(this, function(res) { 

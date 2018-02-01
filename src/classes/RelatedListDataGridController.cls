@@ -100,10 +100,8 @@ public with sharing class RelatedListDataGridController {
     * Return the list of related metadata information
     * */
     @AuraEnabled
-    public static Object[] getReleatedListsMetadata(Id objectId, String sessionId)
+    public static Object[] getReleatedListsMetadata(Id objectId)
     {
-        RestAPIUtils.SESSION_ID = sessionId;
-        
         String recordTypeName = RestAPIUtils.getObjectRecordTypeName(objectId);
         if(recordTypeName=='Master' || recordTypeName=='Principal'){
             recordTypeName = null;
@@ -123,11 +121,8 @@ public with sharing class RelatedListDataGridController {
     * */
     @AuraEnabled
     public static Object getReleatedListMetadata(Id objectId, 
-                                                 String relatedListLabel,
-                                                 String sessionId)
+                                                 String relatedListLabel)
     {
-        RestAPIUtils.SESSION_ID = sessionId;
-        
         String recordTypeName = RestAPIUtils.getObjectRecordTypeName(objectId);
         if(recordTypeName=='Master' || recordTypeName=='Principal'){
             recordTypeName = null;
@@ -151,11 +146,8 @@ public with sharing class RelatedListDataGridController {
     * */
     @AuraEnabled
     public static Object[] getReleatedListItems(Id objectId, 
-                                                String relatedlistName,
-                                                String sessionId)
-    {   
-        RestAPIUtils.SESSION_ID = sessionId;
-        
+                                                String relatedlistName)
+    {            
         Object[] items = RestAPIUtils.getRelatedListItems(objectId, 
                                                           relatedlistName);
         if(items.size()>0){        
@@ -272,10 +264,8 @@ public with sharing class RelatedListDataGridController {
     * Save the related list items
     * */
     @AuraEnabled
-    public static Boolean saveRelatedListItems(String jsonData, String sessionId)
+    public static Boolean saveRelatedListItems(String jsonData)
     {
-        RestAPIUtils.SESSION_ID = sessionId;
-        
         List<SObject> sObjectsItems = new List<SObject>();
         
         Object[] items = (Object[])JSON.deserializeUntyped(jsonData);
@@ -326,9 +316,7 @@ public with sharing class RelatedListDataGridController {
      * Search Candiate for Lookup Field
      * */
     @AuraEnabled
-	public static Object[] getLookupCandidates(String refObjName, String searchTerm, String sessionId) {
-        RestAPIUtils.SESSION_ID = sessionId;
-        
+	public static Object[] getLookupCandidates(String refObjName, String searchTerm) {
 		String qname = '%' + searchTerm + '%';
 		
 		if(isSafeObject(refObjName) && isSafeField('Name', refObjName)){
@@ -357,9 +345,7 @@ public with sharing class RelatedListDataGridController {
     
     
     @AuraEnabled
-    public static Boolean deleteRelatedRecord(Id objectId, String sessionId){
-        RestAPIUtils.SESSION_ID = sessionId;
-        
+    public static Boolean deleteRelatedRecord(Id objectId){
         Schema.SObjectType sobjectType = objectId.getSObjectType();
         String sobjectName = sobjectType.getDescribe().getName();
         
@@ -374,10 +360,8 @@ public with sharing class RelatedListDataGridController {
     * Return the object details
     * */
     @AuraEnabled
-    public static Object getObject(Id objectId, String sessionId)
+    public static Object getObject(Id objectId)
     {            
-        RestAPIUtils.SESSION_ID = sessionId;
-
         Object item = RestAPIUtils.getObject(objectId);
         if(item != null){        
             DescribeSObjectResult objectDescResult = objectId.getSobjectType().getDescribe();
@@ -431,12 +415,9 @@ public with sharing class RelatedListDataGridController {
     @AuraEnabled
     public static Id createRelatedObject(Id objectId,
                                          String objectName,
-                                         String jsonData,
-                                         String sessionId)
+                                         String jsonData)
     {
-        RestAPIUtils.SESSION_ID = sessionId;
-        
-        if(isSafeObject(objectName)){            
+        if(isSafeObject(objectName)){
             Map<String, Object> defaultValues = (Map<String, Object>)JSON.deserializeUntyped(jsonData);
         	SObjectType relatedObjectType =  Schema.getGlobalDescribe().get(objectName);    
             Schema.DescribeSobjectResult relatedDescribe = relatedObjectType.getDescribe();
@@ -467,17 +448,4 @@ public with sharing class RelatedListDataGridController {
         
         return null;
     } 
-    
-    @AuraEnabled
-    public static String getSessionId()
-    {        
-        if (Test.IsRunningTest())
-        {
-            return UserInfo.getSessionId();
-        }else{
-            PageReference newPage = Page.GetSessionIdPage;
-            String content = newPage.getContent().toString();
-            return content.substringBetween('<SessionId>', '</SessionId>');
-        }       
-    }
 }

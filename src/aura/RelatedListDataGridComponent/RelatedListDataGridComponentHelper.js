@@ -36,8 +36,7 @@
         var dataAction = component.get("c.getReleatedListItems");
         dataAction.setParams({
             "objectId": component.get("v.recordId"),
-            "relatedlistName": component.get("v.relatedListName"),
-            "sessionId":component.get("v.sessionId")
+            "relatedlistName": component.get("v.relatedListName")
         });	
         
         dataAction.setCallback(this, function(res) {                                    
@@ -123,8 +122,7 @@
         var saveItemsAction = component.get("c.saveRelatedListItems");
         
         saveItemsAction.setParams({
-            "jsonData": JSON.stringify(component.get("v.items")),
-            "sessionId":component.get("v.sessionId")
+            "jsonData": JSON.stringify(component.get("v.items"))
         });	
         
         saveItemsAction.setCallback(this, function(res) { 
@@ -248,8 +246,7 @@
         //Load the new version from Salesforce
         var getObjectAction = component.get("c.getObject");
         getObjectAction.setParams({
-            "objectId": item.Id,
-            "sessionId":component.get("v.sessionId")
+            "objectId": item.Id
         });	
         
         getObjectAction.setCallback(this, function(res) {                                    
@@ -278,8 +275,7 @@
         //Load the new item from Salesforce
         var getObjectAction = component.get("c.getObject");
         getObjectAction.setParams({
-            "objectId": recordId,
-            "sessionId":component.get("v.sessionId")
+            "objectId": recordId
         });	
         
         getObjectAction.setCallback(this, function(res) {                                    
