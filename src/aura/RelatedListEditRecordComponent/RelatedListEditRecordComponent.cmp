@@ -1,4 +1,4 @@
-<aura:component >    
+<aura:component implements="forceCommunity:availableForAllPageTypes">    
     <aura:attribute name="context" type="Object" required="false"  />    
     <aura:attribute name="showDialog" type="Boolean" default="false" />
     

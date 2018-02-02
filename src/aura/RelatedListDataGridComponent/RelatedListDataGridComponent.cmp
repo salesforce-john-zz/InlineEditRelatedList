@@ -115,6 +115,7 @@
         </div>                 
         
     </article>  
+    
     <c:RelatedListEditRecordComponent aura:id="editDialog" onClose="{!c.editCallback}" onSave="{!c.saveCallback}" />
     <c:DataGridDialogComponent aura:id="deleteDialog" type="CONFIRM" onClose="{!c.deleteCallback}" />           
     <c:DataGridDialogComponent aura:id="loaderDialog" type="LOADER" />

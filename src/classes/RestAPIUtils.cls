@@ -16,10 +16,10 @@ public with sharing class RestAPIUtils {
         req.setMethod(method);
         req.setEndpoint(endPoint);
         req.setHeader('Content-type', 'application/json');       
-        req.setHeader('Authorization', 'OAuth ' + sessionId);
+        req.setHeader('Authorization', 'Bearer ' + sessionId);
         Http http = new Http();
         
-        HTTPResponse res = http.send(req);       
+        HTTPResponse res = http.send(req);        
         return res.getBody();
     }
     
@@ -28,7 +28,7 @@ public with sharing class RestAPIUtils {
      * For Rest API calls
      * */
     public static String getSessionId()
-    {
+    {        
         if (Test.IsRunningTest())
         {
             return UserInfo.getSessionId();
@@ -36,7 +36,7 @@ public with sharing class RestAPIUtils {
             PageReference newPage = Page.GetSessionIdPage;
             String content = newPage.getContent().toString();
             return content.substringBetween('<SessionId>', '</SessionId>');
-        }
+        }        
     }
     
     /**
