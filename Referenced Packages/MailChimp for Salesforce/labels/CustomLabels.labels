@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>DAE_BadQuery</fullName>
+        <categories>Exception</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>DAE: Bad Query</shortDescription>
+        <value>The supplied SOQL query could not be parsed/validated.</value>
+    </labels>
+    <labels>
+        <fullName>DAE_BadRelationshipName</fullName>
+        <categories>Exception</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>DAE: Bad Relationship Name</shortDescription>
+        <value>Subquery through relationship &quot;{0}&quot; does not exist. Bad relationship name?</value>
+    </labels>
+    <labels>
+        <fullName>DAE_DuplicateRecordForUpsert</fullName>
+        <categories>Exception</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>DAE: Duplicate Record For Upsert</shortDescription>
+        <value>Duplicate records with External Id &quot;{0}&quot; were specified in an upsert call.</value>
+    </labels>
+    <labels>
+        <fullName>DAE_FieldDoesNotExist</fullName>
+        <categories>Exception</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>DAE: Field Does Not Exist</shortDescription>
+        <value>Field &quot;{0}&quot; on object &quot;{1}&quot; does not exist.</value>
+    </labels>
+    <labels>
+        <fullName>DAE_FieldNotAccessible</fullName>
+        <categories>Exception</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>DAE: Field Not Accessible</shortDescription>
+        <value>&quot;{0}&quot; permission to field &quot;{2}&quot; on object &quot;{1}&quot; is not allowed for the current user.</value>
+    </labels>
+    <labels>
+        <fullName>DAE_InvalidExternalId</fullName>
+        <categories>Exception</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>DAE: Invalid External Id</shortDescription>
+        <value>Field &quot;{0}&quot; on object &quot;{1}&quot; is not a valid External Id.</value>
+    </labels>
+    <labels>
+        <fullName>DAE_ObjectNotAccessible</fullName>
+        <categories>Exception</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>DAE: Object Not Accessible</shortDescription>
+        <value>&quot;{0}&quot; permission to object &quot;{1}&quot; is not allowed for the current user.</value>
+    </labels>
+</CustomLabels>

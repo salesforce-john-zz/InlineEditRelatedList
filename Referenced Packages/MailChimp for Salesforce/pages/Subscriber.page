@@ -1,0 +1,5 @@
+<apex:page standardController="MC4SF__MC_Subscriber__c" extensions="MC4SF.SubscriberController" action="{!initPage}">
+
+<c:Subscriber subscriber="{!subscriberId}"/>
+
+</apex:page>

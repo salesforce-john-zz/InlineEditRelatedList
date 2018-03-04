@@ -1,0 +1,120 @@
+<apex:page standardController="MC4SF__MC_Query__c" extensions="MC4SF.QueryController">
+
+	<div class="slds-scope">
+		<c:Header setupFunction="headerSetupObject" />
+		<br/>
+		<div class="slds-grid slds-wrap">
+			<apex:repeat value="{!$ObjectType.MC4SF__MC_Query__c.FieldSets.MC4SF__QueryDetailOverride}" var="field"> 
+			    <div class="slds-p-horizontal--small slds-size--1-of-2">
+			        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+			            <span class="slds-form-element__label">{!field.Label}</span>
+			            <div class="slds-form-element__control">
+			                <span class="slds-form-element__static">
+			                 	<apex:outputField value="{!MC4SF__MC_Query__c[field]}"/>
+			                </span>
+			            </div>
+			        </div>
+			    </div>
+			</apex:repeat>
+		</div>
+		<br/>
+		<article class="slds-card">
+		<div class="slds-card__header slds-grid">
+			<header class="slds-media slds-media_center slds-has-flexi-truncate">
+				<div class="slds-media__body">
+					<h2>
+						<span class="slds-text-heading_small">MC Query Filters</span>
+					</h2>
+					<apex:outputPanel rendered="{!filters.size < 1}">
+						<p class="slds-text-body_small slds-line-height_reset">
+							No records to display
+						</p>
+					</apex:outputPanel>
+				</div>
+			</header>
+		</div>
+		<apex:outputPanel rendered="{!filters.size > 0}">
+			<div class="slds-card__body">
+				<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+				<thead>
+				<tr class="slds-text-title_caps">
+				  <th scope="col">
+				    <div class="slds-truncate" title="Object Name">Object Name</div>
+				  </th>
+				  <th scope="col">
+				    <div class="slds-truncate" title="Field Name">Field Name</div>
+				  </th>
+				  <th scope="col">
+				    <div class="slds-truncate" title="Operator">Operator</div>
+				  </th>
+				  <th scope="col">
+				    <div class="slds-truncate" title="Value">Value</div>
+				  </th>
+				  <th scope="col">
+				    <div class="slds-truncate" title="Error Message">Error Message</div>
+				  </th>
+				</tr>
+				</thead>
+				<tbody>
+					<apex:repeat value="{!filters}" var="filter">
+				    <tr class="slds-hint-parent">
+				    	<th scope="row">
+					     	<div class="slds-truncate" title="{!filter.MC4SF__Object_Name__c}">{!filter.MC4SF__Object_Name__c}</div>
+					    </th>
+						<th scope="row">
+							<div class="slds-truncate" title="{!filter.MC4SF__Field_Name__c}">{!filter.MC4SF__Field_Name__c}</div>
+						</th>
+						<th scope="row">
+							<div class="slds-truncate" title="{!filter.MC4SF__Operator__c}">{!filter.MC4SF__Operator__c}</div>
+						</th>
+						<th scope="row">
+							<div class="slds-truncate" title="{!filter.MC4SF__Value__c}">{!filter.MC4SF__Value__c}</div>
+						</th>
+						<th scope="row">
+							<div class="slds-truncate" title="{!filter.MC4SF__Error_Message__c}">{!filter.MC4SF__Error_Message__c}</div>
+						</th>		
+				    </tr>      	
+					</apex:repeat>
+				</tbody>
+				</table>
+			</div>	
+		</apex:outputPanel>
+		</article>
+	</div>
+
+	<script type="text/javascript">
+
+		var headerSetupObject = function(){
+			var setupObj;
+			setupObj = {
+				pageHeading : "{!MC_Query__c.Name}",
+				title : "MC Interest Groups",
+				buttons : createButtons()
+			}
+			return setupObj;
+		};
+
+		function createButtons(){
+		 buttonsArr = [{
+			 title : "Go Back",
+			 onclick : "goBackNavigation"
+		 }];
+		 if({!isMailChimpAdmin || MC_Query__c.Last_Run_As__c == $User.Id}){
+			 buttonsArr.push({
+				 title : "Edit",
+				 onclick : "editNavigation"
+			 });
+		 }
+		 return buttonsArr;
+	 }
+
+		function goBackNavigation(){
+			history.go(-1);
+		}
+
+		function editNavigation(){
+			top.location.href='{!$Page.QueryList}?id={!MC_Query__c.Id}';
+		}
+	</script>
+
+</apex:page>

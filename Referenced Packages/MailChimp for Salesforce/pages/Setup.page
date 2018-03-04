@@ -1,0 +1,600 @@
+<apex:page tabStyle="MC_Setup__tab" controller="MC4SF.SetupController" action="{!initPage}">
+
+<apex:stylesheet value="{!URLFOR($Resource.MC4SF__Assets, 'css/apexElemToSLDS.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.MC4SF__Assets, 'css/introjs.min.css')}"/>
+<script src="{!URLFOR($Resource.Assets, 'js/jquery.min.js')}"></script>
+<script src="{!URLFOR($Resource.Assets, 'js/intro.min.js')}"></script>
+
+<style>
+.introjs-disabled{
+  color: #d0d0d0 !important;
+}
+.introjs-tooltip {
+    max-width: 500px;
+    width: 500px;
+}
+.introjs-tooltiptext {
+    padding: 10px 10px 0 10px ;
+}
+
+.introjs-helperNumberLayer {
+  font-size: 10px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+}
+.introjs-tooltipbuttons {
+    text-align: center;
+}
+</style>
+<body>
+
+  <div class="slds-scope">
+
+  <c:Header setupFunction="headerSetupObject" />
+
+  <!-- Save Toast notification -->
+  <div class="slds-notify_container slds-is-absolute" style="display:none;">
+    <div class="slds-notify slds-notify_toast slds-theme_success" role="alert">
+      <span class="slds-assistive-text">success</span>
+      <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#success"></use>
+        </svg>
+      </span>
+      <div class="slds-notify__content">
+        <h2 class="slds-text-heading_small ">Mailchimp setting updated.</h2>
+      </div>
+      <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close">
+        <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+        </svg>
+        <span class="slds-assistive-text">Close</span>
+      </button>
+    </div>
+  </div>
+  <!-- </ Save Toast notification -->
+
+  <c:CustomApexPageMessages />
+
+  <div class="slds-p-around_large">
+
+    <!-- Tips card -->
+    <article class="slds-card">
+      <div class="slds-card__header slds-grid">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+          <div class="slds-media__figure">
+            <svg class="slds-icon slds-icon_x-small slds-icon-text-default" aria-hidden="true">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#notification"></use>
+            </svg>
+          </div>
+          <div class="slds-media__body">
+            <h2>
+                <span class="slds-text-heading_small">Tips</span>
+            </h2>
+          </div>
+        </header>
+      </div>
+      <div class="slds-card__body slds-card__body_inner">
+        <ol style="line-height:1.2rem;">
+          <li> 1. This app works best when field mappings are complete. We recommend mapping fields before syncing data. </li>
+          <li> 2. The initial hourly sync will upload all MailChimp subscribers into Salesforce and link them to existing Contacts and Leads. </li>
+          <li> 3. An initial upload usually takes a few minutes, but can take several hours for large lists. </li>
+          <li> 4. If the Create Leads from MC option is chosen, the sync process will create a new Lead whenever a Subscriber's email address cannot be found on an existing Salesforce Contact or Lead. Please be sure your org's Lead configuration is ready for an initial upload! </li>
+        </ol>
+      </div>
+    </article>
+    <!-- </ Tips Card > -->
+
+  	<div class="slds-tabs--default slds-p-vertical_small">
+
+  		<ul class="slds-tabs--default__nav" role="tablist">
+  			<li class="slds-tabs__item slds-text-heading--label slds-active" title="Item One" role="presentation" id="tabLists"><a href="#" name="tabContentLists" role="tab" tabindex="0" aria-selected="true">Lists</a></li>
+  			<li class="slds-tabs__item slds-text-heading--label" title="Item Two" id="tabQueries"><a href="#" name="tabContentQueries" role="tab" tabindex="-1" aria-selected="false">Member Queries</a></li>
+  			<li class="slds-tabs__item slds-text-heading--label" title="Item Three" id="tabCampaigns"><a href="#" name="tabContentCampaigns" role="tab" tabindex="-1" aria-selected="false">Campaigns</a></li>
+        <li class="slds-tabs__item slds-text-heading--label" title="Item One" role="presentation" id="tabSettings"><a href="#" name="tabContentSettings" role="tab" tabindex="0" aria-selected="true">Settings</a></li>
+  		</ul>
+
+      <!-- Lists tab -->
+  		<div class="slds-tabs__content slds-show" role="tabpanel" id="tabContentLists">
+        <section aria-labelledby="anchor-component" class="mode-read-only slds-scrollable--x">
+
+          <div style="float:right; margin-bottom:15px;">
+            <button class="slds-button slds-button_neutral introStep4" onclick="refreshListsAction();return false;">Refresh all lists</button>
+          </div>
+
+          <apex:form id="listTable">
+            <apex:inputHidden id="mcListId" value="{!mcListId}"/>
+            <apex:actionFunction action="{!refreshLists}" name="refreshListsAction" rerender="messages" />
+            <apex:actionFunction action="{!updateLists}" name="updateListsAction" rerender="" oncomplete="notifyDone()"/>
+            <apex:actionFunction action="{!syncListNow}" name="syncListNow" rerender="messages">
+            	<apex:param name="mcListId" assignTo="{!mcListId}" value=""/>
+            </apex:actionFunction>
+
+    				<table class="slds-table slds-table--bordered">
+    					<thead>
+    						<tr class="slds-text-heading--label">
+    							<th scope="col"><span class="slds-truncate">Action</span></th>
+    							<th scope="col"><span class="slds-truncate">List Name</span></th>
+    							<th scope="col"><span class="slds-truncate">Sync Setting</span></th>
+    							<th scope="col"><span class="slds-truncate">Create Leads from MC</span></th>
+    							<th scope="col"><span class="slds-truncate">Unmapped Fields</span></th>
+    							<th scope="col"><span class="slds-truncate">Last Sync</span></th>
+    							<th scope="col"><span class="slds-truncate">Sync Status</span></th>
+    							<th scope="col"><span class="slds-truncate"># Subscribers</span></th>
+    							<th scope="col"><span class="slds-truncate"># Unsubscribers</span></th>
+    						</tr>
+    					</thead>
+    					<tbody>
+    						<apex:repeat value="{!listWrappers}" var="listWrapper">
+    							<tr class="slds-hint-parent">
+    								<td data-label="actions">
+    									<apex:outputPanel layout="none" rendered="{!isMailChimpAdmin}">
+    										<a href="{!$Page.Mappings}?id={!listWrapper.mcList.Id}&retURL={!$Page.Setup}" class="introStep5">Map Fields</a>
+                        &nbsp;|&nbsp;
+                        <a href="#" onclick="syncListNow('{!listWrapper.mcList.Id}'); return false;" class="introStep6">Sync List</a>
+    									</apex:outputPanel>
+    								</td>
+    								<td data-label="list name"><a href="/{!listWrapper.mcList.Id}" class="slds-truncate">{!listWrapper.mcList.Name}</a></td>
+    								<td data-label="sync" class="slds-truncate">
+                      <apex:outputPanel layout="none" rendered="{!NOT(isMailChimpAdmin)}">
+    										<span class="slds-truncate">{!listWrapper.mcList.MC4SF__Sync_Setting__c}</span>
+    									</apex:outputPanel>
+    									<apex:selectList value="{!listWrapper.mcList.MC4SF__Sync_Setting__c}" size="1" styleClass="slds-select slds-input--small" rendered="{!isMailChimpAdmin}" onchange="updateListsAction();">
+    										<apex:selectOptions value="{!syncSettingOptions}"/>
+    									</apex:selectList>
+    								</td>
+    								<td data-label="create leads">
+                      <div class="demo-only slds-size_1-of-2">
+                        <div class="slds-form-element">
+                          <label class="slds-checkbox_toggle slds-grid">
+                            <apex:inputCheckbox id="syncSetting" value="{!listWrapper.mcList.MC4SF__Create_New_Leads_From_MailChimp__c}" disabled="{!NOT(isMailChimpAdmin)}" onchange="toggleSyncSetting(this); return false;"/>
+                            <span id="toggle-desc" class="slds-checkbox_faux_container" aria-live="assertive">
+                              <span class="slds-checkbox_faux"></span>
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+    								</td>
+    								<td data-label="unmapped fields"><span class="slds-truncate">{!listWrapper.mcList.Unmapped_Fields__c}</span></td>
+    								<td data-label="last sync"><span class="slds-truncate">{!listWrapper.lastSyncDate}</span></td>
+    								<td data-label="sync status"><span class="slds-truncate">{!listWrapper.mcList.Last_Sync_Status__c}</span></td>
+    								<td data-label="subscribers"><span class="slds-truncate">{!listWrapper.mcList.Member_Count__c}</span></td>
+    								<td data-label="unsubscribers">{!listWrapper.mcList.Unsubscribe_Count__c}</td>
+    							</tr>
+    						</apex:repeat>
+    					</tbody>
+    				</table>
+          </apex:form>
+  			</section>
+  		</div>
+      <!-- / Lists tab -->
+
+
+      <!-- Member queries tab -->
+			<div class="slds-tabs__content slds-hide" role="tabpanel" id="tabContentQueries">
+				<section aria-labelledby="anchor-component">
+
+          <div style="text-align:right; margin-bottom:15px;">
+            <button class="slds-button slds-button_neutral introStep7" onclick="newQueryAction();return false;">New Query</button>
+          </div>
+
+          <apex:form id="memberQueriesTable">
+            <apex:inputHidden id="mcQueryId" value="{!mcQueryId}"/>
+            <apex:actionFunction action="{!deleteQuery}" name="deleteQuery" rerender="memberQueriesTable"/>
+            <apex:actionFunction action="{!runQuery}" name="runQuery" rerender="messages"/>
+            <apex:actionFunction action="{!newQuery}" name="newQueryAction" />
+  					<table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-scrollable--x">
+  						<thead>
+  							<tr class="slds-text-heading--label">
+  								<th scope="col"><span class="slds-truncate">Action</span></th>
+  								<th scope="col"><span class="slds-truncate">Query Name</span></th>
+  								<th scope="col"><span class="slds-truncate">List</span></th>
+  								<th scope="col"><span class="slds-truncate">Last Run As</span></th>
+  								<th scope="col"><span class="slds-truncate">Queried Objects</span></th>
+  								<th scope="col"><span class="slds-truncate">Schedule</span></th>
+  								<th scope="col"><span class="slds-truncate">Last Run</span></th>
+  								<th scope="col"><span class="slds-truncate">Last Status</span></th>
+  								<th scope="col"><span class="slds-truncate">Subscribers Added</span></th>
+  							</tr>
+  						</thead>
+  						<tbody>
+  							<apex:repeat value="{!queryWrappers}" var="wrapper">
+  								<tr class="slds-hint-parent">
+  									<td data-label="action">
+  										<apex:outputPanel layout="none" rendered="{!isMailChimpAdmin || wrapper.mcQuery.MC4SF__Last_Run_As__c == $User.Id}">
+    											<a href="{!$Page.MC4SF__QueryFilter}?id={!wrapper.mcQuery.Id}">Edit</a>
+    											|
+    											<a href="#" onclick="executeDeleteQuery('{!wrapper.mcQuery.Id}'); return false;">Delete</a>
+  											<apex:outputPanel layout="none" rendered="{!isMailChimpAdmin && wrapper.objectNames != null}">
+  												|
+  												<a href="{!$Page.MC4SF__QueryName}?id={!wrapper.mcQuery.Id}">Schedule</a>
+  											</apex:outputPanel>
+  			                <apex:outputPanel layout="none" rendered="{!wrapper.objectNames != null}">
+  			                  |
+  			                  <a href="#" onclick="executeRunQuery('{!wrapper.mcQuery.Id}'); return false;" class="introStep8">Run Query</a>
+  			                </apex:outputPanel>
+  										</apex:outputPanel>
+  									</td>
+  									<td data-label="query name"><a href="/{!wrapper.mcQuery.Id}" class="slds-truncate">{!wrapper.mcQuery.Name}</a></td>
+  									<td data-label="list"><a href="/{!wrapper.mcQuery.MC_List__c}" class="slds-truncate">{!wrapper.mcQuery.MC_List__r.Name}</a></td>
+  									<td data-label="last run as"><a href="/{!wrapper.mcQuery.Last_Run_As__c}" class="slds-truncate">{!wrapper.mcQuery.Last_Run_As__r.Name}</a></td>
+  									<td data-label="queried objects"><span class="slds-truncate">{!wrapper.objectNames}</span></td>
+  									<td data-label="schedule"><span class="slds-truncate">{!wrapper.mcQuery.Run_Daily_At__c}</span></td>
+  									<td data-label="last run"><span class="slds-truncate">{!wrapper.lastRun}</span></td>
+  									<td data-label="last status">
+  										<apex:outputPanel rendered="{!wrapper.mcQuery.MC4SF__Status__c == 'Error'}" styleClass="slds-truncate"><span title="{!wrapper.mcQuery.Error_Message__c}" style="color: red;">{!wrapper.mcQuery.MC4SF__Status__c}</span></apex:outputPanel>
+              							<apex:outputPanel rendered="{!wrapper.mcQuery.MC4SF__Status__c != 'Error'}" styleClass="slds-truncate">{!wrapper.mcQuery.MC4SF__Status__c}</apex:outputPanel>
+  									</td>
+  									<td data-label="subscriers added">{!wrapper.mcQuery.MC4SF__Subscribers_Added_last_run__c}</td>
+  								</tr>
+  							</apex:repeat>
+  						</tbody>
+  					</table>
+          </apex:form>
+				</section>
+			</div>
+      <!-- / Member queries tab -->
+
+      <!-- Campaigns tab -->
+			<div class="slds-tabs__content slds-hide" role="tabpanel" id="tabContentCampaigns">
+				<section aria-labelledby="anchor-component" class="slds-scrollable--x">
+
+          <div style="text-align:right; margin-bottom:15px;">
+            <button class="slds-button slds-button_neutral introStep9" onclick="refreshCampaignsAction(); return false;">Refresh MC Campaigns</button>
+          </div>
+          <apex:form id="campaignsForm">
+          <apex:actionFunction action="{!refreshCampaigns}" name="refreshCampaignsAction" rerender="messages"/>
+          <apex:actionFunction action="{!syncCampaignNow}" name="syncCampaignNowAction" rerender="messages">
+            <apex:param name="mcCampaignId" assignTo="{!mcCampaignId}" value=""/>
+          </apex:actionFunction>
+					<table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+						<thead>
+							<tr class="slds-text-heading--label">
+                <apex:outputPanel rendered="{!isMailChimpAdmin || isMailChimpUser}">
+								   <th scope="col"><span class="slds-truncate">Action</span></th>
+                </apex:outputPanel>
+								<th scope="col"><span class="slds-truncate">Campaign Name</span></th>
+								<th scope="col"><span class="slds-truncate">List</span></th>
+								<th scope="col"><span class="slds-truncate">View In Mailchimp</span></th>
+								<th scope="col">Status</th>
+								<th scope="col"><span class="slds-truncate">Send Time</span></th>
+								<th scope="col">Emails Sent</th>
+								<th scope="col"><span class="slds-truncate">Clicks</span></th>
+								<th scope="col"> <span class="slds-truncate">Opens</span></th>
+								<th scope="col"> <span class="slds-truncate">Forwards</span></th>
+								<th scope="col"><span class="slds-truncate">Unsubscribes</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							<apex:repeat value="{!campaignWrappers}" var="campaignWrapper">
+								<tr class="slds-hint-parent">
+                  <apex:outputPanel rendered="{!isMailChimpAdmin || isMailChimpUser}">
+                    <td data-label="action"><a href="#" class="introStep10" onclick="syncCampaignNowAction('{!campaignWrapper.mcCampaign.Id}')">Update Stats</a></td>
+                  </apex:outputPanel>
+									<td data-label="campaign name"><a href="/{!campaignWrapper.mcCampaign.Id}" class="slds-truncate">{!campaignWrapper.mcCampaign.Name}</a></td>
+									<td data-label="list"><a href="/{!campaignWrapper.mcCampaign.MC_List__c}" class="slds-truncate">{!campaignWrapper.mcCampaign.MC_List__r.Name}</a></td>
+                  <td data-label="view-in-mailchimp">
+                    <apex:outputLink value="{!campaignWrapper.mcCampaign.MC4SF__MailChimp_Link__c}" target="_blank" rendered="{!campaignWrapper.mcCampaign.MC4SF__MailChimp_Link__c != null}">{!campaignWrapper.mcCampaign.MC4SF__MailChimp_Link__c}</apex:outputLink>
+                    <apex:outputLink value="https://{!globalSettings.MC4SF__Data_Center__c}.admin.mailchimp.com/campaigns/" target="_blank" rendered="{!campaignWrapper.mcCampaign.MC4SF__MailChimp_Link__c == null}">https://{!globalSettings.MC4SF__Data_Center__c}.admin.mailchimp.com/campaigns/</apex:outputLink>
+                  </td>
+                  <td data-label="status">{!campaignWrapper.mcCampaign.MC4SF__Status__c}</td>
+									<td data-label="send time"><span class="slds-truncate">{!campaignWrapper.sendTime}</span></td>
+									<td data-label="emails sent"><span class="slds-truncate"><apex:outputText value="{0,number,#,##0}"><apex:param value="{!campaignWrapper.mcCampaign.MC4SF__Emails_Sent__c}"/></apex:outputText></span></td>
+									<td data-label="clicks"><apex:outputText value="{0,number,#,##0}"><apex:param value="{!campaignWrapper.mcCampaign.MC4SF__Clicks__c}"/></apex:outputText></td>
+									<td data-label="opens"><apex:outputText value="{0,number,#,##0}"><apex:param value="{!campaignWrapper.mcCampaign.MC4SF__Opens__c}"/></apex:outputText></td>
+									<td data-label="forwards"><apex:outputText value="{0,number,#,##0}"><apex:param value="{!campaignWrapper.mcCampaign.MC4SF__Forwards__c}"/></apex:outputText></td>
+									<td data-label="unsubscribes"><apex:outputText value="{0,number,#,##0}"><apex:param value="{!campaignWrapper.mcCampaign.MC4SF__Unsubscribes__c}"/></apex:outputText></td>
+								</tr>
+							</apex:repeat>
+						</tbody>
+					</table>
+        </apex:form>
+				</section>
+			</div>
+      <!-- Settings tab -->
+      <div class="slds-tabs__content slds-hide" role="tabpanel" id="tabContentSettings">
+				<section aria-labelledby="anchor-component" class="slds-scrollable--x slds-p-around_small">
+          <apex:form id="settingsForm">
+            <apex:actionFunction action="{!toggleHourlyJob}" name="toggleHourlyJobAction" oncomplete="notifyDone()" rerender="messages"/>
+            <apex:actionFunction action="{!updateCreateLeads}" name="updateCreateLeadsAction" rerender="" oncomplete="notifyDone(); setCreateLeads({!createLeads});"/>
+            <div class="slds-form slds-form_stacked">
+
+              <h1 class="slds-text-heading_medium slds-p-vertical_xx-small introStep3" style="display:inline-block;">Data Sync</h1>
+              <p class="slds-p-bottom_x-small">
+                Enabling will schedule a series of batch tasks. The data sync updates your MailChimp subscriber fields with the corresponding contact/lead field data each hour, and updates the Salesforce contacts/leads with the MailChimp subscriber campaign activity each night.
+              </p>
+
+              <div class="slds-form-element slds-p-bottom_large">
+                <label class="slds-checkbox_toggle slds-grid">
+                  <span class="slds-form-element__label slds-m-bottom_none" style="line-height: 1.5rem;">Data Sync</span>
+                  <apex:inputCheckbox id="enableHourlySync" value="{!hourlyJobScheduled}" disabled="{!NOT(isMailChimpAdmin)}" />
+                  <span id="toggle-desc" class="slds-checkbox_faux_container" aria-live="assertive">
+                    <span class="slds-checkbox_faux"></span>
+                  </span>
+                </label>
+              </div>
+
+              <h1 class="slds-text-heading_medium slds-p-vertical_xx-small introStep2" style="display:inline-block;">Allow MailChimp to create Leads in Salesforce</h1>
+              <p class="slds-p-bottom_x-small">
+                Enabling this feature will allow MailChimp to create new leads in Salesforce for email addresses that don't match existing leads or contacts.
+              </p>
+
+              <div class="slds-form-element">
+                <label class="slds-checkbox_toggle slds-grid">
+                  <span class="slds-form-element__label slds-m-bottom_none" style="line-height: 1.5rem;">MailChimp Lead Creation</span>
+                  <apex:inputCheckbox id="createLeads" value="{!createLeads}" disabled="{!NOT(isMailChimpAdmin)}" onchange="updateCreateLeadsAction(); return false;"/>
+                  <span id="toggle-desc" class="slds-checkbox_faux_container" aria-live="assertive">
+                    <span class="slds-checkbox_faux"></span>
+                  </span>
+                </label>
+              </div>
+
+            </div>
+          </apex:form>
+				</section>
+			</div>
+      <!-- / Settings tab -->
+  	</div>
+  </div>
+
+</div>
+
+
+</body>
+
+<script>
+
+  var headerSetupObject = function(){
+    var setupObj;
+    setupObj = {
+      title : "MailChimp for Salesforce",
+      pageHeading : "Setup",
+      pageDescription : "Configure the Mailchimp for Salesforce application"
+    }
+    return setupObj;
+  };
+
+  //Assign the current state of the create leads when the page loads.
+  window.createLeads = ('{!createLeads}' === 'true');
+
+  function setCreateLeads(createLeads){
+    window.createLeads = createLeads;
+    if(!createLeads){
+      $('[id$="syncSetting"]').each(function() {
+        var el = $(this);
+        if(el.prop("checked") == true){
+          el.prop("checked", false);
+        }
+      });
+      updateListsAction();
+    }
+  }
+
+  function toggleSyncSetting(el) {
+
+    var createLeads = window.createLeads;
+    if(!createLeads){
+      if($(el).prop("checked") == true){
+        $(el).prop("checked", false);
+        alert('Before enabling this setting, please turn on \'Allow MailChimp to create Leads in Salesforce\' in Setting tab.');
+      }else{
+        updateListsAction();
+      }
+    }else{
+      updateListsAction();
+    }
+  }
+
+  function executeDeleteQuery(id) {
+  	if (confirm('Are you sure you want to delete this query?')) {
+  		$('input[id$="mcQueryId"]').val(id);
+  		deleteQuery(id);
+      return false;
+  	}
+  }
+
+  function executeRunQuery(id) {
+  	$('input[id$="mcQueryId"]').val(id);
+  	runQuery();
+    return false;
+  }
+
+  // For toast messages
+  function notifyDone(){
+    $('.slds-notify_container').show().delay(800).fadeOut('slow');
+  }
+
+  $('[id$="enableHourlySync"]').on('click', function(event){
+    var unmappedFields = {!haveUnmappedFields};
+    var notChecked = $('[id$="enableHourlySync"]').is(':checked');
+    if(notChecked && unmappedFields){
+      if (!(confirm('Some MailChimp fields have not been mapped to Salesforce fields. We recommend mapping fields BEFORE turning on the Data sync.'))) {
+        event.stopPropagation();
+        return false;
+      }
+    }
+    toggleHourlyJobAction();
+  });
+
+  if(!({!hourlyJobScheduled})){
+    setPageMessages('INFO','The MailChimp for Salesforce has been set up and is ready to start synchronizing data. Click the "Data Sync" button on the Settings tab to start the magic.');
+  }
+
+  // Handle changing the active tab and it's content
+  $('.slds-tabs__item').on('click', function(event) {
+  	$('.slds-tabs__item').removeClass('slds-active');
+  	$(this).addClass('slds-active');
+    $('.slds-tabs__content').hide();
+  	$('#'+event.target.name).show();
+  });
+
+
+  $(function() {
+
+      $('.freddie').css('width', '35px').addClass('introStep1');
+
+      $('div.links').prepend('<a id="tourLink" href="#">Take a Tour of the MailChimp Settings</a> | ');
+
+      $('#tourLink').click(function() {
+          showTour();
+          return false;
+      });
+
+      $('span.helpLink').closest('a').attr('id', 'helpLink').attr('href', '#');
+
+      $('#helpLink').click(function() {
+          showHelp();
+      });
+
+      $('#goBackButton').click(function() {
+          $.unblockUI();
+      });
+
+      $('#helpCloseButton').click(function() {
+          $.unblockUI();
+      });
+
+      if ({!IF(dontShowTour, 'false', 'true')}) {
+          showTour();
+      }
+
+  });
+
+
+  function showTour() {
+      var steps = [];
+
+      steps.push(
+          {
+              element: $('.introStep1')[0],  //RK: Done
+              intro: '<b>WELCOME TO THE MAILCHIMP FOR SALESFORCE SETUP PAGE</b><br/><br/>MailChimp for Salesforce features the ability to update MailChimp subscriber information based on the contact/lead fields in Salesforce, create new leads from MailChimp subscribers, and view MailChimp campaign activity and reports within your Salesforce account.<br/><br/>Click the \"Next\" button to take a tour of the MailChimp for Salesforce application. If you have additional questions, check out the documentation in the MailChimp Knowledge Base.<br/><br/><a href="http://eepurl.com/B_Bdb">About MailChimp for Salesforce.</a><br/><a href="http://eepurl.com/CqRNz">Install MailChimp for Salesforce.</a><br/><a href="http://eepurl.com/bdNhqv">MailChimp for Salesforce Features.</a><br/>',
+
+              position: 'right'
+          }
+      );
+
+      steps.push(
+          {
+              element: $('.introStep2')[0],  //RK: Done
+              intro: '<b>ALLOW MAILCHIMP TO CREATE LEADS IN SALESFORCE</b><br/><br/>Enabling this feature will allow MailChimp to create new leads in Salesforce for email addresses that don\'t match existing leads or contacts.',
+              position: 'right'
+          }
+      );
+
+      steps.push(
+          {
+              element: $('.introStep3')[0],  //RK: Done
+              intro: '<b>TURN ON/OFF DATA SYNC</b><br/><br/>Enabling the data sync feature will schedule a series of batch tasks. The data sync updates your MailChimp subscriber fields with the corresponding contact/lead field data each hour, and it updates the Salesforce contacts/leads with the MailChimp subscriber campaign activity each night.',
+              position: 'right'
+          }
+      );
+
+      steps.push(
+          {
+              element: $('.introStep4')[0],  //RK: Done
+              intro: '<b>REFRESH ALL LISTS</b><br/><br/>The "Refresh All Lists" button updates all of the list field data. This button updates Salesforce with the MailChimp lists, list fields, and groups.',
+              position: 'left'
+          }
+      );
+
+      if ($('.introStep5').length > 0) {
+          steps.push(
+              {
+                  element: $('.introStep5')[0],     //RK: Done
+                  intro: '<b>MAP FIELDS</b><br/><br/>The "Map Fields" link takes you to the field mapping page for each list. You can edit the field mapping for existing list fields or create new MailChimp list fields. The field mapping settings are used to match MailChimp list fields with their corresponding contact/lead fields.<br/><br/>The permissions for the leads, contacts, and accounts should be set to "Public Read/Write" in order for the MailChimp for Salesforce app to work properly. In order to edit these permissions, go to Setup > Administer > Security Controls > Sharing Settings.',
+                  position: 'right'
+              }
+          );
+      }
+
+      if ($('.introStep6').length > 0) {
+          steps.push(
+              {
+                  element: $('.introStep6')[0], //RK: Done
+                  intro: '<b>SYNC LIST</b><br/><br/>The "Sync List" link updates Salesforce with the MailChimp list settings, fields, segments, and groups. If the sync settings for the list allow subscriber activity, then this link will update the contacts/leads with the MailChimp campaign activity.',
+                  position: 'right'
+              }
+          );
+      }
+
+      steps.push(
+          {
+              element: $('.introStep7')[0],   //RK: Done
+              intro: '<b>NEW QUERY</b><br/><br/>The "New Query" button takes you to the query builder. Queries function to subscribe contacts/leads to the MailChimp list, and to update existing MailChimp list subscribers based on the corresponding contacts/leads in Salesforce. When updating existing subscribers, the Salesforce data will overwrite the MailChimp list field data. Using the filters on step two of the query builder, it’s possible to query all of the contacts/leads or to query specific contacts/leads based on their Salesforce field data.',
+              position: 'left'
+          }
+      );
+
+      if ($('.introStep8').length > 0) {
+          steps.push(
+              {
+                  element: $('.introStep8')[0], //RK: Done
+                  intro: '<b>RUN QUERY</b><br/><br/>The "Run Query" link functions to manually run an existing query. Queries function to subscribe contacts/leads to the MailChimp list, and to update existing MailChimp list subscribers based on the corresponding contacts/leads in Salesforce.',
+                  position: 'right'
+              }
+          );
+      }
+
+      steps.push(
+          {
+              element: $('.introStep9')[0],    //RK: Done
+              intro: '<b>REFRESH MC CAMPAIGNS</b><br/><br/>The "Refresh MC Campaigns" button allows the user to manually update the campaign activity data for all campaigns.',
+              position: 'left'
+          }
+      );
+
+      if ($('.introStep10').length > 0) {
+          steps.push(
+              {
+                  element: $('.introStep10')[0],     //RK: Done
+                  intro: '<b>UPDATE STATS</b><br/><br/>The "Update Stats" link allows the user to manually update the campaign activity data for a particular campaign.',
+                  position: 'right'
+              }
+          );
+      }
+
+
+      introJs().onbeforechange(function(targetEl) {
+        if($(targetEl).hasClass('introStep2'))
+          $('#tabSettings a').click();
+        if($(targetEl).hasClass('introStep3'))
+          $('#tabSettings a').click();
+        if($(targetEl).hasClass('introStep4'))
+          $('#tabLists a').click();
+        if($(targetEl).hasClass('introStep5'))
+          $('#tabLists a').click();
+        if($(targetEl).hasClass('introStep6'))
+          $('#tabLists a').click();
+        if($(targetEl).hasClass('introStep7'))
+          $('#tabQueries a').click();
+        if($(targetEl).hasClass('introStep8'))
+          $('#tabQueries a').click();
+        if($(targetEl).hasClass('introStep9'))
+          $('#tabCampaigns a').click();
+        if($(targetEl).hasClass('introStep10'))
+          $('#tabCampaigns a').click();
+      }).setOption('steps', steps).start();
+
+      $('.introjs-tooltipbuttons').after('<div style="text-align: center; font-size: 11px; color: #666; margin-top: 10px;"><input id="dontShowCheckbox" type="checkbox" style="vertical-align: middle; margin-right: 5px;" {!IF(dontShowTour, 'checked="checked"', '')}/>Don\'t show this again</div>');
+
+      jQuery('#dontShowCheckbox').click(function() {
+          Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SetupController.setDontShowTour}', jQuery(this).is(':checked'), function(result, event) {
+          });
+      });
+
+  }
+
+  function showHelp() {
+      $.blockUI({
+          message: $('#helpDialog'),
+          css: {
+              'border-radius': '8px',
+              'padding': '10px'
+          }
+      });
+  }
+
+</script>
+
+</apex:page>

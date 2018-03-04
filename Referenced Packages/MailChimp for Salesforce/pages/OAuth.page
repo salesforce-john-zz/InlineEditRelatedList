@@ -1,0 +1,3 @@
+<apex:page showHeader="false" controller="MC4SF.OAuthController" action="{!initPage}">
+
+</apex:page>

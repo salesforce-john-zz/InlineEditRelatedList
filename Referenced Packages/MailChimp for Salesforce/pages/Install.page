@@ -1,0 +1,172 @@
+<apex:page tabStyle="MC_Setup__tab" controller="MC4SF.InstallController" action="{!initPage}">
+
+<style type="text/css">
+    .spinner-text {
+        margin-top: 60px;
+    }
+</style>
+
+<div class="slds-scope">
+    <c:Header setupFunction="headerSetupObject" />
+    <apex:form id="form">
+    <apex:outputPanel id="step1" rendered="{!isMailChimpAdmin && step == 'Step 1'}">
+        <c:InstallSteps currentStep="1"/>
+        <c:CustomApexPageMessages />
+        <div class="slds-grid slds-grid_align-space">
+            <div>
+                <apex:commandButton styleClass="slds-button slds-button--neutral" value="Login" action="{!login}" onclick="alert('You will be temporarily redirected to MailChimp to authenticate and will be returned to salesforce.com upon completion.');"/>
+                    
+                <br/><br/>
+                <a href="http://kb.mailchimp.com/article/i-cant-log-in-to-my-mailchimp-account" target="_blank">Forgot password?</a><br/><br/>
+                Don't have an account? <a href="https://login.mailchimp.com/signup/" target="_blank">Sign up for free</a>
+            </div>
+            <div>
+                <span style="font-family: Arial; font-size: 18px; font-weight: normal; color: #333;">MailChimp can help!</span><br/><br/>
+                We're here to help. Send us an email at <a href="mailto:salesforce@mailchimp.com">salesforce@mailchimp.com</a> and we'll be sure to respond shortly.<br/><br/>
+                <a href="http://kb.mailchimp.com/article/what-is-mailchimp-for-salesforce" target="_blank">About MailChimp for Salesforce</a><br/><br/>
+                <a href="http://kb.mailchimp.com/article/how-do-i-install-mailchimp-for-salesforce" target="_blank">Installation Guide</a>
+            </div>
+        </div>
+    </apex:outputPanel>
+    <apex:outputPanel id="step2" title="Step 2: Lead Creation" rendered="{!isMailChimpAdmin && step == 'Step 2'}">
+        <c:InstallSteps currentStep="2"/>
+        <c:CustomApexPageMessages />
+        <div class="slds-grid" style="margin-left: 10px">
+            <div class="slds-text-body_regular">
+                This app can create leads in Salesforce based on subscriber email addresses from MailChimp. If you would like to create Salesforce leads from MailChimp subscribers during this installation process, check the <b>Allow MailChimp to create Leads in Salesforce?</b> box below. 
+
+                Please be sure to note the following:
+            </div>
+        </div>
+        <br/>
+        <div style="margin-left: 20px">
+            <ul class="slds-list_dotted"> 
+                <li>The initial lead sync process will function to create Salesforce leads for all existing MailChimp subscribers that don’t already exist in the Salesforce Org as a contact or lead (based on their email address). It’s important to note that the lead creation will only function to create Salesforce leads with the default fields (Email Address, First Name, Last Name).
+                </li><br/>
+                <li>
+                    Make sure that the Salesforce Org is configured to handle new leads:
+                    <ul class="slds-is-nested slds-list_dotted">
+                        <li>Review your lead assignment rules. Verify that any automated lead assignment processes are in place for MailChimp-generated leads.</li>
+                        <li>Review auto-response or workflow rules for MailChimp-generated leads.</li>
+                        <li>Review any triggers defined for the Salesforce lead record type.</li>
+                        <li>Check required fields and validation rules for Salesforce leads before enabling lead creation. If the MailChimp subscribers don’t meet the field or validation rule requirements for Salesforce lead creation, then it won’t be possible to utilize this feature.</li>
+                    </ul>
+                </li><br/>
+                <li>It’s possible to enable lead creation after the field mapping process using the checkbox on the MC Setup tab. Any subscribers added to the MailChimp list after lead creation is enabled will be added to Salesforce as leads; however, it won’t retroactively create Salesforce leads from the existing MailChimp subscribers.</li>
+            </ul>
+            <br/>        
+        </div>
+        <div class="slds-grid" style="margin-left: 10px">
+            <div class="slds-form-element__row">
+                <div class="slds-form-element">
+                    <label class="slds-checkbox">
+                        <apex:inputcheckbox id="isinstance" styleclass="slds-input" value="{!allowMailChimpToCreateLeads}" />
+                           <span class="slds-checkbox--faux"></span>
+                           <span class="slds-form-element__label"><b>Allow MailChimp to create Leads in Salesforce?</b></span>
+                    </label>
+                </div>
+            </div>        
+        </div>
+        <div class="slds-spinner_container" id="spinner" style="display:none">
+            <div class="slds-align--absolute-center" style="height: 100%">
+                <span id="listLoadStatus"  class="spinner-text"></span>
+            </div>
+            <div class="slds-spinner slds-spinner_medium" role="alert">
+              <div class="slds-spinner__dot-a"></div>
+              <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <br/><br/><br/><br/><br/>        
+
+        <div class="slds-docked-form-footer" style="{!IF($User.UITheme != 'Theme4d', 'position: absolute !important;', '')}">
+            <button id="step2ComeBackLaterButton"  type="button" class="slds-button slds-button_neutral slds-float_right " onclick="comeBackLater()">Come Back Later</button>
+            <button id="readyToMapFieldsButton" type="button" class="slds-button slds-button_brand slds-float_right " onclick="readyToMapFields()">I am Ready to Map Fields</button>
+        </div>
+        <apex:outputPanel layout="none" rendered="{!shouldLoadMergeVars}">
+            <script src="{!URLFOR($Resource.Assets, 'js/jquery.min.js')}"></script>
+            <script>
+                var mcLists = {!mcListsJson};
+                var mcListCount = mcLists.length;
+        
+                // Turn off buffering so that all remoting calls are made one at a time in order.
+                Visualforce.remoting.buffer = false;
+                jQuery(function() {
+        
+                    // Disable the Come Back Later and Ready To Map Fields buttons until all lists are loaded.
+                    jQuery('#step2ComeBackLaterButton').attr('disabled',true);
+                    jQuery('#readyToMapFieldsButton').attr('disabled',true);
+                            
+                    // Add cell in header to place load status message.
+                    //jQuery('div.pbHeader td.pbTitle').closest('tr').append('<td class="pbHelp listLoadStatus"/>');
+
+                    if (mcListCount > 0) {
+                        jQuery('#spinner').show();
+                        loadMergeVars();
+                    }
+                
+                });
+        
+                function loadMergeVars() {
+                    if (mcLists.length == 0) {
+                        // Update load status message.
+                        jQuery('#listLoadStatus').html('<span style="color: green">All lists loaded</span>');
+                        
+                        // Enable the Come Back Later and Ready To Map Fields buttons.
+                        jQuery('#step2ComeBackLaterButton').attr('disabled',false);
+                        jQuery('#readyToMapFieldsButton').attr('disabled',false);
+                        jQuery('#spinner').hide();
+                        return;
+                    }
+        
+                    var mcList = mcLists.shift();
+                    
+                    jQuery('#listLoadStatus').html('<span>Loading list ' + (mcListCount - mcLists.length) + ' of ' + mcListCount + ' - ' + mcList.Name + '</span>');
+        
+                    Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.InstallController.loadMergeVars}', mcList.Id, function(result, event) {
+                        if (event.status) {
+                            loadMergeVars();
+                        } else {
+                            alert('Error loading merge variables for List ' + mcList.Name + '.');
+                            loadMergeVars();
+                        }
+                    });
+                }
+            </script>
+        </apex:outputPanel>
+    </apex:outputPanel>
+
+    <apex:outputPanel id="step3" rendered="{!isMailChimpAdmin && step == 'Step 3'}">
+        <div class="slds-p-around_large" style="margin-top:50px;">
+            <c:InstallSteps currentStep="3" recordName="{!currentMcList.Name}"/>
+            <c:Mappings listId="{!currentMcList.Id}" baseController="{!mappingsBaseController}"/>
+            <div class="slds-docked-form-footer" style="{!IF($User.UITheme != 'Theme4d', 'position: absolute !important;', '')}">
+                <button id="step3ComeBackLaterButton"  type="button" class="slds-button slds-button_neutral" onclick="comeBackLaterMapping()">Come Back Later</button>
+                <button id="saveStep3AndNext" type="button" class="slds-button slds-button_brand" onclick="saveMapping()">Save</button>
+            </div>            
+        </div>
+    </apex:outputPanel>
+    <apex:actionFunction name="comeBackLater" action="{!saveStep2}"/>
+    <apex:actionFunction name="readyToMapFields" action="{!saveStep2AndMapFields}"/>
+    <apex:actionFunction name="comeBackLaterMapping" action="{!saveStep3}"/>
+    <apex:actionFunction name="saveMapping" action="{!saveStep3AndNext}"/>
+    </apex:form>
+
+    <script type="text/javascript">
+
+      var headerSetupObject = function() {
+        var setupObj;
+        setupObj = {
+          title : 'MailChimp for Salesforce',
+          pageHeading : "Install",
+        }
+        return setupObj;
+      }
+
+        function loginHandler(){
+            alert('You will be temporarily redirected to MailChimp to authenticate and will be returned to salesforce.com upon completion.');
+            //Call apex action function
+            login();
+        }
+    </script>
+</div>
+</apex:page>

@@ -1,0 +1,419 @@
+<apex:page standardController="MC4SF__MC_Query__c" extensions="MC4SF.QueryFilterController" action="{!initPage}">
+
+<apex:stylesheet value="{!URLFOR($Resource.MC4SF__Assets, 'css/apexElemToSLDS.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.MC4SF__Assets, 'css/pages/queryFilter.css')}"/>
+
+<div class="slds-scope">
+	<c:Header setupFunction="headerSetupObject" />
+
+	<apex:outputPanel id="filters">
+
+	<apex:form >
+
+	<apex:actionFunction name="cancelQuery" action="{!cancel}" />
+	<apex:actionFunction name="goBack" action="{!previousStep}" />
+	<apex:actionFunction name="nextStepAction" action="{!nextStep}" />
+	<apex:actionFunction name="addLeadFilter" action="{!addLeadRow}" rerender="leadFilters" />
+	<apex:actionFunction name="addContactFilter" action="{!addContactRow}" rerender="contactFilters" />
+	<apex:actionFunction name="addCampaignMemberFilter" action="{!addCampaignMemberRow}" rerender="campaignMemberFilters" />
+	<apex:actionFunction name="removeLeadFilter" action="{!removeLeadRow}" rerender="leadFilters">
+		<apex:param name="queryFilterIndex" assignTo="{!queryFilterIndex}" value="" />
+	</apex:actionFunction>
+	<apex:actionFunction name="removeContactFilter" action="{!removeContactRow}" rerender="contactFilters">
+		<apex:param name="queryFilterIndex" assignTo="{!queryFilterIndex}" value="" />
+	</apex:actionFunction>
+	<apex:actionFunction name="removeCampaignMemberFilter" action="{!removeCampaignMemberRow}" rerender="campaignMemberFilters">
+		<apex:param name="queryFilterIndex" assignTo="{!queryFilterIndex}" value="" />
+	</apex:actionFunction>
+
+	<c:CustomApexPageMessages />
+
+
+	<div class="slds-p-around_large" style="margin-bottom:50px;">
+
+
+		<c:QueryBuilderSteps currentStep="2" />
+
+		<h1 class="slds-text-title slds-p-top_small">{!MC4SF__MC_Query__c.Name}</h1>
+		<h2 class="slds-text-heading_large slds-p-bottom_small ">Build Filters</h2>
+
+
+	  <p>Select the list to populate with this query's results. You may also select segments and interests for your selected list.</p>
+
+		<div class="slds-p-vertical_medium">
+			<div class="slds-form-element" style="display: inline-block;">
+	      <div class="slds-form-element__control">
+					<apex:inputField value="{!mcQuery.MC4SF__Leads__c}" styleClass="slds-checkbox_faux">
+						<apex:actionSupport event="onclick" action="{!updateDisplay}" rerender="messages, filters"/>
+					</apex:inputField>
+					<label class="slds-checkbox__label">
+						<span class="slds-form-element__label">Lead</span>
+					</label>
+	      </div>
+	    </div>
+	 	 <div class="slds-form-element" style="display: inline-block;">
+	      <div class="slds-form-element__control">
+					<apex:inputField value="{!mcQuery.MC4SF__Contacts__c}" styleClass="slds-checkbox_faux">
+						<apex:actionSupport event="onclick" action="{!updateDisplay}" rerender="messages, filters"/>
+					</apex:inputField>
+					<label class="slds-checkbox__label">
+						<span class="slds-form-element__label">Contact</span>
+					</label>
+	      </div>
+	    </div>
+			<apex:outputPanel rendered="{!campaignMembersEnabled}">
+				<div class="slds-form-element" style="display: inline-block;">
+		       <div class="slds-form-element__control">
+		 				<apex:inputField value="{!mcQuery.MC4SF__Campaign_Members__c}" styleClass="slds-checkbox_faux">
+		 					<apex:actionSupport event="onclick" action="{!updateDisplay}" rerender="messages, filters"/>
+		 				</apex:inputField>
+		 				<label class="slds-checkbox__label">
+		 					<span class="slds-form-element__label">Campaign Members</span>
+		 				</label>
+		       </div>
+		     </div>
+		 	</apex:outputPanel>
+			<br />
+			<apex:outputPanel layout="none" rendered="{!mcQuery.MC4SF__Leads__c}">
+				<div class="slds-form-element" style="display: inline-block;">
+					 <div class="slds-form-element__control">
+						<apex:inputCheckbox value="{!mcQuery.MC4SF__User_Leads_Only__c}"/>
+						<label class="slds-checkbox__label">
+							<span class="slds-form-element__label">My Leads only</span>
+						</label>
+					 </div>
+				 </div>
+			</apex:outputPanel>
+			<apex:outputPanel layout="none" rendered="{!mcQuery.MC4SF__Contacts__c}">
+				<div class="slds-form-element" style="display: inline-block;">
+					 <div class="slds-form-element__control">
+						<apex:inputCheckbox value="{!mcQuery.MC4SF__User_Contacts_Only__c}"/>
+						<label class="slds-checkbox__label">
+							<span class="slds-form-element__label">My Contacts only</span>
+						</label>
+					 </div>
+				 </div>
+			</apex:outputPanel>
+		</div>
+
+		 <apex:outputPanel rendered="{!mcQuery.MC4SF__Leads__c}" id="leadFilters">
+			 <div class="slds-text-heading_medium slds-p-vertical_medium">Lead</div>
+			 <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+				  <thead>
+				    <tr class="slds-text-title_caps">
+				      <th scope="col">
+				        <div class="slds-truncate" title="Opportunity Name"></div>
+				      </th>
+				      <th scope="col">
+				        <div class="slds-truncate" title="Account Name">Field</div>
+				      </th>
+				      <th scope="col">
+				        <div class="slds-truncate" title="Close Date">Operator</div>
+				      </th>
+				      <th scope="col">
+				        <div class="slds-truncate" title="Stage">Value</div>
+				      </th>
+							<th scope="col">
+				        <div class="slds-truncate" title="Stage"></div>
+				      </th>
+				    </tr>
+				  </thead>
+				  <tbody>
+						<apex:variable var="currentIndex" value="{!0}"/>
+						<apex:repeat value="{!leadFilterWrappers}" var="wrapper">
+				    <tr>
+				      <th scope="row">
+				        <div class="slds-truncate"><a href="#" onclick="removeLeadFilter('{!currentIndex}')"><img src="{!URLFOR($Resource.Assets, 'icons/utility/close-dark.png')}" class="icon-close" /></a></div>
+				      </th>
+				      <td>
+				        <div class="slds-truncate">
+									<apex:selectList value="{!wrapper.filter.MC4SF__Field_Name__c}" size="1" styleClass="leadFieldNameSelect" onchange="updateOperators('Lead', this)">
+										<apex:selectOption itemValue="" itemLabel="--None--"/>
+										<apex:selectOptions value="{!leadFieldOptions}"/>
+									</apex:selectList>
+								</div>
+				      </td>
+				      <td>
+				        <div class="slds-truncate">
+									<apex:selectList value="{!wrapper.filter.MC4SF__Operator__c}" size="1" styleClass="operatorSelect">
+										<apex:selectOption itemValue="" itemLabel="--None--"/>
+										<apex:selectOptions value="{!operatorOptions}"/>
+									</apex:selectList>
+				        </div>
+				      </td>
+				      <td data-label="Prospecting">
+				        <div class="slds-truncate" title="Prospecting"><apex:inputField value="{!wrapper.filter.MC4SF__Value__c}"/></div>
+				      </td>
+							<td data-label="Prospecting">
+				        <div class="slds-truncate" title="Prospecting">{!IF(currentIndex+1 < leadFilterWrappers.size, 'AND', '')}</div>
+				      </td>
+				    </tr>
+						<apex:variable var="currentIndex" value="{!currentIndex + 1}"/>
+						</apex:repeat>
+				  </tbody>
+				</table>
+				<div class="slds-text-body_regular slds-p-vertical_medium"><a href="#" onclick="addLeadFilter()">+ Add row</a></div>
+		</apex:outputPanel>
+
+		<apex:outputPanel rendered="{!mcQuery.MC4SF__Contacts__c}" id="contactFilters">
+			<div class="slds-text-heading_medium slds-p-vertical_large">Contact</div>
+			<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+				 <thead>
+					 <tr class="slds-text-title_caps">
+						 <th scope="col">
+							 <div class="slds-truncate" title="Opportunity Name"></div>
+						 </th>
+						 <th scope="col">
+							 <div class="slds-truncate" title="Account Name">Field</div>
+						 </th>
+						 <th scope="col">
+							 <div class="slds-truncate" title="Close Date">Operator</div>
+						 </th>
+						 <th scope="col">
+							 <div class="slds-truncate" title="Stage">Value</div>
+						 </th>
+						 <th scope="col">
+							 <div class="slds-truncate" title="Stage"></div>
+						 </th>
+					 </tr>
+				 </thead>
+				 <tbody>
+					 <apex:variable var="currentIndex" value="{!0}"/>
+					 <apex:repeat value="{!contactFilterWrappers}" var="wrapper">
+					 <tr>
+						 <th scope="row">
+							 <div class="slds-truncate"><a href="#" onclick="removeContactFilter('{!currentIndex}')"><img src="{!URLFOR($Resource.Assets, 'icons/utility/close-dark.png')}" class="icon-close" /></a></div>
+						 </th>
+						 <td>
+							 <apex:inputHidden value="{!wrapper.filter.MC4SF__Field_Name__c}"/>
+							 <select class="contactFieldNameSelect" onchange="updateOperators('Contact', this);">
+								 <option value="">--None--</option>
+								 <optgroup label="Contact">
+									 <apex:repeat value="{!contactFieldOptions}" var="option">
+										 <apex:outputPanel layout="none" rendered="{!option.value == wrapper.filter.MC4SF__Field_Name__c}">
+											 <option value="{!option.value}" selected="selected">{!option.label}</option>
+										 </apex:outputPanel>
+										 <apex:outputPanel layout="none" rendered="{!option.value != wrapper.filter.MC4SF__Field_Name__c}">
+											 <option value="{!option.value}">{!option.label}</option>
+										 </apex:outputPanel>
+									 </apex:repeat>
+								 </optgroup>
+								 <optgroup label="Account">
+									 <apex:repeat value="{!accountFieldOptions}" var="option">
+										 <apex:outputPanel layout="none" rendered="{!option.value == wrapper.filter.MC4SF__Field_Name__c}">
+											 <option value="{!option.value}" selected="selected">{!option.label}</option>
+										 </apex:outputPanel>
+										 <apex:outputPanel layout="none" rendered="{!option.value != wrapper.filter.MC4SF__Field_Name__c}">
+											 <option value="{!option.value}">{!option.label}</option>
+										 </apex:outputPanel>
+									 </apex:repeat>
+								 </optgroup>
+							 </select>
+						 </td>
+						 <td>
+							 <div class="slds-truncate">
+								 <apex:selectList value="{!wrapper.filter.MC4SF__Operator__c}" size="1" styleClass="operatorSelect">
+									 <apex:selectOption itemValue="" itemLabel="--None--"/>
+									 <apex:selectOptions value="{!operatorOptions}"/>
+								 </apex:selectList>
+							 </div>
+						 </td>
+						 <td data-label="Prospecting">
+							 <div class="slds-truncate" title="Prospecting"><apex:inputField value="{!wrapper.filter.MC4SF__Value__c}"/></div>
+						 </td>
+						 <td data-label="Prospecting">
+							 <div class="slds-truncate" title="Prospecting">{!IF(currentIndex+1 < contactFilterWrappers.size, 'AND', '')}</div>
+						 </td>
+					 </tr>
+					 <apex:variable var="currentIndex" value="{!currentIndex + 1}"/>
+					 </apex:repeat>
+				 </tbody>
+			 </table>
+			 <div class="slds-text-body_regular slds-p-vertical_medium"><a href="#" onclick="addContactFilter()">+ Add row</a></div>
+	 </apex:outputPanel>
+
+	 <apex:outputPanel rendered="{!mcQuery.MC4SF__Campaign_Members__c}" id="campaignMemberFilters">
+		 <div class="slds-text-heading_medium slds-p-vertical_large">Campaign Members</div>
+		 <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+				<thead>
+					<tr class="slds-text-title_caps">
+						<th scope="col">
+							<div class="slds-truncate" title="Opportunity Name"></div>
+						</th>
+						<th scope="col">
+							<div class="slds-truncate" title="Account Name">Field</div>
+						</th>
+						<th scope="col">
+							<div class="slds-truncate" title="Close Date">Operator</div>
+						</th>
+						<th scope="col">
+							<div class="slds-truncate" title="Stage">Value</div>
+						</th>
+						<th scope="col">
+							<div class="slds-truncate" title="Stage"></div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<apex:variable var="currentIndex" value="{!1}"/>
+					<tr>
+						<th scope="row">
+						</th>
+						<td>
+							Campaign Name
+						</td>
+						<td>
+							Equals
+						</td>
+						<td data-label="Prospecting">
+							<div class="slds-truncate" title="Prospecting"><apex:inputField value="{!campaignMemberObject['CampaignId']}" id="campaign-lookup" required="false"/></div>
+						</td>
+						<td data-label="Prospecting">
+							<div class="slds-truncate" title="Prospecting">AND</div>
+						</td>
+					</tr>
+					<apex:repeat value="{!campaignMemberFilterWrappers}" var="wrapper">
+					<tr>
+						<th scope="row">
+							<div class="slds-truncate"><a href="#" onclick="removeCampaignMemberFilter('{!currentIndex}')"><img src="{!URLFOR($Resource.Assets, 'icons/utility/close-dark.png')}" class="icon-close" /></a></div>
+						</th>
+						<td>
+							<apex:selectList value="{!wrapper.filter.MC4SF__Field_Name__c}" size="1" styleClass="campaignMemberFieldNameSelect" onchange="updateOperators('CampaignMember', this);">
+								<apex:selectOption itemValue="" itemLabel="--None--"/>
+								<apex:selectOptions value="{!campaignMemberFieldOptions}"/>
+							</apex:selectList>
+						</td>
+						<td>
+							<div class="slds-truncate">
+								<apex:selectList value="{!wrapper.filter.MC4SF__Operator__c}" size="1" styleClass="operatorSelect">
+									<apex:selectOption itemValue="" itemLabel="--None--"/>
+									<apex:selectOptions value="{!operatorOptions}"/>
+								</apex:selectList>
+							</div>
+						</td>
+						<td data-label="Prospecting">
+							<div class="slds-truncate" title="Prospecting"><apex:inputField value="{!wrapper.filter.MC4SF__Value__c}"/></div>
+						</td>
+						<td data-label="Prospecting">
+							<div class="slds-truncate" title="Prospecting">{!IF(currentIndex+1 < campaignMemberFilterWrappers.size, 'AND', '')}</div>
+						</td>
+					</tr>
+					<apex:variable var="currentIndex" value="{!currentIndex + 1}"/>
+					</apex:repeat>
+				</tbody>
+			</table>
+			<div class="slds-text-body_regular slds-p-vertical_medium"><a href="#" onclick="addCampaignMemberFilter()">+ Add row</a></div>
+	</apex:outputPanel>
+
+	</div>
+	</apex:form>
+
+	</apex:outputPanel>
+
+	<div class="slds-docked-form-footer" style="{!IF($User.UITheme != 'Theme4d', 'position: absolute !important;', '')}">
+		<button type="button" class="slds-button slds-button_neutral" onclick="goBack()">Previous Step</button>
+	  <button type="button" class="slds-button slds-button_neutral" onclick="cancelQuery()">Cancel</button>
+	  <button type="button" class="slds-button slds-button_brand" onclick="nextStepAction()">Next</button>
+	</div>
+
+</div>
+
+<script src="{!URLFOR($Resource.Assets, 'js/jquery.min.js')}"></script>
+<script>
+
+	var headerSetupObject = function(){
+		var setupObj;
+		setupObj = {
+			title : "MailChimp for Salesforce",
+			pageHeading : "New Query",
+			pageDescription : "Use this tool to create a new query that will be used to determine the Salesforce data you want to migrate to Mailchimp"
+		}
+		return setupObj;
+	};
+
+	setupOperatorOptions();
+
+	function updateOperators(type, select) {
+
+		var leadFieldTypes = {!leadFieldTypesJson};
+		var contactFieldTypes = {!contactFieldTypesJson};
+		var accountFieldTypes = {!accountFieldTypesJson};
+		var campaignMemberFieldTypes = {!campaignMemberFieldTypesJson};
+		var fieldTypeOperators = {!fieldTypeOperatorsJson};
+		var field = jQuery(select).val();
+
+		var fieldTypes;
+		if (type == 'Lead') {
+			fieldTypes = leadFieldTypes;
+		} else if (type == 'Contact') {
+			jQuery(select).closest('tr').find('input[type="hidden"]').val(field);
+
+			if (field.indexOf('account.') == -1) {
+				fieldTypes = contactFieldTypes;
+			} else {
+				fieldTypes = accountFieldTypes;
+			}
+		} else if (type == 'CampaignMember') {
+			fieldTypes = campaignMemberFieldTypes;
+		}
+
+		var operatorSelect = jQuery(select).closest('tr').find('.operatorSelect');
+		operatorSelect.find('option').remove();
+		operatorSelect.append(jQuery('<option/>').attr('value', '').text('--None--'));
+
+		if (field != '--None--') {
+			var fieldType = fieldTypes[field];
+
+			for (var i = 0; i < fieldTypeOperators[fieldType].length; i++) {
+				operatorSelect.append(jQuery('<option/>').attr('value', fieldTypeOperators[fieldType][i]).text(fieldTypeOperators[fieldType][i]));
+			}
+		}
+	}
+
+	function setupOperatorOptions() {
+
+		// Setup proper operator options for Lead filters.
+		jQuery('.leadFieldNameSelect').each(function() {
+			if (jQuery(this).val() != '') {
+				var operatorSelect = jQuery(this).closest('tr').find('.operatorSelect');
+
+				var opertatorValue = operatorSelect.val();
+
+				updateOperators('Lead', jQuery(this));
+
+				operatorSelect.val(opertatorValue);
+			}
+		});
+
+		// Setup proper operator options for Contact filters.
+		jQuery('.contactFieldNameSelect').each(function() {
+			if (jQuery(this).val() != '') {
+				var operatorSelect = jQuery(this).closest('tr').find('.operatorSelect');
+
+				var opertatorValue = operatorSelect.val();
+
+				updateOperators('Contact', jQuery(this));
+
+				operatorSelect.val(opertatorValue);
+			}
+		});
+
+		// Setup proper operator options for Contact filters.
+		jQuery('.campaignMemberFieldNameSelect').each(function() {
+			if (jQuery(this).val() != '') {
+				var operatorSelect = jQuery(this).closest('tr').find('.operatorSelect');
+
+				var opertatorValue = operatorSelect.val();
+
+				updateOperators('CampaignMember', jQuery(this));
+
+				operatorSelect.val(opertatorValue);
+			}
+		});
+	}
+
+
+
+</script>
+
+</apex:page>

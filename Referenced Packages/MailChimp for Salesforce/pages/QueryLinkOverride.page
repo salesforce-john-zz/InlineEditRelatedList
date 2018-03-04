@@ -1,0 +1,7 @@
+<apex:page standardController="MC4SF__MC_Query__c">
+
+<apex:sectionHeader title="MC Query" subtitle="{!MC4SF__MC_Query__c.Name}"/>
+
+<a href="javascript:history.go(-1)">Go Back</a> &nbsp;|&nbsp; <a href="{!$Page.QueryFilter}?id={!MC_Query__c.Id}">Edit</a>
+
+</apex:page>

@@ -1,4 +1,5 @@
-<aura:component implements="forceCommunity:availableForAllPageTypes">    
+<aura:component implements="forceCommunity:availableForAllPageTypes"
+                access="global">    
     <aura:attribute name="type" type="String" required="true" default="CONFIRM" description="CONFIRM, LOADER"/>
     <aura:attribute name="showDialog" type="Boolean" required="true" default="false" />
     <aura:attribute name="context" type="Object" required="false"  />    

@@ -1,0 +1,29 @@
+<apex:page showHeader="false" standardController="MC4SF__MC_Campaign__c">
+<c:SLDS />
+<!-- Make VisualForce compiler happy. -->
+<apex:outputPanel style="display: none;">
+	{!MC4SF__MC_Campaign__c.MC4SF__Report_Secure_URL__c}
+	{!MC4SF__MC_Campaign__c.MC4SF__Report_URL__c}
+	{!MC4SF__MC_Campaign__c.MC4SF__Report_Password__c}
+</apex:outputPanel>
+
+<apex:outputPanel layout="none" rendered="{!ISNULL(MC4SF__MC_Campaign__c.MC4SF__Report_Secure_URL__c) && ISNULL(MC4SF__MC_Campaign__c.MC4SF__Report_URL__c)}">
+
+<div class="slds-grid">
+		<div class="slds-text-body_regular">
+			This area is currently blank because a shared campaign report URL for this campaign doesn’t currently exist.
+			When you send campaigns through MailChimp, you’re able to generate shareable links for your campaign reports
+			so that outside collaborators can view the results. To populate this space with your campaign report and a
+			functional share link, follow these steps in our Knowledge Base:
+			<a href="http://kb.mailchimp.com/reports/share-a-campaign-report">http://kb.mailchimp.com/reports/share-a-campaign-report</a>.
+			After you’ve shared the report in MailChimp, click the Refresh Campaign Stats button on this page to display the report and a working URL.
+		</div>
+</div>
+
+</apex:outputPanel>
+
+<apex:outputPanel layout="none" rendered="{!NOT(ISNULL(MC4SF__MC_Campaign__c.MC4SF__Report_Secure_URL__c)) || NOT(ISNULL(MC4SF__MC_Campaign__c.MC4SF__Report_URL__c))}">
+	<iframe src="{!SUBSTITUTE(IF(NOT(ISNULL(MC_Campaign__c.Report_Secure_URL__c)), MC_Campaign__c.Report_Secure_URL__c, MC_Campaign__c.Report_URL__c), 'http://', 'https://')}&p={!URLENCODE(MC_Campaign__c.Report_Password__c)}" width="100%" height="600" frameBorder="0" seamless="seamless"></iframe>
+</apex:outputPanel>
+
+</apex:page>

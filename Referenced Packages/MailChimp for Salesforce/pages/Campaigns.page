@@ -1,0 +1,21 @@
+<apex:page sidebar="false" standardController="MC4SF__MC_Campaign__c">
+  <div class="slds-scope">
+    <c:Header setupFunction="headerSetupObject"/>
+    <c:CustomApexPageMessages />
+  </div>
+  <br/>
+
+  <div class="ptBreadcrumb">&nbsp;«&nbsp;<a href="/{!$ObjectType.MC_Campaign__c.keyPrefix}/o">Back To {!$ObjectType.MC_Campaign__c.label} Tab</a>
+  </div><br/>
+
+  <script>
+    var headerSetupObject = function () {
+      var setupObj;
+      setupObj = {
+        title: "MailChimp for Salesforce"
+      }
+      return setupObj;
+    };
+    setPageMessages('WARNING', 'The MailChimp for Salesforce application does not support creating new MC Campaigns from within Salesforce.');
+  </script>
+</apex:page>

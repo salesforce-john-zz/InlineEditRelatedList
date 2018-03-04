@@ -1,0 +1,464 @@
+<apex:page standardController="MC4SF__MC_Campaign__c" readOnly="true" extensions="MC4SF.CampaignOverrideController">
+	<div class="slds-scope">
+		<!-- Make VisualForce compiler happy. -->
+		<apex:outputPanel style="display: none;">
+			{!MC4SF__MC_Campaign__c.MC4SF__Report_Secure_URL__c} {!MC4SF__MC_Campaign__c.MC4SF__Report_URL__c} {!MC4SF__MC_Campaign__c.MC4SF__Report_Password__c}
+		</apex:outputPanel>
+		<c:Header setupFunction="headerSetupObject"/>
+		<div id="spinner" style="height: 6rem; display: none;">
+			<div class="slds-spinner_container" style="position: fixed;z-index: 10000;">
+				<div role="status" class="slds-spinner slds-spinner_medium">
+					<span class="slds-assistive-text">Loading</span>
+					<div class="slds-spinner__dot-a"></div>
+					<div class="slds-spinner__dot-b"></div>
+				</div>
+			</div>
+		</div>
+		<apex:outputPanel rendered="{!MC4SF__MC_Campaign__c.Id == null}">
+			<div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+				<span class="slds-assistive-text">error</span>
+				<span class="slds-icon_container slds-icon-utility-ban slds-m-right_x-small" title="Description of icon when needed">
+					<svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+						<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#ban"></use>
+					</svg>
+				</span>
+				<h2>MC Campaigns cannot be created from Salesforce.com.</h2>
+			</div>
+		</apex:outputPanel>
+	</div>
+	<apex:outputPanel rendered="{!MC4SF__MC_Campaign__c.Id != null}">
+		<apex:form >
+			<div class="slds-grid slds-wrap">
+				<div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+						<h3 class="slds-section__title slds-theme_shade">
+							<span class="slds-truncate" title="MC List Detail" style="margin-left: 25px;">MC Campaign Detail</span>
+						</h3>
+						<div aria-hidden="false" class="slds-section__content">
+							<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+								<apex:repeat value="{!$ObjectType.MC4SF__MC_Campaign__c.FieldSets.MC4SF__CampaignDetail}" var="field">
+									<div class="slds-p-horizontal--small slds-size--1-of-2">
+										<div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+											<span class="slds-form-element__label">{!field.Label}</span>
+											<div class="slds-form-element__control">
+												<span class="slds-form-element__static">
+													<apex:outputField value="{!MC4SF__MC_Campaign__c[field]}"/>
+												</span>
+											</div>
+										</div>
+									</div>
+								</apex:repeat>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+						<h3 class="slds-section__title slds-theme_shade">
+							<span class="slds-truncate" title="MC List Detail" style="margin-left: 25px;">Campaign Stats</span>
+						</h3>
+						<div aria-hidden="false" class="slds-section__content">
+							<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+								<apex:repeat value="{!$ObjectType.MC4SF__MC_Campaign__c.FieldSets.MC4SF__CampaignStats}" var="field">
+									<div class="slds-p-horizontal--small slds-size--1-of-2">
+										<div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+											<span class="slds-form-element__label">{!field.Label}</span>
+											<div class="slds-form-element__control">
+												<span class="slds-form-element__static">
+													<apex:outputField value="{!MC4SF__MC_Campaign__c[field]}"/>
+												</span>
+											</div>
+										</div>
+									</div>
+								</apex:repeat>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+						<h3 class="slds-section__title slds-theme_shade">
+							<span class="slds-truncate" title="MC List Detail" style="margin-left: 25px;">Aggregate Hourly Campaign Stats</span>
+						</h3>
+						<div aria-hidden="false" class="slds-section__content">
+							<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+								<apex:repeat value="{!$ObjectType.MC4SF__MC_Campaign__c.FieldSets.MC4SF__AggregateHourlyCampaignStats}" var="field">
+									<div class="slds-p-horizontal--small slds-size--1-of-2">
+										<div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+											<span class="slds-form-element__label">{!field.Label}</span>
+											<div class="slds-form-element__control">
+												<span class="slds-form-element__static">
+													<apex:outputField value="{!MC4SF__MC_Campaign__c[field]}"/>
+												</span>
+											</div>
+										</div>
+									</div>
+								</apex:repeat>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+						<h3 class="slds-section__title slds-theme_shade">
+							<span class="slds-truncate" title="MC List Detail" style="margin-left: 25px;">Unsubscribes/Bounces</span>
+						</h3>
+						<div aria-hidden="false" class="slds-section__content">
+							<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+								<apex:repeat value="{!$ObjectType.MC4SF__MC_Campaign__c.FieldSets.MC4SF__UnsubscribesBounces}" var="field">
+									<div class="slds-p-horizontal--small slds-size--1-of-2">
+										<div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+											<span class="slds-form-element__label">{!field.Label}</span>
+											<div class="slds-form-element__control">
+												<span class="slds-form-element__static">
+													<apex:outputField value="{!MC4SF__MC_Campaign__c[field]}"/>
+												</span>
+											</div>
+										</div>
+									</div>
+								</apex:repeat>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+						<h3 class="slds-section__title slds-theme_shade">
+							<span class="slds-truncate" title="MC List Detail" style="margin-left: 25px;">Related Records</span>
+						</h3>
+						<div aria-hidden="false" class="slds-section__content">
+							<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+								<apex:repeat value="{!$ObjectType.MC4SF__MC_Campaign__c.FieldSets.MC4SF__RelatedRecords}" var="field">
+									<div class="slds-p-horizontal--small slds-size--1-of-2">
+										<div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+											<span class="slds-form-element__label">{!field.Label}</span>
+											<div class="slds-form-element__control">
+												<span class="slds-form-element__static">
+													<apex:outputField value="{!MC4SF__MC_Campaign__c[field]}"/>
+												</span>
+											</div>
+										</div>
+									</div>
+								</apex:repeat>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+						<h3 class="slds-section__title slds-theme_shade">
+							<span class="slds-truncate" title="MC List Detail" style="margin-left: 25px;">Tracking</span>
+						</h3>
+						<div aria-hidden="false" class="slds-section__content">
+							<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+								<apex:repeat value="{!$ObjectType.MC4SF__MC_Campaign__c.FieldSets.MC4SF__Tracking}" var="field">
+									<div class="slds-p-horizontal--small slds-size--1-of-2">
+										<div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+											<span class="slds-form-element__label">{!field.Label}</span>
+											<div class="slds-form-element__control">
+												<span class="slds-form-element__static">
+													<apex:outputField value="{!MC4SF__MC_Campaign__c[field]}"/>
+												</span>
+											</div>
+										</div>
+									</div>
+								</apex:repeat>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+						<h3 class="slds-section__title slds-theme_shade">
+							<span class="slds-truncate" title="MC List Detail" style="margin-left: 25px;">Options</span>
+						</h3>
+						<div aria-hidden="false" class="slds-section__content">
+							<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+								<apex:repeat value="{!$ObjectType.MC4SF__MC_Campaign__c.FieldSets.MC4SF__Options}" var="field">
+									<div class="slds-p-horizontal--small slds-size--1-of-2">
+										<div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+											<span class="slds-form-element__label">{!field.Label}</span>
+											<div class="slds-form-element__control">
+												<span class="slds-form-element__static">
+													<apex:outputField value="{!MC4SF__MC_Campaign__c[field]}"/>
+												</span>
+											</div>
+										</div>
+									</div>
+								</apex:repeat>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+						<h3 class="slds-section__title slds-theme_shade">
+							<span class="slds-truncate" title="MC List Detail" style="margin-left: 25px;">Campaign Report</span>
+						</h3>
+						<div aria-hidden="false" class="slds-section__content">
+							<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+								<div class="slds-p-horizontal--small slds-size--1-of-1">
+									<apex:iframe src="CampaignReport?id={!MC4SF__MC_Campaign__c.Id}"/>
+								</div>
+							</div>
+							<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+								<div class="slds-p-horizontal--small slds-size--1-of-1">
+									<div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+										<span class="slds-form-element__label">Campaign Share Report</span>
+										<div class="slds-form-element__control">
+											<span class="slds-form-element__static">
+												<apex:outputLink value="{!SUBSTITUTE(IF(NOT(ISNULL(MC4SF__MC_Campaign__c.MC4SF__Report_Secure_URL__c)), MC4SF__MC_Campaign__c.MC4SF__Report_Secure_URL__c, MC4SF__MC_Campaign__c.MC4SF__Report_URL__c), 'http://', 'https://')}&p={!URLENCODE(MC4SF__MC_Campaign__c.MC4SF__Report_Password__c)}" id="theLink">{!SUBSTITUTE(IF(NOT(ISNULL(MC_Campaign__c.Report_Secure_URL__c)), MC_Campaign__c.Report_Secure_URL__c, MC_Campaign__c.Report_URL__c), 'http://', 'https://')}&amp;p={!URLENCODE(MC_Campaign__c.Report_Password__c)}</apex:outputLink>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+						<h3 class="slds-section__title slds-theme_shade">
+							<span class="slds-truncate" title="MC List Detail" style="margin-left: 25px;">System Information</span>
+						</h3>
+						<div aria-hidden="false" class="slds-section__content">
+							<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+								<div class="slds-p-horizontal--small slds-size--1-of-2">
+									<div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+										<span class="slds-form-element__label">Created By</span>
+										<div class="slds-form-element__control">
+											<span class="slds-form-element__static">
+	                                            <apex:outputlink value="/{!MC4SF__MC_Campaign__c.CreatedById}">
+	                                            	{!MC4SF__MC_Campaign__c.CreatedBy.Name}
+	                                        	</apex:outputlink>
+	                                            &nbsp;
+												<apex:outputField value="{!MC4SF__MC_Campaign__c.CreatedDate}"/>
+											</span>
+										</div>
+									</div>
+								</div>
+								<div class="slds-p-horizontal--small slds-size--1-of-2">
+									<div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+										<span class="slds-form-element__label">Last Modified By</span>
+										<div class="slds-form-element__control">
+											<span class="slds-form-element__static">
+	                                            <apex:outputlink value="/{!MC4SF__MC_Campaign__c.LastModifiedById}">
+	                                            	{!MC4SF__MC_Campaign__c.LastModifiedBy.Name}
+	                                        	</apex:outputlink>
+	                                            &nbsp;
+												<apex:outputField value="{!MC4SF__MC_Campaign__c.LastModifiedDate}"/>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<article class="slds-card">
+				<div class="slds-card__header slds-grid">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+						<div class="slds-media__body">
+							<h2>
+								<span class="slds-text-heading_small">MC Subscriber Activity</span>
+							</h2>
+							<apex:outputPanel rendered="{!ISNULL(activities)}">
+								<p class="slds-text-body_small slds-line-height_reset">
+									No records to display
+								</p>
+							</apex:outputPanel>
+						</div>
+					</header>
+				</div>
+				<apex:outputPanel id="activityList" rendered="{!NOT(ISNULL(activities))}">
+					<div class="slds-card__body">
+						<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+							<thead>
+								<tr class="slds-text-title_caps">
+									<th scope="col">
+										<div class="slds-truncate" title="Activity Name">Activity Name</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate" title="Timestamp">Timestamp</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate" title="MC Subscriber">MC Subscriber</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate" title="Action">Action</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate" title="Type">Type</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate" title="Url">Url</div>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<apex:repeat value="{!activities}" var="activity">
+									<tr class="slds-hint-parent">
+										<th scope="row">
+											<apex:outputlink value="/{!activity.Id}">{!activity.Name}</apex:outputlink>
+										</th>
+										<th scope="row">
+											<apex:outputField value="{!activity.MC4SF__Timestamp__c}"/>
+										</th>
+										<th scope="row">
+											{!activity.MC_Subscriber__r.Name}
+										</th>
+										<th scope="row">
+											{!activity.MC4SF__Action__c}
+										</th>
+										<th scope="row">
+											{!activity.MC4SF__Type__c}
+										</th>
+										<th scope="row">
+											{!activity.MC4SF__URL__c}
+										</th>
+									</tr>
+								</apex:repeat>
+							</tbody>
+						</table>
+					</div>
+					<footer class="slds-card__footer">
+						<div class="slds-clearfix">
+							<div class="slds-float_left">
+								<apex:commandLink value="Show more »" action="{!showMoreActivity}" reRender="activityList" rendered="{!moreActivity==false && !ISNULL(activities)}"/>
+								<apex:commandLink value="Show less «" action="{!showLessActivity}" reRender="activityList" rendered="{!moreActivity==true && !ISNULL(activities)}"/>
+							</div>
+						</div>
+					</footer>
+				</apex:outputPanel>
+			</article>
+			<article class="slds-card">
+				<div class="slds-card__header slds-grid">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+						<div class="slds-media__body">
+							<h2>
+								<span class="slds-text-heading_small">MC Campaign Hourly Stats</span>
+							</h2>
+							<apex:outputPanel rendered="{!ISNULL(stats)}">
+								<p class="slds-text-body_small slds-line-height_reset">
+									No records to display
+								</p>
+							</apex:outputPanel>
+						</div>
+					</header>
+				</div>
+				<apex:outputPanel id="statList" rendered="{!NOT(ISNULL(stats))}">
+					<div class="slds-card__body">
+						<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+							<thead>
+								<tr class="slds-text-title_caps">
+									<th scope="col">
+										<div class="slds-truncate" title="MC Subscriber Activity">MC Subscriber Activity</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate" title="Statistics Hour">Statistics Hour</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate" title="Emails Sent">Emails Sent</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate" title="Unique Opens">Unique Opens</div>
+									</th>
+									<th scope="col">
+										<div class="slds-truncate" title="Recipents Click">Recipents Click</div>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<apex:repeat value="{!stats}" var="stat">
+									<tr class="slds-hint-parent">
+										<th scope="row">
+											<apex:outputlink value="/{!stat.Id}">{!stat.Name}</apex:outputlink>
+										</th>
+										<th scope="row">
+											<apex:outputField value="{!stat.MC4SF__Statistics_Hour__c}"/>
+										</th>
+										<th scope="row">
+											{!stat.MC4SF__Emails_Sent__c}
+										</th>
+										<th scope="row">
+											{!stat.MC4SF__Unique_Opens__c}
+										</th>
+										<th scope="row">
+											{!stat.MC4SF__Recipients_Click__c}
+										</th>
+									</tr>
+								</apex:repeat>
+							</tbody>
+						</table>
+					</div>
+					<footer class="slds-card__footer">
+						<div class="slds-clearfix">
+							<div class="slds-float_left">
+								<apex:commandLink value="Show more »" action="{!showMoreStat}" reRender="statList" rendered="{!moreStat==false && !ISNULL(stats)}"/>
+								<apex:commandLink value="Show less «" action="{!showLessStat}" reRender="statList" rendered="{!moreStat==true && !ISNULL(stats)}"/>
+							</div>
+						</div>
+					</footer>
+				</apex:outputPanel>
+			</article>
+		</apex:form>
+
+	</apex:outputPanel>
+	<script src="{!URLFOR($Resource.Assets, 'js/jquery.min.js')}"></script>
+	<script>
+		// Replace Campaign Share Report URL with URL that contains password. The password needs to be URL encoded which can't be done in a formula field.
+		var shareUrl = '{!SUBSTITUTE(IF(NOT(ISNULL(MC_Campaign__c.Report_Secure_URL__c)), MC_Campaign__c.Report_Secure_URL__c, MC_Campaign__c.Report_URL__c), ' http : //', 'https://')}&p={!URLENCODE(MC_Campaign__c.Report_Password__c)}';
+
+		$('td.labelCol:contains("Campaign Share Report")').siblings('.data2Col').find('a').text(shareUrl).attr('href', shareUrl);
+
+		(function (myContext) {
+			myContext.ForceUI = myContext.ForceUI || {};
+
+			myContext.ForceUI.isSalesforce1 = function () {
+				return ((typeof sforce != 'undefined') && sforce && (!!sforce.one));
+			}
+		})(this);
+
+		var spinner = document.getElementById("spinner");
+
+		var headerSetupObject = function () {
+			var setupObj;
+			setupObj = {
+				title: "MC Campaign",
+				pageHeading: "{!MC_Campaign__c.Name}",
+				buttons: ("{!MC_Campaign__c.Name}"
+					? this.createButtons()
+					: null)
+			}
+			return setupObj;
+		}
+
+		function createButtons() {
+			buttonsArr = [
+				{
+					title: "Refresh Campaign Stats",
+					onclick: "refreshStats"
+				}
+			];
+			return buttonsArr;
+		}
+
+		function refreshStats() {
+			spinner.style.display = '';
+			Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.CampaignOverrideController.loadCampaign}', '{!JSENCODE(MC_Campaign__c.MailChimp_ID__c)}', function (result, event) {
+				spinner.style.display = 'none';
+				if (event.status) {
+					var response = result;
+					if (response != 'Success') {
+						alert(response);
+					} else {
+						ForceUI.isSalesforce1()? sforce.one.navigateToSObject('{!MC_Campaign__c.Id}'): (top.location.href = '/{!MC_Campaign__c.Id}');
+					}
+				} else {
+					alert('Error Refreshing Campaign.');
+				}
+			});
+		}
+	</script>
+</apex:page>

@@ -1,5 +1,6 @@
 <aura:component implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" 
-                controller="RelatedListDataGridController">
+                controller="RelatedListDataGridController"
+                access="global">
     <aura:attribute name="displayMode" type="String"/>
     <aura:attribute name="columns" type="Object[]"/>
     

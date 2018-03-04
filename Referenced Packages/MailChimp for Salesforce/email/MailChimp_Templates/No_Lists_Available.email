@@ -1,0 +1,7 @@
+Dear Admin,
+
+It looks like there are no lists in the MailChimp account that's linked to your salesforce.com org but you've got the hourly sync job running. We've gone ahead and turned it off until you create at least one list that we can sync.
+
+Thanks!
+
+MailChimp for Salesforce

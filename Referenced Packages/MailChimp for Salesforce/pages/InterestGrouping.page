@@ -1,0 +1,137 @@
+<apex:page standardController="MC4SF__MC_Interest_Grouping__c" readOnly="true" extensions="MC4SF.InterestGroupingOverrideController">
+
+<div class="slds-scope">
+
+	<c:CustomApexPageMessages />
+
+	<c:Header setupFunction="headerSetupObject" />
+
+	<apex:outputPanel rendered="{!MC4SF__MC_Interest_Grouping__c.Id != null}">
+		<div class="slds-grid slds-wrap" style="margin-left: 12px">
+		    <div class="slds-p-horizontal--small slds-size--1-of-1">
+		        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+		            <span class="slds-form-element__label">Interest Grouping Name</span>
+		            <div class="slds-form-element__control">
+		                <span class="slds-form-element__static">
+		                	<apex:outputField value="{!MC4SF__MC_Interest_Grouping__c.Name}"/>
+		                </span>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="slds-p-horizontal--small slds-size--1-of-1">
+		        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+		            <span class="slds-form-element__label">MC List</span>
+		            <div class="slds-form-element__control">
+		                <span class="slds-form-element__static">
+		                	<apex:outputlink value="/{!MC4SF__MC_Interest_Grouping__c.MC4SF__MC_List__c}">
+		                		{!MC4SF__MC_Interest_Grouping__c.MC_List__r.Name}
+		                	</apex:outputlink>
+		                </span>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="slds-p-horizontal--small slds-size--1-of-1">
+		        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+		            <span class="slds-form-element__label">Form Field</span>
+		            <div class="slds-form-element__control">
+		                <span class="slds-form-element__static">
+		                	<apex:outputField value="{!MC4SF__MC_Interest_Grouping__c.MC4SF__Form_Field__c}"/>
+		                </span>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="slds-p-horizontal--small slds-size--1-of-2">
+		        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+		            <span class="slds-form-element__label">Created By</span>
+		            <div class="slds-form-element__control">
+		                <span class="slds-form-element__static">
+		                	<apex:outputlink value="/{!MC4SF__MC_Interest_Grouping__c.CreatedById}">
+		                		<apex:outputField value="{!MC4SF__MC_Interest_Grouping__c.CreatedBy.Name}"/> &nbsp;
+		                	</apex:outputlink>
+		                	<apex:outputField value="{!MC4SF__MC_Interest_Grouping__c.CreatedDate}"/>
+		                </span>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="slds-p-horizontal--small slds-size--1-of-2">
+		        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+		            <span class="slds-form-element__label">Last Modified By</span>
+		            <div class="slds-form-element__control">
+		                <span class="slds-form-element__static">
+		                	<apex:outputlink value="/{!MC4SF__MC_Interest_Grouping__c.LastModifiedById}">
+		                	    <apex:outputField value="{!MC4SF__MC_Interest_Grouping__c.LastModifiedBy.Name}"/> &nbsp;
+		                	</apex:outputlink>
+							<apex:outputField value="{!MC4SF__MC_Interest_Grouping__c.LastModifiedDate}"/>
+		                </span>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+		<br/>
+		<article class="slds-card">
+			<apex:form >
+				<div class="slds-card__header slds-grid">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+					  <div class="slds-media__body">
+					    <h2>
+					    	<span class="slds-text-heading_small">MC Interest Groups</span>
+					    </h2>
+				        <apex:outputPanel rendered="{!(ISNULL(interestGroups))}">
+							<p class="slds-text-body_small slds-line-height_reset">
+								No records to display
+							</p>
+				        </apex:outputPanel>
+					  </div>
+					</header>
+				</div>
+				<apex:outputPanel id="interestGroupTable" rendered="{!NOT(ISNULL(interestGroups))}">
+					<div class="slds-card__body">
+					<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+					  <thead>
+					    <tr class="slds-text-title_caps">
+					      <th scope="col">
+					        <div class="slds-truncate" title="Name">Interest Group Name</div>
+					      </th>
+					    </tr>
+					  </thead>
+					  <tbody>
+					  	<apex:repeat value="{!interestGroups}" var="interestGroup">
+					        <tr class="slds-hint-parent">
+					          <th scope="row">
+								<apex:outputlink value="/{!interestGroup.Id}" rendered="{!ISNULL(interestGroup.MC4SF__Long_Name__c)}">{!interestGroup.Name}</apex:outputlink>
+					          </th>	
+					        </tr>      	
+					  	</apex:repeat>
+					  </tbody>
+					</table>
+					</div>
+					<footer class="slds-card__footer">
+						<div class="slds-clearfix">
+						  <div class="slds-float_left">
+							<apex:commandLink value="Show more »" action="{!showMoreInterestGroup}" reRender="interestGroupTable" rendered="{!moreInterestGroup==false && !ISNULL(interestGroups)}" />
+							<apex:commandLink value="Show less «" action="{!showLessInterestGroup}" reRender="interestGroupTable" rendered="{!moreInterestGroup==true && !ISNULL(interestGroups)}"/>
+						  </div>
+						</div>
+					</footer>		
+				</apex:outputPanel>
+			</apex:form>
+		</article>
+	</apex:outputPanel>
+</div>
+
+	<script>
+
+		if({!MC_Interest_Grouping__c.Id == null})
+			setPageMessages('ERROR', 'MC Interest Groupings cannot be created from Salesforce.com');
+
+		var headerSetupObject = function() {
+			var setupObj;
+			var pHeading = ({!MC4SF__MC_Interest_Grouping__c.Id != null} ? '{!MC_Interest_Grouping__c.MC_List__r.Name}' : 'MC Interest Grouping');
+			setupObj = {
+				pageHeading : pHeading,
+				title : "MailChimp for Salesforce",
+			}
+			return setupObj;
+		}
+	</script>
+</apex:page>

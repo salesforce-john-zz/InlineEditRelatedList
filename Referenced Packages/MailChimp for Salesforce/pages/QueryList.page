@@ -1,0 +1,512 @@
+<apex:page standardController="MC4SF__MC_Query__c" extensions="MC4SF.QueryListController" >
+
+<apex:stylesheet value="{!URLFOR($Resource.MC4SF__Assets, 'css/pages/queryList.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.MC4SF__Assets, 'css/apexElemToSLDS.css')}"/>
+
+<div class="slds-scope">
+
+  <c:Header setupFunction="headerSetupObject" />
+
+  <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert" style="display:none;">
+    <span class="slds-assistive-text">error</span>
+    <span class="slds-icon_container slds-icon-utility-ban slds-m-right_x-small" title="Description of icon when needed">
+      <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#ban"></use>
+      </svg>
+    </span>
+    <h2>Please select a list to continue.</h2>
+    <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="closeAlert()">
+      <img src="{!URLFOR($Resource.Assets, 'icons/utility/close.png')}" style="height:12px;"/>
+      <span class="slds-assistive-text">Close</span>
+    </button>
+  </div>
+
+  <div class="slds-p-around_large" style="margin-bottom:75px;">
+
+    <c:QueryBuilderSteps currentStep="1" />
+
+    <h1 class="slds-text-heading_large slds-p-vertical_small">Select a list</h1>
+    <p>Select the list to populate with this query's results. You may also select segments and interests for your selected list.</p>
+
+
+    <div class="slds-p-vertical_large">
+      <apex:form >
+        <apex:actionFunction name="cancelQuery" action="{!cancel}" />
+        <apex:actionFunction name="nextStepAction" action="{!nextStep}" />
+        <apex:inputHidden id="staticSegments" value="{!mcQuery.MC4SF__Static_Segments__c}"/>
+        <apex:inputHidden id="interests" value="{!mcQuery.MC4SF__Interests__c}"/>
+        <label for="mcList">List</label>
+        <apex:selectList id="mcList" value="{!mcQuery.MC4SF__MC_List__c}" size="1" disabled="{!mcQuery.MC4SF__MC_List__c != null}">
+            <apex:selectOption itemValue="" itemLabel="Select an option"/>
+            <apex:selectOptions value="{!mcListOptions}"/>
+        </apex:selectList>
+      </apex:form>
+    </div>
+
+
+    <div id="lists-wrapper" class="slds-grid" style="display:none;">
+      <div class="slds-col slds-small-size--1-of-1 slds-medium-size_1-of-2" style="max-width: 700px;">
+        <h2 class="slds-text-heading_medium slds-p-vertical_small">Groups</h2>
+        <div id="interestGroupings" style="display: none;">
+        </div>
+      </div>
+      <div class="slds-col slds-small-size--1-of-1 slds-medium-size_1-of-2">
+        <h2 class="slds-text-heading_medium slds-p-vertical_small">Segments</h2>
+        <a href="#" onclick="showAddSegment()"><img src="{!URLFOR($Resource.Assets, 'icons/utility/add.png')}" class="add-icon" style="height:12px;"/>Create a new segment</a><br />
+        <div id="new-segment-form" class="slds-form" style="margin-top:10px; display:none;">
+          <input type="text" id="new-segment" class="slds-input" placeholder="Enter Name..." style="width:200px;" />
+          <button id="addSegmentButton" class="slds-button slds-button_brand" style="vertical-align: top; margin-left:5px;">Add</button>
+        </div>
+        <div id="staticSegments" style="display: none;">
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+
+
+  <div class="slds-docked-form-footer" style="{!IF($User.UITheme != 'Theme4d', 'position: absolute !important;', '')}">
+    <button type="button" class="slds-button slds-button_neutral" onclick="cancelQuery()">Cancel</button>
+    <button type="button" class="slds-button slds-button_brand" onclick="nextStep()">Next</button>
+  </div>
+
+</div>
+
+<script src="{!URLFOR($Resource.Assets, 'js/jquery.min.js')}"></script>
+<script>
+
+  var headerSetupObject = function(){
+    var setupObj;
+    setupObj = {
+      title : "MailChimp for Salesforce",
+      pageHeading : "New Query",
+      pageDescription : "Use this tool to create a new query that will be used to determine the Salesforce data you want to migrate to Mailchimp"
+    }
+    return setupObj;
+  };
+
+    var lists = {};
+
+    // Whether an AJAX call is in progress.
+    var ajaxInProgress = false;
+
+
+    jQuery(function() {
+        <apex:outputPanel layout="none" rendered="{!mcQuery.MC4SF__MC_List__c != null}">
+            loadList('{!mcQuery.MC4SF__MC_List__c}');
+        </apex:outputPanel>
+
+
+        jQuery('select[name$="mcList"]').change(function() {
+            if (ajaxInProgress) return;
+
+            clearMessages();
+
+            var id = jQuery(this).val();
+
+            if (id == '') {
+                jQuery('#lists-wrapper').hide();
+                jQuery('#interestGroupingsPleaseSelect').show();
+                jQuery('#interestGroupings').hide();
+                jQuery('#staticSegmentsPleaseSelect').show();
+                jQuery('#newSegment').hide();
+                jQuery('#staticSegments').hide();
+
+                jQuery('input[id$="interests"]').val('');
+                jQuery('input[id$="staticSegments"]').val('');
+
+                return;
+            }
+
+            if (typeof(lists[id]) == 'undefined') {
+                loadList(id);
+            } else {
+                displayList(id);
+            }
+        });
+
+        // Record interest group subscribed state changes.
+        jQuery(document).on('click', '.interestGroup input[type="checkbox"]', function() {
+            var listId = jQuery('select[name$="mcList"]').val();
+            var interestGroupId = jQuery(this).attr('id');
+            var list = lists[listId];
+            var interestGroup;
+
+            for (var i = 0; i < list.interestGroupings.length; i++) {
+                for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+                    if (list.interestGroupings[i].interestGroups[j].id == interestGroupId) {
+                        interestGroup = list.interestGroupings[i].interestGroups[j];
+                    }
+                }
+            }
+
+            interestGroup.subscribe = (interestGroup.subscribe == true ? false : true);
+
+
+            setInterests();
+        });
+
+        jQuery(document).on('click', '.interestGroup input[type="radio"]', function() {
+            var listId = jQuery('select[name$="mcList"]').val();
+            var interestGroupingId = jQuery(this).attr('name');
+            var interestGroupId = jQuery(this).attr('id');
+            var list = lists[listId];
+            var previousInterestGroup;
+            var interestGroup;
+
+            // Find the previous and current interest groups.
+            for (var i = 0; i < list.interestGroupings.length; i++) {
+                if (list.interestGroupings[i].id == interestGroupingId) {
+                    for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+                        if (list.interestGroupings[i].interestGroups[j].subscribe == true) {
+                            previousInterestGroup = list.interestGroupings[i].interestGroups[j];
+                        } else if (list.interestGroupings[i].interestGroups[j].id == interestGroupId) {
+                            interestGroup = list.interestGroupings[i].interestGroups[j];
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            if (previousInterestGroup == undefined && interestGroupId != undefined) {
+                interestGroup.subscribe = true;
+            } else if (previousInterestGroup != undefined && interestGroupId == undefined) {
+                previousInterestGroup.subscribe = false;
+            } else {
+                if(previousInterestGroup != undefined)
+                  previousInterestGroup.subscribe = false;
+                interestGroup.subscribe = true;
+            }
+
+            setInterests();
+        });
+
+        jQuery(document).on('change', '.interestGroupSelect select', function() {
+            var listId = jQuery('select[name$="mcList"]').val();
+            var interestGroupingId = jQuery(this).attr('id');
+            var interestGroupId = jQuery('option:selected', this).attr('id');
+            var list = lists[listId];
+            var previousInterestGroup;
+            var interestGroup;
+
+            // Find the previous and current interest groups.
+            for (var i = 0; i < list.interestGroupings.length; i++) {
+                if (list.interestGroupings[i].id == interestGroupingId) {
+                    for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+                        if (list.interestGroupings[i].interestGroups[j].subscribe == true) {
+                            previousInterestGroup = list.interestGroupings[i].interestGroups[j];
+                        } else if (list.interestGroupings[i].interestGroups[j].id == interestGroupId) {
+                            interestGroup = list.interestGroupings[i].interestGroups[j];
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            if (previousInterestGroup == undefined && interestGroupId != undefined) {
+                interestGroup.subscribe = true;
+            } else if (previousInterestGroup != undefined && interestGroupId == undefined) {
+                previousInterestGroup.subscribe = false;
+            } else {
+                previousInterestGroup.subscribe = false;
+                interestGroup.subscribe = true;
+            }
+
+            setInterests();
+        });
+
+        // Record static segment subscribed state changes.
+        jQuery(document).on('click', '.staticSegment input[type="checkbox"]', function() {
+            var listId = jQuery('select[name$="mcList"]').val();
+            var staticSegmentId = jQuery(this).attr('id');
+            var list = lists[listId];
+            var staticSegment;
+
+            for (var i = 0; i < list.staticSegments.length; i++) {
+                if (list.staticSegments[i].id == staticSegmentId) {
+                    staticSegment = list.staticSegments[i];
+                    break;
+                }
+            }
+
+            staticSegment.subscribe = (staticSegment.subscribe == true ? false : true);
+
+            setStaticSegments();
+        });
+
+        jQuery('#addSegmentButton').click(function(e) {
+            e.preventDefault();
+
+            clearMessages();
+
+
+            var name = jQuery('#new-segment').val();
+            if (name == '' || name == undefined) {
+                alert('Please enter a name for the Segment.');
+                return false;
+            }
+
+            jQuery('#segmentName #addSegmentButton #newSegmentAdding').toggle();
+
+            var listId = jQuery('select[name$="mcList"]').val();
+
+            // Save the new segment.
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.QueryListController.saveStaticSegment}', listId, name, function(result, event) {
+                if (event.status) {
+                    var list = lists[listId];
+
+                    list.staticSegments.push({
+                        id: result,
+                        name: name,
+                        subscribe: true
+                    });
+
+                    var html = '';
+                    html += '<div class="staticSegment">';
+                    html +=   '<div class="slds-form-element">';
+                    html +=     '<div class="slds-form-element__control">';
+                    html +=       '<span class="slds-checkbox">';
+                    html +=         '<input type="checkbox" name="options" id="'+result+'" checked="checked" />';
+                    html +=         '<label class="slds-checkbox__label" for="'+result+'">';
+                    html +=           '<span class="slds-checkbox_faux"></span>';
+                    html +=           '<span class="slds-form-element__label">'+name+'</span>';
+                    html +=         '</label>';
+                    html +=       '</span>';
+                    html +=     '</div>';
+                    html +=   '</div>';
+                    html += '</div>';
+
+                    if (jQuery('#staticSegments').find('.staticSegment').length > 0) {
+                        jQuery('#staticSegments').append(html);
+                    } else {
+                        jQuery('#staticSegments').html(html);
+                    }
+
+                    jQuery('#new-segment').val('');
+                    jQuery('#new-segment-form').hide();
+
+                    setStaticSegments();
+                } else {
+                    alert('Error saving new Segment.');
+                }
+
+                jQuery('#segmentName #addSegmentButton #newSegmentAdding').toggle();
+            });
+
+            return false;
+        });
+
+    });
+
+    function loadList(id) {
+        ajaxInProgress = true;
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.QueryListController.loadList}', id, function(result, event) {
+            if (event.status) {
+                lists[id] = result;
+                displayList(id);
+            } else {
+                alert('Error loading list.');
+            }
+
+            ajaxInProgress = false;
+        });
+    }
+
+    function showAddSegment() {
+      jQuery('#new-segment-form').show();
+    }
+
+    function displayList(id) {
+        var list = lists[id];
+
+        jQuery('#lists-wrapper').show();
+        jQuery('#interestGroupingsPleaseSelect').hide();
+        jQuery('#interestGroupings').show();
+        jQuery('#staticSegmentsPleaseSelect').hide();
+        jQuery('#newSegment').show();
+        jQuery('#staticSegments').show();
+
+        var html = '';
+
+        if (list.interestGroupings.length == 0) {
+            html = "<img src=\"{!URLFOR($Resource.MC4SF__Assets, 'icons/utility/info.png')}\" class=\"info-icon\" />This list has no interest groups.";
+        } else {
+            var interestsList = jQuery('input[id$="interests"]').val();
+            var interests = [];
+            if(interestsList != undefined){
+              interests = interestsList.split(',');
+            }
+
+            for (var i = 0; i < list.interestGroupings.length; i++) {
+                var isLast = ((i + 1) == list.interestGroupings.length && list.interestGroupings[i].interestGroups.length == 0);
+
+                html += '<div class="interestGrouping">' + list.interestGroupings[i].name;
+
+                if (list.interestGroupings[i].formField == 'dropdown') {
+                    html += '<div class="interestGroupSelect">';
+                    html +=     '<select id="' + list.interestGroupings[i].id + '">';
+                    html +=         '<option>No Selection</option>';
+
+                    for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+                        for (var k = 0; k < interests.length; k++) {
+                            if (list.interestGroupings[i].interestGroups[j].id == interests[k]) {
+                                list.interestGroupings[i].interestGroups[j].subscribe = true;
+                                break;
+                            }
+                        }
+                        html += '<option id="' + list.interestGroupings[i].interestGroups[j].id + '"' + (list.interestGroupings[i].interestGroups[j].subscribe ? ' selected="selected"' : '') + '>' + list.interestGroupings[i].interestGroups[j].name + '</option>';
+                    }
+
+                    html +=     '</select>';
+                    html += '</div>';
+                } else {
+                    for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+                        for (var k = 0; k < interests.length; k++) {
+                            if (list.interestGroupings[i].interestGroups[j].id == interests[k]) {
+                                list.interestGroupings[i].interestGroups[j].subscribe = true;
+                                break;
+                            }
+                        }
+
+                        isLast = ((i + 1) == list.interestGroupings.length && (j + 1) == list.interestGroupings[i].interestGroups.length );
+
+
+
+                        html += '<div class="interestGroup">';
+                        html +=   '<div class="slds-form-element">';
+                        html +=     '<div class="slds-form-element__control">';
+                        html +=       '<span class="slds-checkbox">';
+
+                        if (list.interestGroupings[i].formField == 'radio') {
+                          html +=       '<input type="radio" id="'+list.interestGroupings[i].interestGroups[j].id+'" name="'+list.interestGroupings[i].id+'"' + (list.interestGroupings[i].interestGroups[j].subscribe ? ' checked="checked"' : '') + '/>';
+                          html +=         '<label class="slds-checkbox__label" for="'+list.interestGroupings[i].interestGroups[j].id+'">';
+                        } else {
+                          html +=       '<input type="checkbox" name="options" id="'+list.interestGroupings[i].interestGroups[j].id+'" '+(list.interestGroupings[i].interestGroups[j].subscribe ? 'checked="checked"' : '')+' />';
+                          html +=         '<label class="slds-checkbox__label" for="'+list.interestGroupings[i].interestGroups[j].id+'">';
+                          html +=           '<span class="slds-checkbox_faux"></span>';
+                        }
+
+                        html +=           '<span class="slds-form-element__label">'+list.interestGroupings[i].interestGroups[j].name+'</span>';
+                        html +=         '</label>';
+                        html +=       '</span>';
+                        html +=     '</div>';
+                        html +=   '</div>';
+                        html += '</div>';
+
+                    }
+                    html += '</div>'; // End interestGrouping
+
+                }
+            }
+        }
+
+        jQuery('#interestGroupings').html(html);
+
+        html = '';
+
+        if (list.staticSegments.length == 0) {
+            html = '<img src=\"{!URLFOR($Resource.MC4SF__Assets, 'icons/utility/info.png')}\" class=\"info-icon\" />This list has no segments.';
+        } else {
+            var staticSegmentList = jQuery('input[id$="staticSegments"]').val();
+            var staticSegments = [];
+            if(staticSegmentList != undefined){
+              staticSegments = staticSegmentList.split(',');
+            }
+
+
+            for (var i = 0; i < list.staticSegments.length; i++) {
+                for (var j = 0; j < staticSegments.length; j++) {
+                    if (list.staticSegments[i].id == staticSegments[j]) {
+                        list.staticSegments[i].subscribe = true;
+                        break;
+                    }
+                }
+
+
+
+                html += '<div class="staticSegment">';
+                html +=   '<div class="slds-form-element">';
+                html +=     '<div class="slds-form-element__control">';
+                html +=       '<span class="slds-checkbox">';
+                html +=         '<input type="checkbox" name="options" id="'+list.staticSegments[i].id+'" '+(list.staticSegments[i].subscribe ? 'checked="checked"' : '')+' />';
+                html +=         '<label class="slds-checkbox__label" for="'+list.staticSegments[i].id+'">';
+                html +=           '<span class="slds-checkbox_faux"></span>';
+                html +=           '<span class="slds-form-element__label">'+list.staticSegments[i].name+'</span>';
+                html +=         '</label>';
+                html +=       '</span>';
+                html +=     '</div>';
+                html +=   '</div>';
+                html += '</div>';
+            }
+        }
+
+
+
+        jQuery('#staticSegments').html(html);
+
+    }
+
+    function setInterests() {
+        var listId = jQuery('select[name$="mcList"]').val();
+        var list = lists[listId];
+
+        var interestGroupIds = [];
+
+        // Find the previous and current interest groups.
+        for (var i = 0; i < list.interestGroupings.length; i++) {
+            for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+                if (list.interestGroupings[i].interestGroups[j].subscribe == true) {
+                    interestGroupIds.push(list.interestGroupings[i].interestGroups[j].id);
+                }
+            }
+        }
+
+        jQuery('input[id$="interests"]').val(interestGroupIds.join(','));
+    }
+
+    function nextStep() {
+
+      var mcList = jQuery('select[name$="mcList"]').val();
+
+      if(mcList == undefined || mcList == null || mcList == ''){
+        showNoListAlert();
+      }else{
+        nextStepAction();
+      }
+
+    }
+
+    function closeAlert() {
+      jQuery('.slds-notify_alert').hide();
+    }
+
+    function showNoListAlert() {
+      jQuery('.slds-notify_alert').show();
+    }
+
+    function setStaticSegments() {
+        var listId = jQuery('select[name$="mcList"]').val();
+        var list = lists[listId];
+
+        var staticSegmentIds = [];
+
+        for (var i = 0; i < list.staticSegments.length; i++) {
+            if (list.staticSegments[i].subscribe == true) {
+                staticSegmentIds.push(list.staticSegments[i].id);
+            }
+        }
+
+        jQuery('input[id$="staticSegments"]').val(staticSegmentIds.join(','));
+    }
+
+    function clearMessages() {
+        jQuery('#messages').removeClass('errorM3 warningM3 confirmM3').hide();
+        jQuery('#messages li').remove();
+    }
+</script>
+
+</apex:page>

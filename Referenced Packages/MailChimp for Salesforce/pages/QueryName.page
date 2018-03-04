@@ -1,0 +1,59 @@
+<apex:page standardController="MC4SF__MC_Query__c" extensions="MC4SF.QueryNameController" action="{!initPage}">
+
+<apex:stylesheet value="{!URLFOR($Resource.MC4SF__Assets, 'css/apexElemToSLDS.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.MC4SF__Assets, 'css/pages/queryPreview.css')}"/>
+
+<div class="slds-scope">
+
+	<c:Header setupFunction="headerSetupObject" />
+
+	<c:CustomApexPageMessages />
+
+	<apex:form >
+	<apex:actionFunction name="goBack" action="{!previousStep}" />
+	<apex:actionFunction name="cancelQuery" action="{!cancel}" />
+	<apex:actionFunction name="saveQuery" action="{!save}" />
+	<apex:actionFunction name="saveAndRunQuery" action="{!saveAndRun}" />
+
+	<div class="slds-p-around_large" style="margin-bottom:50px;">
+
+		<c:QueryBuilderSteps currentStep="4" />
+
+		<h1 class="slds-text-title slds-p-top_small">{!MC4SF__MC_Query__c.Name}</h1>
+		<h2 class="slds-text-heading_large slds-p-bottom_small">Name{!IF(isMailChimpAdmin, ' and schedule', '')}</h2>
+
+
+		<apex:outputPanel layout="none" rendered="{!isMailChimpAdmin}"><p>Choose to schedule your query to run every day or now.</p></apex:outputPanel>
+		<div class="slds-p-vertical_large">
+			<label style="margin-right: 20px;">MC Query name</label><apex:inputField value="{!mcQuery.Name}"/><br />
+			<br />
+			<label style="margin-right: 49px;">Run daily at</label><apex:inputField value="{!mcQuery.MC4SF__Run_Daily_At__c}" rendered="{!isMailChimpAdmin}"/>
+		</div>
+
+	</div>
+
+	</apex:form>
+
+	<div class="slds-docked-form-footer" style="{!IF($User.UITheme != 'Theme4d', 'position: absolute !important;', '')}">
+		<button type="button" class="slds-button slds-button_neutral" onclick="goBack()">Previous Step</button>
+	  <button type="button" class="slds-button slds-button_neutral" onclick="cancelQuery()">Cancel</button>
+	  <button type="button" class="slds-button slds-button_brand" onclick="saveQuery()">Save</button>
+		<button type="button" class="slds-button slds-button_brand" onclick="saveAndRunQuery()">Save and run</button>
+	</div>
+
+</div>
+
+
+<script>
+var headerSetupObject = function(){
+	var setupObj;
+	setupObj = {
+		title : "MailChimp for Salesforce",
+		pageHeading : "New Query",
+		pageDescription : "Use this tool to create a new query that will be used to determine the Salesforce data you want to migrate to Mailchimp"
+	}
+	return setupObj;
+};
+</script>
+
+</apex:page>

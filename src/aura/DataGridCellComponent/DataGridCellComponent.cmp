@@ -1,6 +1,7 @@
 <aura:component implements="forceCommunity:availableForAllPageTypes"
                 controller="RelatedListDataGridController"
-                abstract="true">
+                abstract="true"
+                access="global">
     <aura:attribute name="item" type="Object"/>
     <aura:attribute name="itemRank" type="Integer"/>
     <aura:attribute name="column" type="Object"/>    

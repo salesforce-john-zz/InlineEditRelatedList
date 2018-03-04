@@ -1,0 +1,688 @@
+<apex:page standardController="MC4SF__MC_List__c" readOnly="true" extensions="MC4SF.ListOverrideController">
+	<div class="slds-scope">
+		<c:Header setupFunction="headerSetupObject" />
+		<div id="spinner" style="height: 6rem; display: none;">
+		  <div class="slds-spinner_container" style="position: fixed;z-index: 10000;">
+		    <div role="status" class="slds-spinner slds-spinner_medium">
+		      <span class="slds-assistive-text">Loading</span>
+		      <div class="slds-spinner__dot-a"></div>
+		      <div class="slds-spinner__dot-b"></div>
+		    </div>
+		  </div>
+		</div>
+		<apex:form >
+			<div class="slds-grid slds-wrap">
+			    <div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+					   <h3 class="slds-section__title slds-theme_shade">
+					      <span class="slds-truncate" title="MC List Detail" style="margin-left: 25px;">MC List Detail</span>
+					  </h3>
+					  <div aria-hidden="false" class="slds-section__content">
+					  	<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+							<apex:repeat value="{!$ObjectType.MC4SF__MC_List__c.FieldSets.MC4SF__ListDetail}" var="field"> 
+							    <div class="slds-p-horizontal--small slds-size--1-of-2">
+							        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+							            <span class="slds-form-element__label">{!field.Label}</span>
+							            <div class="slds-form-element__control">
+							                <span class="slds-form-element__static">
+							                 	<apex:outputField value="{!MC4SF__MC_List__c[field]}"/>
+							                </span>
+							            </div>
+							        </div>
+							    </div>
+							</apex:repeat>					  	
+					  	</div>
+					  </div>					    
+			    	</div>
+				</div>
+			    <div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+					   <h3 class="slds-section__title slds-theme_shade">
+					      <span class="slds-truncate" title="Stats" style="margin-left: 25px;">Stats</span>
+					  </h3>
+					  <div aria-hidden="false" class="slds-section__content">
+					  	<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+							<apex:repeat value="{!$ObjectType.MC4SF__MC_List__c.FieldSets.MC4SF__Stats}" var="field"> 
+							    <div class="slds-p-horizontal--small slds-size--1-of-2">
+							        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+							            <span class="slds-form-element__label">{!field.Label}</span>
+							            <div class="slds-form-element__control">
+							                <span class="slds-form-element__static">
+							                 	<apex:outputField value="{!MC4SF__MC_List__c[field]}"/>
+							                </span>
+							            </div>
+							        </div>
+							    </div>
+							</apex:repeat>						  	
+					  	</div>
+					  </div>					    
+			    	</div>
+				</div>
+			    <div class="slds-container_fluid">
+					<div class="slds-section slds-is-open">
+					   <h3 class="slds-section__title slds-theme_shade">
+					      <span class="slds-truncate" title="Address" style="margin-left: 25px;">Address</span>
+					  </h3>
+					  <div aria-hidden="false" class="slds-section__content">
+					  	<div class="slds-grid slds-wrap" style="margin-left: 15px;">
+							<apex:repeat value="{!$ObjectType.MC4SF__MC_List__c.FieldSets.MC4SF__Address}" var="field"> 
+							    <div class="slds-p-horizontal--small slds-size--1-of-1">
+							        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+							            <span class="slds-form-element__label">{!field.Label}</span>
+							            <div class="slds-form-element__control">
+							                <span class="slds-form-element__static">
+							                 	<apex:outputField value="{!MC4SF__MC_List__c[field]}"/>
+							                </span>
+							            </div>
+							        </div>
+							    </div>
+							</apex:repeat>
+						    <div class="slds-p-horizontal--small slds-size--1-of-2">
+						        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+						            <span class="slds-form-element__label">Created By</span>
+						            <div class="slds-form-element__control">
+						                <span class="slds-form-element__static">
+                                            <apex:outputlink value="/{!MC4SF__MC_List__c.CreatedById}">
+                                        		<apex:outputField value="{!MC4SF__MC_List__c.CreatedBy.Name}"/> &nbsp;
+                                    		</apex:outputlink>
+                                            <apex:outputField value="{!MC4SF__MC_List__c.CreatedDate}"/> 
+                                        </span>
+						            </div>
+						        </div>
+						    </div>
+						    <div class="slds-p-horizontal--small slds-size--1-of-2">
+						        <div class="slds-form-element slds-hint-parent slds-has-divider--bottom">
+						            <span class="slds-form-element__label">Last Modified By</span>
+						            <div class="slds-form-element__control">
+						                <span class="slds-form-element__static">
+                                            <apex:outputlink value="/{!MC4SF__MC_List__c.LastModifiedById}">
+                                            	<apex:outputField value="{!MC4SF__MC_List__c.LastModifiedBy.Name}"/> &nbsp;
+                                        	</apex:outputlink>
+                                            <apex:outputField value="{!MC4SF__MC_List__c.LastModifiedDate}"/> 
+                                        </span>
+						            </div>
+						        </div>
+						    </div>					  	
+					  	</div>
+					  </div>					    
+			    	</div>
+				</div>
+			</div>
+			<article class="slds-card">
+				<div class="slds-card__header slds-grid">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+					  <div class="slds-media__body">
+					    <h2>
+					    	<span class="slds-text-heading_small">MC Interest Groups</span>
+					    </h2>
+				        <apex:outputPanel rendered="{!ISNULL(groupings)}">
+							<p class="slds-text-body_small slds-line-height_reset">
+								No records to display
+							</p>
+				        </apex:outputPanel>
+					  </div>
+					</header>
+				</div>
+				<apex:outputPanel id="groupingList" rendered="{!NOT(ISNULL(groupings))}">
+					<div class="slds-card__body">
+					<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+					  <thead>
+					    <tr class="slds-text-title_caps">
+					      <th scope="col">
+					        <div class="slds-truncate" title="Interest Grouping Name">Interest Grouping Name</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Form Field">Form Field</div>
+					      </th>
+					    </tr>
+					  </thead>
+					  <tbody>
+					  	<apex:repeat value="{!groupings}" var="grouping">
+					        <tr class="slds-hint-parent">
+					          <th scope="row">
+								<apex:outputlink value="/{!grouping.Id}">{!grouping.Name}</apex:outputlink>
+					          </th>
+					          <th scope="row">
+								{!grouping.MC4SF__Form_Field__c}
+					          </th>		
+					        </tr>      	
+					  	</apex:repeat>
+					  </tbody>
+					</table>
+					</div>
+					<footer class="slds-card__footer">
+						<div class="slds-clearfix">
+							<div class="slds-float_left">
+								<apex:commandLink value="Show more »" action="{!showMoreGrouping}" reRender="groupingList" rendered="{!moreGrouping==false && !ISNULL(groupings)}" />
+								<apex:commandLink value="Show less «" action="{!showLessGrouping}" reRender="groupingList" rendered="{!moreGrouping==true && !ISNULL(groupings)}"/>
+							</div>
+						</div>
+					</footer>		
+				</apex:outputPanel>
+			</article>
+			<article class="slds-card">
+				<div class="slds-card__header slds-grid">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+					  <div class="slds-media__body">
+					    <h2>
+					    	<span class="slds-text-heading_small">MC Static Segments Name</span>
+					    </h2>
+				        <apex:outputPanel rendered="{!ISNULL(segments)}">
+							<p class="slds-text-body_small slds-line-height_reset">
+								No records to display
+							</p>
+				        </apex:outputPanel>
+					  </div>
+					</header>
+				</div>
+				<apex:outputPanel id="segments" rendered="{!NOT(ISNULL(segments))}">
+					<div class="slds-card__body">
+					<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+					  <thead>
+					    <tr class="slds-text-title_caps">
+					      <th scope="col">
+					        <div class="slds-truncate" title="MC Static Segments Name">MC Static Segments Name</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Member Count">Member Count</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Last Reset">Last Reset</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Last Update">Last Update</div>
+					      </th>
+					    </tr>
+					  </thead>
+					  <tbody>
+					  	<apex:repeat value="{!segments}" var="segment">
+					        <tr class="slds-hint-parent">
+					          <th scope="row">
+								<apex:outputlink value="/{!segment.Id}">{!segment.Name}</apex:outputlink>
+					          </th>
+					          <th scope="row">
+								{!segment.MC4SF__Member_Count__c}
+					          </th>
+					          <th scope="row">
+								{!segment.MC4SF__Last_Reset__c}
+					          </th>
+					          <th scope="row">
+								{!segment.MC4SF__Last_Update__c}
+					          </th>		
+					        </tr>      	
+					  	</apex:repeat>
+					  </tbody>
+					</table>
+					</div>
+					<footer class="slds-card__footer">
+						<div class="slds-clearfix">
+						  <div class="slds-float_left">
+							<apex:commandLink value="Show more »" action="{!showMoreSegment}" reRender="segments" rendered="{!moreSegment==false && !ISNULL(segments)}" />
+							<apex:commandLink value="Show less «" action="{!showLessSegment}" reRender="segments" rendered="{!moreSegment==true && !ISNULL(segments)}"/>
+						  </div>
+						</div>
+					</footer>		
+				</apex:outputPanel>
+			</article>
+
+			<article class="slds-card">
+				<div class="slds-card__header slds-grid">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+					  <div class="slds-media__body">
+					    <h2>
+					    	<span class="slds-text-heading_small">MC Merge Variables</span>
+					    </h2>
+				        <apex:outputPanel rendered="{!ISNULL(merges)}">
+							<p class="slds-text-body_small slds-line-height_reset">
+								No records to display
+							</p>
+				        </apex:outputPanel>
+					  </div>
+					</header>
+				</div>
+				<apex:outputPanel id="mergeList" rendered="{!NOT(ISNULL(merges))}">
+					<div class="slds-card__body">
+					<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+					  <thead>
+					    <tr class="slds-text-title_caps">
+					      <th scope="col">
+					        <div class="slds-truncate" title="MC Merge Variable Name">MC Merge Variable Name</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Field Type">Field Type</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Choices">Choices</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Required">Required</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Order">Order</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="MailChimp Id">MailChimp Id</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Contact Field Mapping">Contact Field Mapping</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Lead Field Mapping">Lead Field Mapping</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Size">Size</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Tag">Tag</div>
+					      </th>
+					    </tr>
+					  </thead>
+					  <tbody>
+					  	<apex:repeat value="{!merges}" var="merge">
+					        <tr class="slds-hint-parent">
+						      <th scope="row">
+								<apex:outputlink value="/{!merge.Id}">{!merge.Name}</apex:outputlink>
+						      </th>
+						      <th scope="row">
+								{!merge.MC4SF__Field_Type__c}
+						      </th>
+						      <th scope="row">
+								{!merge.MC4SF__Choices__c}
+						      </th>
+						      <th scope="row">
+								{!merge.MC4SF__Required__c}
+						      </th>
+						      <th scope="row">
+								{!merge.MC4SF__Order__c}
+						      </th>
+						      <th scope="row">
+								{!merge.MC4SF__MailChimp_ID__c}
+						      </th>
+					          <th scope="row">
+								{!merge.MC4SF__Contact_Field_Mapping__c}
+					          </th>
+					          <th scope="row">
+								{!merge.MC4SF__Lead_Field_Mapping__c}
+					          </th>
+					          <th scope="row">
+								{!merge.MC4SF__Size__c}
+					          </th>
+					          <th scope="row">
+								{!merge.MC4SF__Tag__c}
+					          </th>	
+					        </tr>      	
+					  	</apex:repeat>
+					  </tbody>
+					</table>
+					</div>
+					<footer class="slds-card__footer">
+						<div class="slds-clearfix">
+						  <div class="slds-float_left">
+				 			<apex:commandLink value="Show more »" action="{!showMoreMerge}" reRender="mergeList" rendered="{!moreMerge==false && !ISNULL(merges)}" />
+				 			<apex:commandLink value="Show less «" action="{!showLessMerge}" reRender="mergeList" rendered="{!moreMerge==true && !ISNULL(merges)}"/>
+						  </div>
+						</div>
+					</footer>		
+				</apex:outputPanel>
+			</article>
+			<article class="slds-card">
+				<div class="slds-card__header slds-grid">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+					  <div class="slds-media__body">
+					    <h2>
+					    	<span class="slds-text-heading_small">MC Campaigns</span>
+					    </h2>
+				        <apex:outputPanel rendered="{!ISNULL(campaigns)}">
+							<p class="slds-text-body_small slds-line-height_reset">
+								No records to display
+							</p>
+				        </apex:outputPanel>
+					  </div>
+					</header>
+				</div>
+				<apex:outputPanel id="campaignList" rendered="{!NOT(ISNULL(campaigns))}">
+					<div class="slds-card__body">
+					<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+					  <thead>
+					    <tr class="slds-text-title_caps">
+					      <th scope="col">
+					        <div class="slds-truncate" title="Campaign Name">Campaign Name</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Status">Status</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Subject">Subject</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Emails Sent">Emails Sent</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="From Email">From Email</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Report Url">Report Url</div>
+					      </th>
+					    </tr>
+					  </thead>
+					  <tbody>
+					  	<apex:repeat value="{!campaigns}" var="campaign">
+					        <tr class="slds-hint-parent">
+					          <th scope="row">
+								<apex:outputlink value="/{!campaign.Id}">{!campaign.Name}</apex:outputlink>
+					          </th>
+					          <th scope="row">
+								{!campaign.MC4SF__Status__c}
+					          </th>
+					          <th scope="row">
+								{!campaign.MC4SF__Subject__c}
+					          </th>
+					          <th scope="row">
+								{!campaign.MC4SF__Emails_Sent__c}
+					          </th>
+					          <th scope="row">
+								{!campaign.MC4SF__From_Email__c}
+					          </th>
+					          <th scope="row">
+								{!campaign.MC4SF__Report_URL__c}
+					          </th>		
+					        </tr>      	
+					  	</apex:repeat>
+					  </tbody>
+					</table>
+					</div>
+					<footer class="slds-card__footer">
+						<div class="slds-clearfix">
+						  <div class="slds-float_left">
+		 					<apex:commandLink value="Show more »" action="{!showMoreCampaign}" reRender="campaignList" rendered="{!moreCampaign==false && !ISNULL(campaigns)}" />
+		 					<apex:commandLink value="Show less «" action="{!showLessCampaign}" reRender="campaignList" rendered="{!moreCampaign==true && !ISNULL(campaigns)}"/>
+						  </div>
+						</div>
+					</footer>		
+				</apex:outputPanel>
+			</article>
+
+			<article class="slds-card">
+				<div class="slds-card__header slds-grid">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+					  <div class="slds-media__body">
+					    <h2>
+					    	<span class="slds-text-heading_small">MC Subscribers</span>
+					    </h2>
+				        <apex:outputPanel rendered="{!ISNULL(subscribers)}">
+							<p class="slds-text-body_small slds-line-height_reset">
+								No records to display
+							</p>
+				        </apex:outputPanel>
+					  </div>
+					</header>
+				</div>
+				<apex:outputPanel id="subscriberList" rendered="{!NOT(ISNULL(subscribers))}">
+					<div class="slds-card__body">
+					<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+					  <thead>
+					    <tr class="slds-text-title_caps">
+					      <th scope="col">
+					        <div class="slds-truncate" title="MC Subscriber">MC Subscriber</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Email Address">Email Address</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Member Status">Member Status</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Status Timestamp">Status Timestamp</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Last Activity Date">Last Activity Date</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="View Subscriber in MC">View Subscriber in MC</div>
+					      </th>
+					    </tr>
+					  </thead>
+					  <tbody>
+					  	<apex:repeat value="{!subscribers}" var="subscriber">
+					        <tr class="slds-hint-parent">
+					          <th scope="row">
+								<apex:outputlink value="/{!subscriber.Id}">{!subscriber.Name}</apex:outputlink>
+					          </th>
+					          <th scope="row">
+								{!subscriber.MC4SF__Email2__c}
+					          </th>
+					          <th scope="row">
+								{!subscriber.MC4SF__Member_Status__c}
+					          </th>
+					          <th scope="row">
+								{!subscriber.MC4SF__Status_Timestamp__c}
+					          </th>
+					          <th scope="row">
+								{!subscriber.MC4SF__Last_Activity_Date__c}
+					          </th>
+					          <th scope="row">
+								{!subscriber.MC4SF__View_Subscriber_in_MC__c}
+					          </th>		
+					        </tr>      	
+					  	</apex:repeat>
+					  </tbody>
+					</table>
+					</div>
+					<footer class="slds-card__footer">
+						<div class="slds-clearfix">
+						  <div class="slds-float_left">
+		 					<apex:commandLink value="Show more »" action="{!showMoreSubscriber}" reRender="subscriberList" rendered="{!moreSubscriber==false && !ISNULL(subscribers)}" />
+		 					<apex:commandLink value="Show less «" action="{!showLessSubscriber}" reRender="subscriberList" rendered="{!moreSubscriber==true && !ISNULL(subscribers)}"/>
+						  </div>
+						</div>
+					</footer>		
+				</apex:outputPanel>
+			</article>
+			<article class="slds-card">
+				<div class="slds-card__header slds-grid">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+					  <div class="slds-media__body">
+					    <h2>
+					    	<span class="slds-text-heading_small">MC Subscriber Activity</span>
+					    </h2>
+				        <apex:outputPanel rendered="{!ISNULL(activities)}">
+							<p class="slds-text-body_small slds-line-height_reset">
+								No records to display
+							</p>
+				        </apex:outputPanel>
+					  </div>
+					</header>
+				</div>
+				<apex:outputPanel id="activityList" rendered="{!NOT(ISNULL(activities))}">
+					<div class="slds-card__body">
+					<apex:outputPanel layout="block" styleClass="pShowMore">
+						<apex:panelGrid columns="5">
+							<apex:commandLink action="{!first}" reRender="activityList">First</apex:commandLink>
+							<apex:commandLink action="{!previous}" reRender="activityList" rendered="{!hasPrevious}">Previous</apex:commandLink>
+							<apex:outputText value="Page {0} of {1}">
+								<apex:param value="{!pageNumber}" />
+								<apex:param value="{!totalPages}" />
+							</apex:outputText>
+							<apex:commandLink action="{!next}" reRender="activityList" rendered="{!hasNext}">Next</apex:commandLink>
+							<apex:commandLink action="{!last}" reRender="activityList">Last</apex:commandLink>
+						</apex:panelGrid>
+					</apex:outputPanel>
+					<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+					  <thead>
+					    <tr class="slds-text-title_caps">
+					      <th scope="col">
+					        <div class="slds-truncate" title="Activity Name">Activity Name</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Timestamp">Timestamp</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Action">Action</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Type">Type</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Url">Url</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="MC Subscriber">MC Subscriber</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="MC Campaign">MC Campaign</div>
+					      </th>
+					    </tr>
+					  </thead>
+					  <tbody>
+					  	<apex:repeat value="{!activities}" var="activity">
+					        <tr class="slds-hint-parent">
+					          <th scope="row">
+								<apex:outputlink value="/{!activity.Id}">{!activity.Name}</apex:outputlink>
+					          </th>
+					          <th scope="row">
+								{!activity.MC4SF__Timestamp__c}
+					          </th>
+					          <th scope="row">
+								{!activity.MC4SF__Action__c}
+					          </th>
+					          <th scope="row">
+								{!activity.MC4SF__Type__c}
+					          </th>
+					          <th scope="row">
+								{!activity.MC4SF__URL__c}
+					          </th>
+					          <th scope="row">
+								{!activity.MC_Subscriber__r.Name}
+					          </th>
+					          <th scope="row" style="text-overflow: ellipsis;">
+								{!activity.MC_Campaign__r.Name}
+					          </th>		
+					        </tr>      	
+					  	</apex:repeat>
+					  </tbody>
+					</table>
+					</div>		
+				</apex:outputPanel>
+			</article>
+
+			<article class="slds-card">
+				<div class="slds-card__header slds-grid">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+					  <div class="slds-media__body">
+					    <h2>
+					    	<span class="slds-text-heading_small">MC Queries</span>
+					    </h2>
+				        <apex:outputPanel rendered="{!ISNULL(queries)}">
+							<p class="slds-text-body_small slds-line-height_reset">
+								No records to display
+							</p>
+				        </apex:outputPanel>
+					  </div>
+					</header>
+				</div>
+				<apex:outputPanel id="queryList" rendered="{!NOT(ISNULL(queries))}">
+					<div class="slds-card__body">
+					<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+					  <thead>
+					    <tr class="slds-text-title_caps">
+					      <th scope="col">
+					        <div class="slds-truncate" title="Query Name">Query Name</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Ran Daily At">Ran Daily At</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Last Run">Last Run</div>
+					      </th>
+					      <th scope="col">
+					        <div class="slds-truncate" title="Status">Status</div>
+					      </th>
+					    </tr>
+					  </thead>
+					  <tbody>
+					  	<apex:repeat value="{!queries}" var="query">
+					        <tr class="slds-hint-parent">
+					          <th scope="row">
+								<apex:outputlink value="/{!query.Id}">{!query.Name}</apex:outputlink>
+					          </th>
+					          <th scope="row">
+								{!query.MC4SF__Run_Daily_At__c}
+					          </th>
+					          <th scope="row">
+								{!query.MC4SF__Last_Run__c}
+					          </th>
+					          <th scope="row">
+								{!query.MC4SF__Status__c}
+					          </th>		
+					        </tr>      	
+					  	</apex:repeat>
+					  </tbody>
+					</table>
+					</div>
+					<footer class="slds-card__footer">
+						<div class="slds-clearfix">
+						  <div class="slds-float_left">
+		 					<apex:commandLink value="Show more »" action="{!showMoreQuery}" reRender="queryList" rendered="{!moreQuery==false && !ISNULL(queries)}" />
+		 					<apex:commandLink value="Show less «" action="{!showLessQuery}" reRender="queryList" rendered="{!moreQuery==true && !ISNULL(queries)}"/>
+						  </div>
+						</div>
+					</footer>		
+				</apex:outputPanel>
+			</article>
+		</apex:form>
+	</div>
+
+	<script type="text/javascript">
+		(function(myContext){
+		    myContext.ForceUI = myContext.ForceUI || {};
+
+		    myContext.ForceUI.isSalesforce1 = function() {
+		        return((typeof sforce != 'undefined') && sforce && (!!sforce.one));
+		    }
+		})(this);
+		var spinner = document.getElementById("spinner");
+
+		function goToFieldMapping(){
+			top.location.href='{!$Page.Mappings}?id={!MC_List__c.Id}';
+		}
+
+		function loadList(){
+			spinner.style.display = '';
+	        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.ListOverrideController.loadList}', '{!JSENCODE(MC_List__c.MailChimp_ID__c)}', function(result, event) {
+	        	spinner.style.display = 'none';
+	            if (event.status) {
+	                var response = result;
+	                if(response != 'Success'){
+	                	alert(response);
+	                } else {
+						ForceUI.isSalesforce1() ? sforce.one.navigateToSObject('{!MC_List__c.Id}') : (top.location.href='/' + '{!MC_List__c.Id}');
+	                }
+	            } else {
+	                alert('Error Loading List.');
+	            }
+	        });
+		}
+
+		var headerSetupObject = function() {
+			var setupObj;
+			setupObj = {
+				title : "MC List",
+				pageHeading : "{!MC_List__c.Name}",
+				buttons : this.createButtons()
+			}
+			return setupObj;
+		}
+
+		function createButtons(){
+			buttonsArr = [{
+				title : "Retrieve from Mailchimp",
+				onclick : "loadList"
+			},{
+				title : "MailChimp Field Mapping",
+				onclick : "goToFieldMapping"
+			}];
+			return buttonsArr;
+		}
+
+	</script>
+</apex:page>

@@ -1,0 +1,3 @@
+<apex:page standardController="MC4SF__MC_List__c" recordSetVar="lists" extensions="MC4SF.RetrieveListsController">
+    <c:RetrieveLists sObjectType="MC_List__c" recordListJson="{!recsJson}"/>
+</apex:page>

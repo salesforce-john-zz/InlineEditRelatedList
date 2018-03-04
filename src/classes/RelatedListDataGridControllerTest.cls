@@ -42,19 +42,19 @@ public class RelatedListDataGridControllerTest {
         
         Object[] contacts = RelatedListDataGridController.getReleatedListItems('0010Y000003iFovQAE', 
                                                                                'Contacts');                
-		Account account = new Account();
-        account.Name='Test Account' ;
-        insert account;
+		Sobject acc = getNewSobject('Account');
+        acc.put('Name', 'Test Account');
+        insert acc;
 
-        Contact contact = new Contact();
-        contact.Accountid= account.id;
-        contact.FirstName='Test';
-        contact.LastName='Test';        
+        Sobject contact = getNewSobject('Contact');
+        contact.put('AccountId', acc.get('Id'));
+        contact.put('FirstName', 'Test');
+        contact.put('LastName', 'Test');        
         insert contact;
 
         Map<String, Object> mContact = (Map<String, Object>)contacts.get(0);        
-        mContact.put('AccountId', contact.AccountId);
-        mContact.put('Id', contact.Id);        
+        mContact.put('AccountId', contact.get('AccountId'));
+        mContact.put('Id', contact.get('Id'));        
         mContact.remove('OwnerId');
         
 		Boolean result = RelatedListDataGridController.saveRelatedListItems(System.JSON.serialize(contacts));
@@ -66,14 +66,16 @@ public class RelatedListDataGridControllerTest {
         Test.stopTest();        
     }
     
-    static Account createFakeAccount(){
-        Account account = new Account();
-        account.Name='Test Account' ;
-        insert account;
+    public static SObject getNewSobject(String typeName) {
+        Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe(); 
         
-        return account;
-    }
-    
+        Schema.SObjectType st = gd.get(typeName);
+        System.assert(st != null,'Type provided: "' + typeName + '" doesnt map to an sobject token in this org.');
+        
+        Sobject s = st.newSobject();        
+        return s;
+    }    
+   
     static testMethod void testGetObject()
     {
         Test.startTest();        
@@ -88,12 +90,12 @@ public class RelatedListDataGridControllerTest {
     {
         Test.startTest();
         
-        Contact ct = new Contact();
-        ct.LastName = 'Hicham';
-        ct.FirstName = 'El Mansouri';       
-        insert ct;
+        Sobject contact = getNewSobject('Contact');        
+        contact.put('FirstName', 'Test');
+        contact.put('LastName', 'Test');        
+        insert contact;              
         
-        boolean result = RelatedListDataGridController.deleteRelatedRecord(ct.Id);
+        boolean result = RelatedListDataGridController.deleteRelatedRecord(contact.Id);
         System.assertEquals(true, result);
         
         Test.stopTest();
@@ -104,16 +106,16 @@ public class RelatedListDataGridControllerTest {
         Test.startTest();
         Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator()); 
         
-        Account account = new Account();
-        account.Name='Test Account' ;
-        insert account;
+        Sobject acc = getNewSobject('Account');
+        acc.put('Name', 'Test Account');
+        insert acc;
 
         Map<String, String> data = new Map<String, String>();
-        data.put('AccountId', account.id);
+        data.put('AccountId', acc.id);
         data.put('lastname', 'Test');
         data.put('firstname', 'Test');        
                 
-        Id IdContact = RelatedListDataGridController.createRelatedObject(account.Id, 
+        Id IdContact = RelatedListDataGridController.createRelatedObject(acc.Id, 
                                                                          'Contact', 
                                                                          JSON.serialize(data));
         System.assertEquals(true, IdContact != null);
