@@ -26,7 +26,8 @@ Display a specific related list based on the label. Using the label is more user
 The related list label can set from the app lightning builder.
 
 Both components are availables in the lightning app builder. So just drag&drop and enjoy.
-![alt text](https://cloud.githubusercontent.com/assets/7535971/20064241/4b8711d4-a50a-11e6-93a2-adbd40a93979.PNG "App Builder")
+![Lightning App Builder](https://cloud.githubusercontent.com/assets/7535971/22865386/59da45da-f163-11e6-94fc-9d2f68875dca.png)
+
 
 ## Apex Testing
 
