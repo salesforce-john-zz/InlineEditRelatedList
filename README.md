@@ -30,11 +30,13 @@ The related list label can set from the app lightning builder.
 Both components are availables in the lightning app builder. So just drag&drop and enjoy.
 ![alt text](https://cloud.githubusercontent.com/assets/7535971/20064241/4b8711d4-a50a-11e6-93a2-adbd40a93979.PNG "App Builder")
 
-## Testing
+## Apex Testing
 
 The package contains Unit Tests for Apex classes and Static Resources for Rest MockUp.
 
 In this tutorial, I will show you how to use RelatedListEditor components from deployment to testing.
+
+## Get Started
 
 ### Configuration
 * Create subdomain on your salesforce instance. See [My Domain Setup](https://help.salesforce.com/articleView?id=domain_name_overview.htm&language=en_US&type=0) for more details.
@@ -48,15 +50,15 @@ At this step, you will be able to see 2 new custom lightning components in the "
 
 ![Lightning App Builder](https://cloud.githubusercontent.com/assets/7535971/22865386/59da45da-f163-11e6-94fc-9d2f68875dca.png)
 
-Now, I'm going to change the account lightning page to use my brand new grid component. 
+Now, You can change the account lightning page to use the brand new grid component. 
 
 ![](https://cloud.githubusercontent.com/assets/7535971/22865399/d168b960-f163-11e6-9158-b8e016bfd3d7.png)
 
-All I have to do is to remove the 'Out Of The Box' components above and drag and drop the new component 'RelatedListDataGridsComponent'. 
+All you have to do is to remove the 'Out Of The Box' components above and drag and drop the new component 'RelatedListDataGridsComponent'. 
 
 ![](https://cloud.githubusercontent.com/assets/7535971/22865469/b195282e-f165-11e6-9703-a42d3bd5fef9.png)
 
-I also changed the page layout to display only the account contact list. We can see that the page is refreshed right away reflecting exactly what is defined at page layout.
+You can also change the page layout to display only the account contact list. We can see that the page is refreshed right away reflecting exactly what is defined at page layout.
 
 ![](https://cloud.githubusercontent.com/assets/7535971/22865535/79978a60-f166-11e6-9ce2-92470d7e645e.png)
 
@@ -65,7 +67,7 @@ Note that:
 * RelatedListDataGridComponent (without s) is to display a specific related list and you have specify the related list 'label' not the name.
 
 ### Testing
-Now if we zoom on a specific account, we can check that the contact list is well displayed in our grid and we can edit and save our change from this page.  
+If you we zoom on a specific account, you can check that the contact list is well displayed in the grid and you can edit and save your changes from this page.  
 
 ![](https://cloud.githubusercontent.com/assets/7535971/22865560/f6e39892-f166-11e6-8b34-5beac7e4bdea.png)
 
