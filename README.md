@@ -34,4 +34,48 @@ Both components are availables in the lightning app builder. So just drag&drop a
 
 The package contains Unit Tests for Apex classes and Static Resources for Rest MockUp.
 
+In this tutorial, I will show you how to use RelatedListEditor components from deployment to testing.
+
+### Deployment
+Use the button below to deploy this package to your salesforce instance.
+
+<p><a href="https://githubsfdeploy.herokuapp.com?owner=hicham-elmansouri/&amp;repo=SFRelatedListEditor">
+  <img alt="Deploy to Salesforce" src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png" style="max-width:100%;">
+</a></p>
+
+### Configuration
+* Create subdomain on your salesforce instance. See [My Domain Setup](https://help.salesforce.com/articleView?id=domain_name_overview.htm&language=en_US&type=0) for more details.
+
+* Add your salesforce instance as "Remote Site". See [Remote Site Setup](https://help.salesforce.com/articleView?id=configuring_remoteproxy.htm&type=0&language=en_US&release=206.8) for more details.
+Here is my entry for this tutorial:
+![](https://cloud.githubusercontent.com/assets/7535971/22865451/3d4ae65c-f165-11e6-9686-b6ac20d43511.png)
+ 
+### App Builder
+At this step, you will be able to see 2 new custom lightning components in the "lightning app builder". 
+
+![Lightning App Builder](https://cloud.githubusercontent.com/assets/7535971/22865386/59da45da-f163-11e6-94fc-9d2f68875dca.png)
+
+Now, I'm going to change the account lightning page to use my brand new grid component. 
+
+![](https://cloud.githubusercontent.com/assets/7535971/22865399/d168b960-f163-11e6-9158-b8e016bfd3d7.png)
+
+All I have to do is to remove the 'Out Of The Box' components above and drag and drop the new component 'RelatedListDataGridsComponent'. 
+
+![](https://cloud.githubusercontent.com/assets/7535971/22865469/b195282e-f165-11e6-9703-a42d3bd5fef9.png)
+
+I also changed the page layout to display only the account contact list. We can see that the page is refreshed right away reflecting exactly what is defined at page layout.
+
+![](https://cloud.githubusercontent.com/assets/7535971/22865535/79978a60-f166-11e6-9ce2-92470d7e645e.png)
+
+Note that:
+* RelatedListDataGridsComponent is used to display all the related list defined in page layout
+* RelatedListDataGridComponent (without s) is to display a specific related list and you have specify the related list 'label' not the name.
+
+### Testing
+Now if we zoom on a specific account, we can check that the contact list is well displayed in our grid and we can edit and save our change from this page.  
+
+![](https://cloud.githubusercontent.com/assets/7535971/22865560/f6e39892-f166-11e6-8b34-5beac7e4bdea.png)
+
+![](https://cloud.githubusercontent.com/assets/7535971/22865582/a13617ca-f167-11e6-9919-926ee8c8f4d6.png)
+
 
