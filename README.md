@@ -50,9 +50,7 @@ At this step, you will be able to see 2 new custom lightning components in the "
 
 ![Lightning App Builder](https://cloud.githubusercontent.com/assets/7535971/22865386/59da45da-f163-11e6-94fc-9d2f68875dca.png)
 
-Now, You can change the account lightning page to use the brand new grid component. 
-
-![](https://cloud.githubusercontent.com/assets/7535971/22865399/d168b960-f163-11e6-9158-b8e016bfd3d7.png)
+Now, You can change the account lightning page to use the brand new grid component.
 
 All you have to do is to remove the 'Out Of The Box' components above and drag and drop the new component 'RelatedListDataGridsComponent'. 
 
