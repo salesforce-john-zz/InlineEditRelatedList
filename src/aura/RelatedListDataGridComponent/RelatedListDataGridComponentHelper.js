@@ -292,5 +292,13 @@
         });   
         
         $A.enqueueAction(getObjectAction);    		        
+    },
+    viewAllUrl : function(itemId, relatedList) {
+        if(window.location.href.indexOf('one.app') == -1){
+            return "/lightning/r/" + itemId + "/related/" + relatedList + "/view";
+        }
+        else{
+            return "/one/one.app#/sObject/" + itemId + "/rlName/" + relatedList + "/view";;
+        }
     }
 })

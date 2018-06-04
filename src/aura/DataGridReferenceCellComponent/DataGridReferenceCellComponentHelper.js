@@ -4,7 +4,7 @@
         var column = component.get("v.column");
         
         if(item[column.name]){
-            component.set("v.refValue", "/one/one.app#/sObject/" + item[column.name] + "/view");
+            component.set("v.refValue", this.sobjectViewUrl(item[column.name]));
             component.set("v.refLabel", item[column.name + '__Name']);                                
         }
         else{

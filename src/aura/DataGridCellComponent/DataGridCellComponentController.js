@@ -12,5 +12,5 @@
     toggleErrTooltip : function(component, event, helper) {
         var toggleText = component.find("tooltip");
         $A.util.toggleClass(toggleText, "tooltip-toggle");
-    }
+    }           
 })

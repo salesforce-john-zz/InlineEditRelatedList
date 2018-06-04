@@ -86,5 +86,16 @@
     },
     customCheckInput : function(cellInput, component, event){
         //Virtual function
-    }
+    },
+    sobjectUrlPrefix : function() {
+        if(window.location.href.indexOf('one.app') == -1){
+            return "/lightning/r/";
+        }
+        else{
+            return "/one/one.app#/sObject/";
+        }
+    },
+    sobjectViewUrl : function(itemId) {
+        return this.sobjectUrlPrefix() + itemId + "/view";
+    }    
 }

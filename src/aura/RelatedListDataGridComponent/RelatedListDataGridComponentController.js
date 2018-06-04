@@ -25,9 +25,8 @@
                         component.set("v.columns", res.getReturnValue().columns);                                               
                         
                         //Set the viewAll Link
-                        var viewAllLink = "/one/one.app#/sObject/" + 
-                            component.get("v.recordId") + "/rlName/" + 
-                            component.get("v.relatedListName") + "/view";                        
+                        var viewAllLink = helper.viewAllUrl(component.get("v.recordId"),
+                                                            component.get("v.relatedListName"));                        
                         component.set("v.viewAllLink", viewAllLink);
                         
                         helper.loadItems(component);                      

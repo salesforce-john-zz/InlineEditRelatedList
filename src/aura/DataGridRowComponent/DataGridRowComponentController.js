@@ -6,7 +6,7 @@
         var columns = component.get("v.columns");
         var displayMode = component.get("v.displayMode");
         
-        function getCellComponent(column, index){
+        function getCellComponent(column, index){            
             var columnType = column.type;                    
             if(displayMode == 'read' && 
                column.name.toLowerCase() == 'name'){
