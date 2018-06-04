@@ -50,17 +50,9 @@ Here is my entry for this tutorial:
 ### App Builder
 At this step, you will be able to see 2 new custom lightning components in the "lightning app builder". 
 
-![Lightning App Builder](https://cloud.githubusercontent.com/assets/7535971/22865386/59da45da-f163-11e6-94fc-9d2f68875dca.png)
+To change the account lightning page and use RelatedListGrid components, remove the 'Out Of The Box' components above and drag and drop the new component 'RelatedListDataGridsComponent'.
 
-Now, You can change the account lightning page to use the brand new grid component.
-
-All you have to do is to remove the 'Out Of The Box' components above and drag and drop the new component 'RelatedListDataGridsComponent'. 
-
-![](https://cloud.githubusercontent.com/assets/7535971/22865469/b195282e-f165-11e6-9703-a42d3bd5fef9.png)
-
-You can also change the page layout to display only the account contact list. We can see that the page is refreshed right away reflecting exactly what is defined at page layout.
-
-![](https://cloud.githubusercontent.com/assets/7535971/22865535/79978a60-f166-11e6-9ce2-92470d7e645e.png)
+![](https://user-images.githubusercontent.com/7535971/40939796-0e0b5f6c-6846-11e8-842a-094f85c6602d.png)
 
 Note that:
 * RelatedListDataGridsComponent is used to display all the related list defined in page layout
