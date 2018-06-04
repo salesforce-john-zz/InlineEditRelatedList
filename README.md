@@ -36,13 +36,6 @@ The package contains Unit Tests for Apex classes and Static Resources for Rest M
 
 In this tutorial, I will show you how to use RelatedListEditor components from deployment to testing.
 
-### Deployment
-Use the button below to deploy this package to your salesforce instance.
-
-<p><a href="https://githubsfdeploy.herokuapp.com?owner=hicham-elmansouri/&amp;repo=SFRelatedListEditor">
-  <img alt="Deploy to Salesforce" src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png" style="max-width:100%;">
-</a></p>
-
 ### Configuration
 * Create subdomain on your salesforce instance. See [My Domain Setup](https://help.salesforce.com/articleView?id=domain_name_overview.htm&language=en_US&type=0) for more details.
 
