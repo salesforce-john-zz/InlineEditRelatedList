@@ -62,3 +62,16 @@ When you display only one related list, you have different options to play with 
 
 ![](https://user-images.githubusercontent.com/7535971/40939795-0ddb9b24-6846-11e8-98fe-2a391308a813.png)
 
+* Filter example : If we want to filter only Closed Won Opportunities : {"StageName":"Closed Won"}
+
+* Aggregate example :  If we want to display the total row at the end representing the sum of opportunities amount : {"Amount":"sum"}
+
+* Default Values example : If we check 'Can Create Object', the component use default values property to initialize the new object when you hit (+) button. This is usefulf to set the non displayed fields. The parent id for exemple. {"accountid":"$recordId", "name":"Opp 1", "closedate" : "2018-07-07","stagename":"Needs Analysis"}
+
+Note that: Use $recordId to reference the current record Id and dot not forget to user low case for field name. 
+
+* Sort example : If you want to sort the grid, set the field name : Amount  
+
+* Order exemple : 'asc' or 'desc'
+
+
