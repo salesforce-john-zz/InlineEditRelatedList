@@ -39,13 +39,14 @@ In this tutorial, I will show you how to use RelatedListEditor components from d
 ## Get Started
 
 ### Configuration
+* Each user using any page with RelatedListGrid should have a profil with API enabled.
+
 * Create subdomain on your salesforce instance. See [My Domain Setup](https://help.salesforce.com/articleView?id=domain_name_overview.htm&language=en_US&type=0) for more details.
 
 * Add your salesforce instance as "Remote Site". See [Remote Site Setup](https://help.salesforce.com/articleView?id=configuring_remoteproxy.htm&type=0&language=en_US&release=206.8) for more details.
 Here is my entry for this tutorial:
 ![](https://cloud.githubusercontent.com/assets/7535971/22865451/3d4ae65c-f165-11e6-9686-b6ac20d43511.png)
 
-* Each user using any page with RelatedListGrid should have a profil with API enabled.
  
 ### App Builder
 At this step, you will be able to see 2 new custom lightning components in the "lightning app builder". 
