@@ -58,11 +58,7 @@ Note that:
 * RelatedListDataGridsComponent is used to display all the related list defined in page layout
 * RelatedListDataGridComponent (without s) is to display a specific related list and you have specify the related list 'label' not the name.
 
-### Testing
-If you we zoom on a specific account, you can check that the contact list is well displayed in the grid and you can edit and save your changes from this page.  
+When you display only one related list, you have different options to play with like filtering, sorting (see screenshot below):
 
-![](https://cloud.githubusercontent.com/assets/7535971/22865560/f6e39892-f166-11e6-8b34-5beac7e4bdea.png)
-
-![](https://cloud.githubusercontent.com/assets/7535971/22865582/a13617ca-f167-11e6-9919-926ee8c8f4d6.png)
-
+![](https://user-images.githubusercontent.com/7535971/40939795-0ddb9b24-6846-11e8-98fe-2a391308a813.png)
 
