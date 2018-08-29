@@ -12,7 +12,8 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
     
     <aura:if isTrue="{!v.displayMode == 'read'}">
-        <ui:outputURL aura:id="outputCell" value="{!v.refValue}" label="{!v.refLabel}"/> 
+        <a href="javascript:void(0);" onclick="{!c.navigateToObject}">{!v.refLabel}</a>
+        
         <aura:set attribute="else">
             <div class="slds-form-element slds-lookup slds-is-open" data-select="single">
                 <aura:if isTrue="{!v.isSearching}">

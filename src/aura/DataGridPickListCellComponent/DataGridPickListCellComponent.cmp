@@ -1,6 +1,6 @@
-<aura:component extends="c:DataGridCellComponent">
+<aura:component extends="c:DataGridCellComponent">        
     <aura:if isTrue="{!v.displayMode == 'read'}">
-        <ui:outputText aura:id="outputCell" value="{!v.value}"/>
+        <ui:outputText aura:id="outputCell" value="{!v.valueLabel}"/>
         <aura:set attribute="else">
             <ui:inputSelect aura:id="inputCell" value="{!v.value}" options="{!v.options}" change="{!c.checkInput}"/>                       
         </aura:set>

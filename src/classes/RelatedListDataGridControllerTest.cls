@@ -79,8 +79,11 @@ public class RelatedListDataGridControllerTest {
     static testMethod void testGetObject()
     {
         Test.startTest();        
-        Test.setMock(HttpCalloutMock.class, new RestAPIMockHttpResponseGenerator());                                
-        Object jsonObj = RelatedListDataGridController.getObject('0019E000006nVr3QAE');        
+        Sobject acc = getNewSobject('Account');
+        acc.put('Name', 'Test Account');
+        insert acc;
+        
+        Object jsonObj = RelatedListDataGridController.getObject(acc.Id);        
         System.assertEquals(true, jsonObj != null);        
         
         Test.stopTest();            
@@ -119,6 +122,54 @@ public class RelatedListDataGridControllerTest {
                                                                          'Contact', 
                                                                          JSON.serialize(data));
         System.assertEquals(true, IdContact != null);
+        
+        Test.stopTest();
+    }
+    
+    static testMethod void testGetFieldSetMetadata()
+    {
+        Test.startTest();
+        
+        FieldSetUtils.setMock( new List<SObjectField> { Opportunity.Amount, Opportunity.Name }, 
+                              'Opportunity_FieldSet', 
+                              'Opportunity FieldSet');
+        
+        Map<String, Object> mRelatedListMetadata = 
+            (Map<String, Object>)RelatedListDataGridController.getFieldSetMetadata('Opportunity', 
+                                                                                   'OneDesk__Opportunity_FieldSet');
+        
+        System.assert(mRelatedListMetadata != null);
+        
+        Test.stopTest();
+    }
+    
+    static testMethod void testGetFieldSetItems()
+    {
+        Test.startTest();
+        
+        Sobject acc = getNewSobject('Account');
+        acc.put('Name', 'Test Account');
+        insert acc;
+        
+        Sobject opp = getNewSobject('Opportunity');
+        opp.put('Name', 'Test Opportunity');
+        opp.put('StageName', 'Sourcing Demand');
+        opp.put('CloseDate', System.today());
+        opp.put('AccountId', acc.Id);
+        insert opp;        
+
+        FieldSetUtils.setMock( new List<SObjectField> { Opportunity.Amount, Opportunity.Name }, 
+                              'Opportunity_FieldSet', 
+                              'Opportunity FieldSet');
+        
+        List<Object> opportunityList = 
+            RelatedListDataGridController.getFieldSetItems('Opportunity', 
+                                                           'OneDesk__Opportunity_FieldSet',
+                                                           null,
+                                                           null,
+                                                           null);
+        
+        System.assert(opportunityList != null);
         
         Test.stopTest();
     }

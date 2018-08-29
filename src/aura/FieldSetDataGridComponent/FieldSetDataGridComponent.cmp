@@ -1,0 +1,112 @@
+<aura:component implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:hasRecordId" 
+                controller="RelatedListDataGridController"
+                access="global" >       
+    <aura:attribute name="relatedObjectName" type="String" access="global"/> 
+    <aura:attribute name="fieldSetName" type="String" access="global"/> 
+    <aura:attribute name="canCreate" type="Boolean" default="true" access="global"/>
+    <aura:attribute name="filter" type="String" access="global"/>
+    <aura:attribute name="aggregate" type="String" access="global"/>
+    <aura:attribute name="defaultValues" type="String" default="{}" access="global"/>
+    <aura:attribute name="customLabel" type="String" access="global"/> 
+    <aura:attribute name="customIcon" type="String" default="standard:contact" access="global"/> 
+    <aura:attribute name="sort" type="String" access="global"/>
+    <aura:attribute name="order" type="String" access="global" default="desc"/>
+    
+    <aura:attribute name="displayMode" type="String" default="read" access="private"/>        
+    <aura:attribute name="columns" type="Object[]" access="private"/>
+    <aura:attribute name="aggregations" type="Object[]" access="private"/>    
+    <aura:attribute name="items" type="Object[]" access="private"/>
+    <aura:attribute name="oldItems" type="Object[]" access="private"/>    
+    
+    
+    <aura:attribute name="displayLabel" type="String"/>    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
+    <aura:handler event="force:refreshView" action="{!c.reloadItems}"/>
+    
+    
+    
+    <article aura:id="gridContainer" class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container">
+                        <lightning:icon iconName="{!v.customIcon}" size="small"/>
+                    </span>
+                </div>
+                <div class="slds-media__body slds-truncate">
+                    <h2>
+                        <span class="slds-text-heading--small">{!v.displayLabel}</span>                        
+                    </h2>
+                </div>
+            </header>
+            <div class="slds-no-flex">
+                <lightning:buttonIcon aura:id="editButton"
+                                      iconName="utility:edit" 
+                                      size="medium" variant="bare"
+                                      onclick="{! c.startEdit }" 
+                                      alternativeText="Edit Items" />
+                <aura:if isTrue="{!and(v.canCreate, v.displayMode != 'read')}">
+                    <lightning:buttonIcon aura:id="createButton"
+                                          iconName="utility:new" 
+                                          size="medium" variant="bare"
+                                          onclick="{! c.createItem }" 
+                                          alternativeText="Create New Record" />                
+                </aura:if>
+            </div>
+        </div>
+        <div class="slds-card__body">
+            <table class="slds-table slds-table--bordered slds-no-row-hover slds-table--cell-buffer">
+                <thead>
+                    <tr class="slds-text-title--caps">
+                        <aura:iteration items="{!v.columns}" var="column">
+                            <th scope="col">
+                                <div class="slds-truncate" 
+                                     title="{!column.label}">
+                                    {!column.label}
+                                </div>
+                            </th>
+                        </aura:iteration>                           
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.items}" 
+                                    var="item" 
+                                    indexVar="itemRank">                  
+                        <c:DataGridRowComponent aura:id="row"
+                                                displayMode="{!v.displayMode}"
+                                                columns="{!v.columns}"                                                 
+                                                item="{!item}" 
+                                                itemRank="{!itemRank}"
+                                                onDelete="{!c.actionDelete}"
+                                                onEdit="{!c.actionEdit}"
+                                                />                                
+                    </aura:iteration>   
+                    <tr aura:id="total" class="total hidden">
+                        <aura:iteration items="{!v.aggregations}" 
+                                        var="aggregation">                          
+                            <td>{!aggregation}</td>
+                        </aura:iteration>                        
+                    </tr>                      
+                </tbody>
+            </table>
+        </div>
+        <div aura:id="gridActions" class="forceRecordEditActions hidden">
+            <div class="slds-align_absolute-center">
+                <button type="button" 
+                        class="slds-button slds-button--neutral" 
+                        onclick="{! c.cancelEdit }">
+                    Cancel
+                </button>
+                <button type="button" 
+                        class="slds-button slds-button--brand" 
+                        onclick="{! c.saveEdit }">
+                    Save
+                </button>
+            </div>
+        </div> 
+    </article>  
+    
+    <c:DataGridDialogComponent aura:id="deleteDialog" type="CONFIRM" onClose="{!c.deleteCallback}" />           
+    <c:DataGridDialogComponent aura:id="loaderDialog"/>
+</aura:component>

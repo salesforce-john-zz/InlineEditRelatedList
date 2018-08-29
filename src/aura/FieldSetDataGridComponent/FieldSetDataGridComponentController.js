@@ -1,59 +1,43 @@
 ({
     doInit : function(component, event, helper) {  
-        //If the component is initialized 
-        //From the related lists component
-        //We have just to load items
-        if(component.get("v.relatedObjectName")!=""){
-            helper.loadItems(component);                      
+        if(component.get("v.fieldSetName") && component.get("v.relatedObjectName")){
+            var metadataAction = component.get("c.getFieldSetMetadata");
+            
+            metadataAction.setParams({
+                "objectName": component.get("v.relatedObjectName"),
+                "fielSetName": component.get("v.fieldSetName")
+            });
+            
+            metadataAction.setCallback(this, function(res) {            
+                if (res.getState() === "SUCCESS" && res.getReturnValue()) { 
+                    //Set the display columns   
+                    component.set("v.columns", res.getReturnValue().columns);                                               
+                                        
+                    //Set the display label        
+                    var displayLabel = component.get("v.customLabel") || res.getReturnValue().label;                        
+                    component.set("v.displayLabel", displayLabel); 
+                                        
+                    //Update the default values for the current record
+                    var defaultValues = component.get("v.defaultValues");
+                    component.set("v.defaultValues", defaultValues.replace("$recordId", component.get("v.recordId"))); 
+                    
+                    //Update the filter property for the current record
+                    var filter = component.get("v.filter") || "{}";
+                    component.set("v.filter", filter.replace("$recordId", component.get("v.recordId"))); 
+                    
+                    //Toogle the total row
+                    helper.toogleTotal(component, event);                    
+                    
+                    //Load items 
+                    helper.loadItems(component);                      
+                } 
+                else if (res.getState() === "ERROR") {
+                    $A.log("Errors", res.getError());
+                }           
+            });  
+            
+            $A.enqueueAction(metadataAction);             
         }
-        
-        //Otherwise we have to load 
-        //the metadata as well
-        else{
-            if(component.get("v.relatedListLabel")){
-                var metadataAction = component.get("c.getReleatedListMetadata");
-                
-                metadataAction.setParams({
-                    "objectId": component.get("v.recordId"),
-                    "relatedListLabel": component.get("v.relatedListLabel")
-                });
-                
-                metadataAction.setCallback(this, function(res) {            
-                    if (res.getState() === "SUCCESS" && res.getReturnValue()) {        
-                        component.set("v.relatedListName", res.getReturnValue().name);
-                        component.set("v.relatedObjectName",  res.getReturnValue().sobject);
-                        component.set("v.columns", res.getReturnValue().columns);                                               
-                        
-                        //Set the viewAll Link
-                        var viewAllLink = helper.viewAllUrl(component.get("v.recordId"),
-                                                            component.get("v.relatedListName"));                        
-                        component.set("v.viewAllLink", viewAllLink);
-                        
-                        helper.loadItems(component);                      
-                    } 
-                    else if (res.getState() === "ERROR") {
-                        $A.log("Errors", res.getError());
-                    }           
-                });  
-                
-                $A.enqueueAction(metadataAction);             
-            }
-        }
-        
-        //Toogle the total row
-        helper.toogleTotal(component, event);
-        
-        //Update the default values for the current record
-        var defaultValues = component.get("v.defaultValues") || "{}";
-        component.set("v.defaultValues", defaultValues.replace("$recordId", component.get("v.recordId")));
-        
-        //Update the filter property for the current record
-        var filter = component.get("v.filter") || "{}";
-        component.set("v.filter", filter.replace("$recordId", component.get("v.recordId"))); 
-        
-        //Set the display label        
-        var displayLabel = component.get("v.customLabel") || component.get("v.relatedListLabel");                        
-        component.set("v.displayLabel", displayLabel);                
     },    
     startEdit : function(component, event, helper) {
         //Save a copy of items
@@ -185,20 +169,6 @@
             $A.enqueueAction(deleteAction);            
         }                
     },
-    editCallback: function(component, event, helper) {
-        if (event.getParam('confirmResult')){
-            var loaderDialog = component.find("loaderDialog");
-            loaderDialog.set('v.title', 'Saving ' + event.getParam('context').Name);
-            loaderDialog.set("v.content", "Please wait while saving the record"); 
-            loaderDialog.set('v.showDialog', true);           
-        }
-    },
-    saveCallback: function(component, event, helper) {
-        var loaderDialog = component.find("loaderDialog");         
-        loaderDialog.set('v.showDialog', false); 
-        
-        helper.notifyItemUpdated(component, event.getParam('context'));                   
-    },
     actionDelete : function(component, event, helper){       
         var deleteDialog = component.find("deleteDialog"); 
         var item = event.getParam('item');
@@ -208,11 +178,5 @@
         deleteDialog.set('v.context', item);
         
         deleteDialog.set('v.showDialog', true);        
-    },
-    actionEdit : function(component, event, helper){                    
-        var editDialog = component.find('editDialog');
-        
-        editDialog.set('v.context', event.getParam('item'));                       
-        editDialog.set('v.showDialog', true);         
-    }    
+    }
 })

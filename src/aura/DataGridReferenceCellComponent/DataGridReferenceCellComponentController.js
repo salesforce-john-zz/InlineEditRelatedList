@@ -21,5 +21,14 @@
     },
     toggleSearching : function(component, event, helper){
         helper.resetBeforeSearch(component, event);
+    },
+    navigateToObject : function(component, event, helper){
+        var navEvt = $A.get("e.force:navigateToSObject");
+        navEvt.setParams({
+            "recordId": component.get("v.value"),
+            "slideDevName": "detail"
+        });
+        
+        navEvt.fire();
     }
 })

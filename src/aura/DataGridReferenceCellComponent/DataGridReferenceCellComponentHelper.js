@@ -5,7 +5,7 @@
         
         if(item[column.name]){
             component.set("v.refValue", this.sobjectViewUrl(item[column.name]));
-            component.set("v.refLabel", item[column.name + '__Name']);                                
+            component.set("v.refLabel", item[column.name + '__Name']);             
         }
         else{
             component.set("v.isSearching", true);                                

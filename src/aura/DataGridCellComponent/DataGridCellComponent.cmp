@@ -8,8 +8,9 @@
     <aura:attribute name="columnRank" type="Integer"/>
     <aura:attribute name="displayMode" type="String" />
        
-    <aura:attribute name="value" type="Object"/>	
     <aura:attribute name="label" type="String"/>
+    <aura:attribute name="value" type="Object"/>	
+    <aura:attribute name="valueLabel" type="Object"/>	    
     <aura:attribute name="required" type="Boolean"/>
     <aura:attribute name="length" type="Integer"/>
     <aura:attribute name="options" type="Object[]"/>

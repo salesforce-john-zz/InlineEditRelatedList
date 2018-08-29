@@ -4,5 +4,5 @@
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
     
-    <ui:outputURL aura:id="outputCell" value="{!v.refValue}" label="{!v.refLabel}"/> 
+    <a href="javascript:void(0);" onclick="{!c.navigateToObject}">{!v.refLabel}</a>
 </aura:component>

@@ -8,7 +8,7 @@
         //Set the value from the item
         component.set("v.value", item[column.name]);          
         
-        try{ 
+        try{
             //Set the required flag for all fields
             component.set("v.required", JSON.parse(column.required));
             //Set the length for String field
@@ -18,7 +18,15 @@
             //Set the digits for Integer field
             component.set("v.digits", JSON.parse(column.digits));
             //Set the precision for Integer field
-            component.set("v.precision", JSON.parse(column.precision));                
+            component.set("v.precision", JSON.parse(column.precision));
+            
+            //Set the value label for PickList field
+            var options = component.get("v.options");                        
+            options.forEach(function(option){
+                if(option.value == item[column.name]){
+                    component.set("v.valueLabel", option.label);
+                }
+            });   
         }
         catch(ex){
             console.error("RelatedListEditor", ex.message);
@@ -97,5 +105,8 @@
     },
     sobjectViewUrl : function(itemId) {
         return this.sobjectUrlPrefix() + itemId + "/view";
+    },
+    customInit : function(component, event){
+        //Virtual function
     }    
 }

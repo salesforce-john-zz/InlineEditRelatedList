@@ -7,6 +7,7 @@
 		<members>RestAPIMockHttpResponseGenerator</members>
 		<members>RestAPIUtils</members>
 		<members>RestAPIUtilsTest</members>
+		<members>FieldSetUtils</members>		
 		<name>ApexClass</name>
 	</types>
 	<types>
@@ -38,6 +39,7 @@
 		<members>DataGridCloseDialogEvent</members>
 		<members>DataGridRelatedRecordEvent</members>
 		<members>RelatedListEditRecordComponent</members>
+		<members>FieldSetDataGridComponent</members>
 		<name>AuraDefinitionBundle</name>
 	</types>
 	<types>

@@ -1,0 +1,13 @@
+<design:component >
+    <design:attribute name="recordId" label="recordId" description="recordId"/>    
+    <design:attribute name="relatedObjectName" label="Related Object Name" description="The name of the related object to display"/>    
+    <design:attribute name="fieldSetName" label="FieldSet Name" description="The fieldSet name of the related object to display"/>    
+    <design:attribute name="canCreate" label="Can Create Object" description="Can Create Object Option"/>    
+    <design:attribute name="filter" label="Filter" description="Javascript filter"/>    
+    <design:attribute name="aggregate" label="Aggregate" description="Aggregate Options"/>    
+    <design:attribute name="defaultValues" label="Default Values" description="Default Values for Creation"/>
+    <design:attribute name="customLabel" label="Custom Label" description="Custom Label"/> 
+    <design:attribute name="customIcon" label="Custom Icon" description="Custom Icon"/> 
+    <design:attribute name="sort" label="Sort" description="Sort Options"/>
+    <design:attribute name="order" label="Order" description="Sort Order"/>
+</design:component>

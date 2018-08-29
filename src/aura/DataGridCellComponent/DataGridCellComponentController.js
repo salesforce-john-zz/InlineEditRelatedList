@@ -1,6 +1,7 @@
 ({
     doInit : function(component, event, helper) { 
-        helper.doInit(component, event);       
+        helper.doInit(component, event);
+        helper.customInit(component, event);      
     },
     checkInput : function(component, event, helper) {
         var cellInput = helper.getInputCell(component, event); 

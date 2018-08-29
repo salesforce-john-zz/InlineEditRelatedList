@@ -1,10 +1,11 @@
-<aura:component implements="forceCommunity:availableForAllPageTypes"
+<aura:component implements="forceCommunity:availableForAllPageTypes,forceCommunity:availableForAllPageTypes"
                 access="global">    
     <aura:attribute name="type" type="String" required="true" default="CONFIRM" description="CONFIRM, LOADER"/>
     <aura:attribute name="showDialog" type="Boolean" required="true" default="false" />
-    <aura:attribute name="context" type="Object" required="false"  />    
-    <aura:attribute name="title" type="String" required="true" />
-    <aura:attribute name="content" type="String" required="true"  />
+    <aura:attribute name="title" type="String" required="true" default="" />
+    <aura:attribute name="content" type="String" required="true" default="" />
+    
+    <aura:attribute name="context" type="Object" required="false" />    
     
     <aura:registerEvent name="onClose" type="c:DataGridCloseDialogEvent"/>
     <aura:registerEvent name="onSave" type="c:DataGridCloseDialogEvent"/>
@@ -18,27 +19,27 @@
         <div class="slds-modal__container">
             <div class="slds-modal__header">
                 <h2 class="slds-text-heading--medium">{!v.title}</h2>
-                <aura:renderIf isTrue="{!v.type == 'LOADER'}">
+                <aura:If isTrue="{!v.type == 'LOADER'}">
                     <div style="margin-top:30px;" class="slds-spinner--brand slds-spinner slds-spinner--small" aria-hidden="false" role="alert">
                         <div class="slds-spinner__dot-a"></div>
                         <div class="slds-spinner__dot-b"></div>
                     </div>
-                </aura:renderIf>
+                </aura:If>
             </div>
             
             <div class="slds-modal__content slds-p-around--medium">
-                <aura:renderIf isTrue="{!not(empty(v.content))}">
+                <aura:If isTrue="{!not(empty(v.content))}">
                     <div style="text-align:center;">
                         <p><aura:unescapedHtml value="{!v.content}" /></p>                            
                     </div>
-                </aura:renderIf>
+                </aura:If>
             </div>
             
             <div class="slds-modal__footer slds-modal__footer--directional">
-                <aura:renderIf isTrue="{!v.type == 'CONFIRM'}">
+                <aura:If isTrue="{!v.type == 'CONFIRM'}">
                     <button class="slds-button slds-button--neutral " onclick="{!c.closeModal}">No</button>
                     <button class="slds-button slds-button--brand " onclick="{!c.closeModalYes}">Yes</button>
-                </aura:renderIf>
+                </aura:If>
             </div>                
         </div>
     </div>
