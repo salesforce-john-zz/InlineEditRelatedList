@@ -283,10 +283,15 @@ public with sharing class RelatedListDataGridController {
                     else if(sfield.getDescribe().getType() == Schema.DisplayType.PICKLIST){
                         Schema.DescribeFieldResult fieldDescribe = sfield.getDescribe();
                         List<Schema.PicklistEntry> entries = fieldDescribe.getPicklistValues();
-                        for(Schema.PicklistEntry entry : entries){
-                            if(entry.getValue()==mObj.get(field)){
-                                sObj.put(field, mObj.get(field)); 
-                                break;
+                        if(fieldDescribe.isNillable() && String.isEmpty((String)mObj.get(field))){
+                            sObj.put(field, null); 
+                        }
+                        else{
+                            for(Schema.PicklistEntry entry : entries){
+                                if(entry.getValue()==mObj.get(field)){
+                                    sObj.put(field, mObj.get(field)); 
+                                    break;
+                                }
                             }
                         }
                     }

@@ -26,7 +26,12 @@
                 if(option.value == item[column.name]){
                     component.set("v.valueLabel", option.label);
                 }
-            });   
+            });    
+            
+            //Add None option 
+            if(!component.get("v.required")){
+                options.unshift({ label: "--None--", value: "" });
+            }
         }
         catch(ex){
             console.error("RelatedListEditor", ex.message);
