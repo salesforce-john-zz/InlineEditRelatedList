@@ -1,7 +1,11 @@
-<a href="https://githubsfdeploy.herokuapp.com?owner=hicham-elmansouri/&repo=SFRelatedListEditor">
+<a href="https://githubsfdeploy.herokuapp.com?owner=jschneider-nexgen/&repo=InlineEditRelatedList">
   <img alt="Deploy to Salesforce"
        src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">
 </a>
+
+## 7 Jan 2019 Updates
+
+Updates were completed to allow dynamic functionality based on the object.  So it should work with both cases and objects with a ‘Name’ field.
 
 ## Overview
 
