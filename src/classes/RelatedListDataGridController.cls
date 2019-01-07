@@ -25,10 +25,10 @@ public with sharing class RelatedListDataGridController {
     
     /**
     * Clean the related list metadata
-	* -If the field is AutoNumber or Calculated set the type to Formula. Otherwise set the type from the map
-	* -If the column is not an inner field set the type to Reference
-	* -If the field is not accessible remove the field from columns list  
-	* */
+  * -If the field is AutoNumber or Calculated set the type to Formula. Otherwise set the type from the map
+  * -If the column is not an inner field set the type to Reference
+  * -If the field is not accessible remove the field from columns list  
+  * */
     private static void cleanRelatedListMetadata(Map<String, Object> mRelatedListMetadata)
     {
         Object[] columns = (Object[] )mRelatedListMetadata.get('columns');                
@@ -84,7 +84,7 @@ public with sharing class RelatedListDataGridController {
                         mColumn.put('type', 'Formula');                           
                     }   
                     
- 					//Set type for AutoNumber Fields
+           //Set type for AutoNumber Fields
                     if(fieldDescResult.isAutoNumber()){
                         mColumn.put('calculatedType', mColumn.get('type')); 
                         mColumn.put('type', 'ItemLink');                           
@@ -154,9 +154,9 @@ public with sharing class RelatedListDataGridController {
                                                           relatedlistName);
         if(items.size()>0){        
             Id firstChildId = (Id)((Map<String, Object>) items.get(0)).get('Id');            
-        	DescribeSObjectResult objectDescResult = firstChildId.getSobjectType().getDescribe();
+          DescribeSObjectResult objectDescResult = firstChildId.getSobjectType().getDescribe();
             
-        	Map<String, DescribeFieldResult> lookupFields = new Map<String,DescribeFieldResult>();  
+          Map<String, DescribeFieldResult> lookupFields = new Map<String,DescribeFieldResult>();  
             Map<String, DescribeFieldResult> percentFields = new Map<String,DescribeFieldResult>();    
             
             for(Schema.SObjectField sfield : objectDescResult.fields.getMap().Values()){ 
@@ -169,7 +169,7 @@ public with sharing class RelatedListDataGridController {
                     percentFields.put(fieldDescResult.getName(), fieldDescResult);
                 } 
             }   
-			
+      
             //Set the lookup labels based on the field type
             for(String fieldKey : lookupFields.keySet()){
                 Set<Id> lookupIds = new Set<Id>();
@@ -196,7 +196,7 @@ public with sharing class RelatedListDataGridController {
                     for(SObject lookupObj : lookupObjs){
                         for(Object item : lookupMap.get(lookupObj.Id)){
                             Map<String, Object> mItem = (Map<String, Object>) item;
-                            try{                            	
+                            try{                              
                                 mItem.put(fieldKey + '__Name', lookupObj.get('Name'));                                                                                        
                             }
                             catch(Exception e){
@@ -213,7 +213,7 @@ public with sharing class RelatedListDataGridController {
                 for(Object item : items){                    
                     Map<String, Object> mItem = (Map<String, Object>) item;
                     if(mItem.get(fieldKey) != null){
-	                    mItem.put(fieldKey, (decimal)mItem.get(fieldKey)/100);
+                      mItem.put(fieldKey, (decimal)mItem.get(fieldKey)/100);
                     }
                 }
             }    
@@ -229,14 +229,30 @@ public with sharing class RelatedListDataGridController {
      * */
     private static SObject[] getLookupObjects(Set<Id> lookupIds)
     {
+        System.debug('lookupIds '+lookupIds);
         Schema.SObjectType sobjectType = (new list<Id>(lookupIds))[0].getSObjectType();
         String sobjectName = sobjectType.getDescribe().getName();
         
-        if(isSafeObject(sobjectName) && isSafeField('Name', sobjectName)){
-        	return Database.query('Select Id, Name From ' + 
-	                              sobjectName + 
-	                              ' Where Id in :lookupIds');
+        if(sobjectName == 'Case'){
+            if(isSafeObject(sobjectName) && isSafeField('Casenumber', sobjectName)){
+            System.debug('Query '+Database.query('Select Id, Casenumber From ' +sobjectName + ' Where Id in :lookupIds'));
+          return Database.query('Select Id, Casenumber From ' + 
+                                  sobjectName + 
+                                  ' Where Id in :lookupIds');
+            }
+            
+        } 
+        
+        else {
+            if(isSafeObject(sobjectName) && isSafeField('Name', sobjectName)){
+                System.debug('Query '+Database.query('Select Id, Name From ' +sobjectName + ' Where Id in :lookupIds'));
+                return Database.query('Select Id, Name From ' + 
+                                      sobjectName + 
+                                      ' Where Id in :lookupIds');
+                //return Database.query('Select Id, CaseNUmber from Case');
+            }
         }
+        
         
         return null;                   
     }
@@ -312,38 +328,38 @@ public with sharing class RelatedListDataGridController {
      * Search Candiate for Lookup Field
      * */
     @AuraEnabled
-	public static Object[] getLookupCandidates(String refObjName, String searchTerm) {
-		String qname = '%' + searchTerm + '%';
-		
-		if(isSafeObject(refObjName) && isSafeField('Name', refObjName)){
-	        return Database.query('Select Id,Name From ' + 
-	        					  refObjName + 
-	            				  ' Where Name Like :qname Limit 5');
-		}
-		
-		return null;
-	}
-	
+  public static Object[] getLookupCandidates(String refObjName, String searchTerm) {
+    String qname = '%' + searchTerm + '%';
+    
+    if(isSafeObject(refObjName) && isSafeField('Name', refObjName)){
+          return Database.query('Select Id,Name From ' + 
+                      refObjName + 
+                        ' Where Name Like :qname Limit 5');
+    }
+    
+    return null;
+  }
+  
     /**
     * Check if the object is safe to use
     * */
-	private static boolean isSafeObject(String objName){
-	    Map <String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
-	    SObjectType myObj = schemaMap.get(objName);
-	    
-	    return (myObj != null && myObj.getDescribe().isAccessible()); 
-	}
-	
+  private static boolean isSafeObject(String objName){
+      Map <String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+      SObjectType myObj = schemaMap.get(objName);
+      
+      return (myObj != null && myObj.getDescribe().isAccessible()); 
+  }
+  
     /**
     * Check if the field is safe to use
     * */
-	private static boolean isSafeField(String fieldName, String objName){
-	    	Map <String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
-	    	SObjectType myObj = schemaMap.get(objName);
-	    	
-	        SObjectField myField = myObj.getDescribe().fields.getMap().get(fieldName);
-	        return (myField != null && myField.getDescribe().isAccessible());	    
-	}	
+  private static boolean isSafeField(String fieldName, String objName){
+        Map <String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+        SObjectType myObj = schemaMap.get(objName);
+        
+          SObjectField myField = myObj.getDescribe().fields.getMap().get(fieldName);
+          return (myField != null && myField.getDescribe().isAccessible());      
+  }  
     
     /**
     * Delete a related record
@@ -385,7 +401,7 @@ public with sharing class RelatedListDataGridController {
         
         String query = 'Select ' + String.join(queryFields, ', ') +
             ' From ' + String.valueOf(objectId.getSobjectType()) + 
-        	' Where Id=\'' + objectId + '\'';
+          ' Where Id=\'' + objectId + '\'';
         
         System.debug(query);
         SObject item = Database.query(query); 
@@ -412,7 +428,7 @@ public with sharing class RelatedListDataGridController {
                 if(!lookupIds.isEmpty()){
                     SObject[] lookupObjs = getLookupObjects(lookupIds);                 
                     for(SObject lookupObj : lookupObjs){
-                        try{                            	
+                        try{                              
                             mItem.put(fieldKey + '__Name', lookupObj.get('Name'));                                                                                        
                         }
                         catch(Exception e){
@@ -492,7 +508,7 @@ public with sharing class RelatedListDataGridController {
                                              fielSetName);
         }
 
-		return null;        
+    return null;        
     }        
     
     /**
@@ -524,10 +540,10 @@ public with sharing class RelatedListDataGridController {
     
     /**
     * Clean the fieldSet metadata
-	* -If the field is AutoNumber or Calculated set the type to Formula. Otherwise set the type from the map
-	* -If the column is not an inner field set the type to Reference
-	* -If the field is not accessible remove the field from columns list  
-	* */
+  * -If the field is AutoNumber or Calculated set the type to Formula. Otherwise set the type from the map
+  * -If the column is not an inner field set the type to Reference
+  * -If the field is not accessible remove the field from columns list  
+  * */
     private static List<Object> getFieldSetColumns(String objectName, 
                                                    FieldSetUtils.IFieldSet fieldSet)
     {       
@@ -574,7 +590,7 @@ public with sharing class RelatedListDataGridController {
                         mColumn.put('type', 'Formula');                           
                     }   
                     
- 					//Set type for AutoNumber Fields
+           //Set type for AutoNumber Fields
                     if(fieldDescResult.isAutoNumber()){
                         mColumn.put('calculatedType', mColumn.get('type')); 
                         mColumn.put('type', 'ItemLink');                           
@@ -663,8 +679,8 @@ public with sharing class RelatedListDataGridController {
     }     
     
     /**
-    * Return the lookup field name	  
-	* */
+    * Return the lookup field name    
+  * */
     static String getLookupNamePath(String fieldName)
     {
         return fieldName.endsWith('__c') ?
