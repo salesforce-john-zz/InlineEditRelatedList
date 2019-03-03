@@ -3,6 +3,10 @@
        src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">
 </a>
 
+## 3 Mar 2019
+
+The original creator of this Lighting Component is no longer sharing it publicly.  This has been used for the Stratos Enterprise FSC implementation and documentation will be updated.
+
 ## 7 Jan 2019 Updates
 
 Updates were completed to allow dynamic functionality based on the object.  So it should work with both cases and objects with a ‘Name’ field.
