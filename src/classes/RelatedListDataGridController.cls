@@ -616,6 +616,7 @@ public with sharing class RelatedListDataGridController {
     public static Object[] getFieldSetItems(String objectName, 
                                             String fieldSetName,
                                             String filterBy,
+                                            String filterType,
                                             String sortBy,
                                             String orderBy)
     {            
@@ -648,16 +649,20 @@ public with sharing class RelatedListDataGridController {
             
             //Apply filter
             if(filterBy != null){
-                Map<String, Object> filterMap = 
-                    (Map<String, Object>)JSON.deserializeUntyped(filterBy);
+
+                if(filterType == null || String.isEmpty(filterType) || filterType.equalsIgnoreCase('Map')){
+                    Map<String, Object> filterMap = (Map<String, Object>)JSON.deserializeUntyped(filterBy);
                 
-                List<String> filterList = new List<String>();
-                for(String field : filterMap.keySet()){
-                    filterList.add(field + '=\'' +  filterMap.get(field) + '\'');
-                }
-                
-                if(filterList.size()>0){
-                    query += ' Where ' + String.join(filterList , ' And ');                    
+                    List<String> filterList = new List<String>();
+                    for(String field : filterMap.keySet()){
+                        filterList.add(field + '=\'' +  filterMap.get(field) + '\'');
+                    }
+                    
+                    if(filterList.size()>0){
+                        query += ' Where ' + String.join(filterList , ' And ');                    
+                    }
+                }else if(filterType != null && filterType.equalsIgnoreCase('String')){
+                    query += ' WHERE ' + filterBy;
                 }
             }
             

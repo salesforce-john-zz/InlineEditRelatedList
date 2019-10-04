@@ -64,6 +64,7 @@
             "objectName": component.get("v.relatedObjectName"),
             "fieldSetName": component.get("v.fieldSetName"),
             "filterBy" : component.get("v.filter"),
+            "filterType" : component.get("v.filterType"),
             "sortBy" : component.get("v.sort"),
             "orderBy" : component.get("v.order")
         });	

@@ -1,10 +1,11 @@
-<aura:component implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:hasRecordId" 
+<aura:component implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:hasRecordId,lightning:availableForFlowScreens" 
                 controller="RelatedListDataGridController"
                 access="global" >       
     <aura:attribute name="relatedObjectName" type="String" access="global"/> 
     <aura:attribute name="fieldSetName" type="String" access="global"/> 
     <aura:attribute name="canCreate" type="Boolean" default="true" access="global"/>
     <aura:attribute name="filter" type="String" access="global"/>
+    <aura:attribute name="filterType" type="String" access="global"/>
     <aura:attribute name="aggregate" type="String" access="global"/>
     <aura:attribute name="defaultValues" type="String" default="{}" access="global"/>
     <aura:attribute name="customLabel" type="String" access="global"/> 
