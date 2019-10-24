@@ -167,7 +167,8 @@ public class RelatedListDataGridControllerTest {
                                                            'OneDesk__Opportunity_FieldSet',
                                                            null,
                                                            null,
-                                                           null);
+                                                           null,
+							   null);
         
         System.assert(opportunityList != null);
         
